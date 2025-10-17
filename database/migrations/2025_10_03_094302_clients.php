@@ -1,0 +1,56 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('clients', function (Blueprint $table) {
+    $table->id();
+    $table->string('client_code')->unique(); // auto-generate
+    $table->string('client_name');
+    $table->string('business_display_name')->nullable();
+
+    // Address
+    $table->string('address1')->nullable();
+    $table->string('address2')->nullable();
+    $table->string('address3')->nullable();
+    $table->string('city')->nullable();
+    $table->string('state')->nullable();
+    $table->string('country')->nullable();
+    $table->string('pincode', 10)->nullable();
+
+    // Business Contact
+    $table->string('billing_spoc_name')->nullable();
+    $table->string('billing_spoc_contact', 20)->nullable();
+    $table->string('billing_spoc_email')->nullable();
+    $table->string('gstin', 20)->nullable();
+    $table->string('invoice_email')->nullable();
+    $table->string('invoice_cc')->nullable();
+
+    // Technical Support
+    $table->string('support_spoc_name')->nullable();
+    $table->string('support_spoc_mobile', 20)->nullable();
+    $table->string('support_spoc_email')->nullable();
+
+    $table->enum('status', ['Active', 'Inactive'])->default('Active');
+
+    $table->timestamps();
+});
+
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+         Schema::dropIfExists('clients');
+    }
+};
