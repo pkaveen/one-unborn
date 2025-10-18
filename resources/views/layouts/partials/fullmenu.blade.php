@@ -79,6 +79,11 @@
     </a>
     @endif
 
+    {{-- Common Settings --}}
+@php
+    $commonSettings = \App\Helpers\TemplateHelper::getUserMenuPermissions('Common Settings');
+@endphp
+@if($commonSettings && $commonSettings->can_menu)
     <li class="nav-item">
         <a class="nav-link text-white d-flex justify-content-between align-items-center"
            data-bs-toggle="collapse" href="#commonSettings" role="button"
@@ -108,6 +113,9 @@
             </ul>
         </div>
     </li>
+    @endif
+
+    {{-- Logout --}}
 
     <li class="nav-item mt-3">
         <form method="POST" action="{{ route('logout') }}">

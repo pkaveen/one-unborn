@@ -23,21 +23,29 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Vendor;
 use Carbon\Carbon;
+use App\Models\Company;
 
 
 //
 // 🔁 Root redirect to login page
 //
+// Route::get('/', function () {
+//     return redirect()->route('login');
+// });
 Route::get('/', function () {
-    return redirect()->route('login');
+    if (Auth::check()) {
+        return redirect()->route('welcome'); // logged-in users → dashboard
+    }
+    return redirect()->route('login'); // guests → login
 });
 
 //
 // 🔐 AUTH ROUTES
 //
+Route::middleware('guest')->group(function () {
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
-
+});
 // Logout route
 Route::post('/logout', function () {
     Auth::logout();
@@ -203,5 +211,25 @@ Route::post('/menus/privileges/{userId}', [MenuController::class, 'updatePrivile
 // });
 
 Route::get('/gst/fetch/{gstin}', [GSTController::class, 'fetchGSTDetails'])->name('gst.fetch');
+
+Route::get('/company/fetch/{pan}', function ($pan) {
+    $company = Company::where('pan_number', strtoupper($pan))->first();
+
+    if ($company) {
+        return response()->json([
+            'success' => true,
+            'data' => $company
+        ]);
+    }
+
+    return response()->json([
+        'success' => false,
+        'message' => 'No company found for this PAN.'
+    ]);
+});
+// Fallback route to handle undefined routes
+Route::fallback(function () {
+    return redirect('/welcome');
+});
 
 });

@@ -11,7 +11,8 @@ class GSTController extends Controller
     {
         try {
             // Replace this with your real GST API URL
-            $apiUrl = "https://appyflow.in/api/verifyGST?gstNo={$gstin}&key_secret=YOUR_API_KEY_HERE";
+            $apiKey = config('services.appyflow.key'); // Store in config/services.php
+            $apiUrl = "https://appyflow.in/api/verifyGST?gstNo={$gstin}&key_secret={$apiKey}";
 
             $response = Http::get($apiUrl);
 

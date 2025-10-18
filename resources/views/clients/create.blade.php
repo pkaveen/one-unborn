@@ -20,9 +20,16 @@
         {{--  Client creation form --}}
         <form action="{{ route('clients.store') }}" method="POST">
             @csrf {{--  Protect against CSRF attacks --}}
+            <div class="col-md-4">
+    <label class="form-label">PAN Number</label>
+    <input type="text" id="pan_number" name="pan_number" class="form-control" 
+           placeholder="Enter PAN Number">
+</div>
+
 
             {{--  Basic Details Section --}}
             <h5 class="text-secondary">Basic Details</h5>
+            
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label class="form-label">Client Name</label>
@@ -169,6 +176,32 @@ document.getElementById('gstin').addEventListener('blur', function() {
                 // document.querySelector('[name="business_display_name"]').value = data.data.tradeNam;
             } else {
                 alert("Invalid GST Number");
+            }
+        })
+        .catch(err => console.error(err));
+    }
+});
+
+/**
+ * pan number fetch
+ */
+document.getElementById('pan_number').addEventListener('blur', function() {
+    let pan = this.value.trim().toUpperCase();
+    if (pan.length === 10) {
+        fetch(`/company/fetch/${pan}`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                let c = data.data;
+                alert("Company Found: " + c.company_name);
+
+                // Auto-fill matching fields
+                document.querySelector('[name="business_display_name"]').value = c.company_name ?? '';
+                document.querySelector('[name="address1"]').value = c.address ?? '';
+                document.querySelector('[name="gstin"]').value = c.gst_no ?? '';
+                document.querySelector('[name="billing_spoc_email"]').value = c.email_1 ?? '';
+            } else {
+                alert("No company found for this PAN");
             }
         })
         .catch(err => console.error(err));

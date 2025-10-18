@@ -35,8 +35,6 @@
     background-color: #121722ff;
     z-index: 100;
 }
-
-
      /* ✅ Active & Hover Colors */
         .nav-link.menu-item {
             padding: 10px 15px;
@@ -61,7 +59,6 @@
     font-size: 0.95rem;
     padding-left: 1.8rem;
 }
-
         /*  */
 
     /* Content shift */
@@ -71,9 +68,6 @@
     transition: margin-left 0.3s ease, width 0.3s ease;
     padding: 0; /* remove extra padding causing push */
 }
-
-
-
     /* Sidebar collapsed (mobile) */
     @media (max-width: 768px) {
         #sidebar {
@@ -106,12 +100,7 @@
 
     #sidebar.active + #sidebarOverlay {
         display: block;
-    }
-        
-
-        /*  */
-
-        
+    }  
     .form-control {
         border-radius: 8px;
         padding: 10px;
@@ -120,9 +109,71 @@
     .form-group {
         margin-bottom: 15px;
     }
-
-
     }
+    /* Fix action button alignment */
+.table td .btn {
+    vertical-align: middle;
+    margin-top: 0 !important;
+}
+
+/* Restore alternating row colors (fix for .table-striped + .table-bordered) */
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #f9fafb !important;
+}
+
+/* Improve Action button look */
+.table td .btn-sm {
+    border-radius: 6px;
+    padding: 4px 8px;
+}
+
+/* ✅ Fix Action button vertical alignment */
+.table td {
+    vertical-align: middle !important;
+}
+
+/* ✅ Center align the Action column */
+.table th:nth-child(2),
+.table td:nth-child(2) {
+    text-align: center;
+    vertical-align: middle !important;
+}
+
+/* ✅ Keep buttons inline and neat */
+.table td .btn {
+    margin: 2px 3px;
+    vertical-align: middle;
+}
+
+/* Optional: soften button colors to match your previous look */
+.btn-primary {
+    background-color: #0d6efd !important;
+    border-color: #0d6efd !important;
+}
+
+.btn-danger {
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+}
+
+.btn-success {
+    background-color: #198754 !important;
+    border-color: #198754 !important;
+}
+
+.btn-warning {
+    background-color: #ffc107 !important;
+    border-color: #ffc107 !important;
+    color: #000 !important;
+}
+
+.btn-info {
+    background-color: #0dcaf0 !important;
+    border-color: #0dcaf0 !important;
+    color: #000 !important;
+}
+
+    
 </style>
 <?php if(session('alert')): ?>
   <div class="alert alert-warning text-center"><?php echo e(session('alert')); ?></div>
