@@ -62,9 +62,13 @@ Route::post('/logout', function () {
 // })->name('logout');
 
 // 🔑 PASSWORD RESET ROUTES (public)
-Route::get('forgot-password', function () {
-    return view('auth.forgot-password');
-})->name('password.request');
+Route::middleware('guest')->group(function () {
+    Route::get('forgot-password', function () {
+        if (Auth::check()) {
+            return redirect()->route('welcome');
+        }
+        return view('auth.forgot-password');
+    })->name('password.request');
 
 Route::post('forgot-password', function (Request $request) {
     $request->validate(['email' => 'required|email']);
@@ -76,6 +80,9 @@ Route::post('forgot-password', function (Request $request) {
 })->name('password.email');
 
 Route::get('reset-password/{token}', function ($token) {
+    if (Auth::check()) {
+        return redirect()->route('welcome');
+    }
     return view('auth.reset-password', ['token' => $token]);
 })->name('password.reset');
 
@@ -105,6 +112,7 @@ Route::post('reset-password', function (Request $request) {
 
     return back()->withErrors(['email' => [__($status)]]);
 })->name('password.update');
+});
 //
 // 👤 PROFILE CREATION — allowed for all logged-in users
 //

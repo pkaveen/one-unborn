@@ -91,13 +91,16 @@
             </div>
 
             {{-- ✅ Status --}}
-            <div class="mb-3">
+            <!-- <div class="mb-3">
                 <label class="form-label">Status</label>
                 <select name="status" class="form-select">
                     <option value="Active" {{ old('status', 'Active') == 'Active' ? 'selected' : '' }}>Active</option>
                     <option value="Inactive" {{ old('status') == 'Inactive' ? 'selected' : '' }}>Inactive</option>
                 </select>
-            </div>
+            </div> -->
+             {{--  Status Dropdown --}}
+            <input type="hidden" name="status" value="Active">
+
 
             {{-- ✅ Buttons --}}
             <div class="d-flex justify-content-between">

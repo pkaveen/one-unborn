@@ -151,13 +151,16 @@
             </div>
 
             
-            <div class="mb-3">
+            <!-- <div class="mb-3">
                 <label>Status</label>
                 <select name="status" class="form-control">
                     <option {{ $client->status=='Active'?'selected':'' }}>Active</option>
                     <option {{ $client->status=='Inactive'?'selected':'' }}>Inactive</option>
                 </select>
-            </div>
+            </div> -->
+             {{--  Status Dropdown --}}
+            <input type="hidden" name="status" value="Active">
+
 
             <button type="submit" class="btn btn-primary mt-3">Update Client</button>
             <a href="{{ route('clients.index') }}" class="btn btn-secondary mt-3">Cancel</a>

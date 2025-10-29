@@ -29,14 +29,17 @@
                 {{-- ✅ Input for user description (optional) --}}
             </div>
            
-            <div class="mb-3">
+            <!-- <div class="mb-3">
                 <label>Status</label>
                 <select name="status" class="form-control">
                     <option value="Active">Active</option>
                     <option value="Inactive">Inactive</option>
                 </select>
                 {{-- ✅ Dropdown for choosing the status (Active or Inactive) --}}
-            </div>
+            </div> -->
+             {{--  Status Dropdown --}}
+            <input type="hidden" name="status" value="Active">
+
 
             <button class="btn btn-success">Save</button>
             {{-- ✅ Submits the form --}}

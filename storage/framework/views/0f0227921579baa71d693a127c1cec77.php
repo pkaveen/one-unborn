@@ -77,7 +77,7 @@
         
         <div class="mt-3">
             <a href="<?php echo e(route('users.index')); ?>" class="btn btn-secondary">Back</a>
-            <a href="<?php echo e(route('users.edit', $user)); ?>" class="btn btn-warning">Edit</a>
+            <!-- <a href="<?php echo e(route('users.edit', $user)); ?>" class="btn btn-warning">Edit</a> -->
         </div>
     </div>
 </div>

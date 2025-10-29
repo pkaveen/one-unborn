@@ -53,7 +53,7 @@
                 {{-- ✅ Optional description field --}}
             </div>
 
-            <div class="mb-3">
+            <!-- <div class="mb-3">
                 <label>Status</label>
                 <select name="status" class="form-control">
                     {{-- ✅ Dropdown menu with two options --}}
@@ -61,7 +61,10 @@
                     <option value="Inactive" {{ $usertypetable->status == 'Inactive' ? 'selected' : '' }}>Inactive</option>
                 </select>
                 {{-- ✅ Automatically selects the current status --}}
-            </div>
+            </div> -->
+             {{--  Status Dropdown --}}
+            <input type="hidden" name="status" value="Active">
+
 
             <button class="btn btn-warning">Update</button>
             {{-- ✅ Submit button for updating record --}}

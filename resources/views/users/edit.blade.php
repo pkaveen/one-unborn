@@ -87,14 +87,17 @@
                 <label>Date of Joining</label>
                 <input type="date" name="Date_of_Joining" value="{{ old('Date_of_Joining', $user->Date_of_Joining) }}" class="form-control" required>
             </div>
-            {{-- 🔹 Status Dropdown --}}
+            <!-- {{-- 🔹 Status Dropdown --}}
             <div class="mb-3">
                 <label>Status</label>
                 <select name="status" class="form-control">
                     <option {{ $user->status=='Active'?'selected':'' }}>Active</option>
                     <option {{ $user->status=='Inactive'?'selected':'' }}>Inactive</option>
                 </select>
-            </div>
+            </div> -->
+             {{--  Status Dropdown --}}
+            <input type="hidden" name="status" value="Active">
+
             {{-- 🔘 Buttons --}}
             <button class="btn btn-warning">Update</button>
             <a href="{{ route('users.index') }}" class="btn btn-secondary">Back</a>
