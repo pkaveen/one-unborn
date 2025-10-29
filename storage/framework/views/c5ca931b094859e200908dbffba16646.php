@@ -58,42 +58,121 @@
             <?php endif; ?>
 
             
-            <?php
-                $feasibility = \App\Helpers\TemplateHelper::getUserMenuPermissions('Feasibility');
-            ?>
-            <?php if($feasibility && $feasibility->can_menu): ?>
-                <li class="nav-item">
-                    <a class="nav-link text-white d-flex justify-content-between align-items-center"
-                       data-bs-toggle="collapse" href="#operationsMenu" role="button"
-                       aria-expanded="<?php echo e(request()->is('feasibility*') ? 'true' : 'false'); ?>"
-                       aria-controls="operationsMenu">
-                        <span><i class="bi bi-tools"></i>  Sales & Marketing</span>
-                        <i class="bi bi-chevron-down small"></i>
-                    </a>
+<?php
+    $feasibility = \App\Helpers\TemplateHelper::getUserMenuPermissions('Feasibility');
+    $feasibilityMaster = \App\Helpers\TemplateHelper::getUserMenuPermissions('Feasibility Master');
+?>
+<?php if(($feasibility && $feasibility->can_menu) || ($feasibilityMaster && $feasibilityMaster->can_menu)): ?>
+<li class="nav-item">
+    <a class="nav-link text-white d-flex justify-content-between align-items-center"
+       data-bs-toggle="collapse" href="#salesMarketingMenu" role="button"
+       aria-expanded="<?php echo e(request()->is('feasibility*') ? 'true' : 'false'); ?>"
+       aria-controls="salesMarketingMenu">
+        <span><i class="bi bi-briefcase"></i> Sales & Marketing</span>
+        <i class="bi bi-chevron-down small"></i>
+    </a>
 
-                    <div class="collapse <?php echo e(request()->is('feasibility*') ? 'show' : ''); ?>" id="operationsMenu">
-                        <ul class="nav flex-column ms-3 mt-2">
-                            <li><a class="nav-link text-white menu-item <?php echo e(request()->is('feasibility*') ? 'active' : ''); ?>" href="<?php echo e(route('feasibility.index')); ?>"><i class="bi bi-diagram-3"></i> Feasibility</a></li>
-                           <li><a class="nav-link text-white menu-item <?php echo e(request()->is('feasibility-status/open') ? 'active' : ''); ?>" 
-                          href="<?php echo e(route('feasibility.status.index', ['status' => 'Open'])); ?>">
-                        <i class="bi bi-hourglass-split"></i> Open
-                       </a></li>
+    <div class="collapse <?php echo e(request()->is('feasibility*') ? 'show' : ''); ?>" id="salesMarketingMenu">
+        <ul class="nav flex-column ms-3 mt-1">
 
-                          <li><a class="nav-link text-white menu-item <?php echo e(request()->is('feasibility-status/inprogress') ? 'active' : ''); ?>" 
-                                 href="<?php echo e(route('feasibility.status.index', ['status' => 'InProgress'])); ?>">
-                             <i class="bi bi-clock-history"></i>  In Progress
-                          </a></li>
+            
+            <?php if($feasibilityMaster && $feasibilityMaster->can_menu): ?>
+            <li>
+                <a class="nav-link text-white d-flex justify-content-between align-items-center"
+                   data-bs-toggle="collapse" href="#feasibilityMainMenu" role="button"
+                   aria-expanded="<?php echo e(request()->is('feasibility*') ? 'true' : 'false'); ?>"
+                   aria-controls="feasibilityMainMenu">
+                    <span><i class="bi bi-diagram-3 me-2"></i> Feasibility</span>
+                    <i class="bi bi-chevron-right small"></i>
+                </a>
 
-                          <li><a class="nav-link text-white menu-item <?php echo e(request()->is('feasibility-status/closed') ? 'active' : ''); ?>" 
-                                href="<?php echo e(route('feasibility.status.index', ['status' => 'Closed'])); ?>">
-                             <i class="bi bi-check-circle"></i>  Closed
-                          </a></li>
+                <div class="collapse <?php echo e(request()->is('feasibility*') ? 'show' : ''); ?>" id="feasibilityMainMenu">
+                    <ul class="nav flex-column ms-3">
+                        
+                        <li>
+                            <a class="nav-link text-white-50 menu-item <?php echo e(request()->is('feasibility/create') ? 'active text-white fw-bold' : ''); ?>"
+                               href="<?php echo e(route('feasibility.create')); ?>">
+                               <i class="bi bi-plus-circle me-2"></i> Add Feasibility
+                            </a>
+                        </li>
 
-   
-                        </ul>
-                    </div>
-                </li>
+                        
+                        <li>
+                            <a class="nav-link text-white-50 menu-item <?php echo e(request()->is('feasibility') && !request()->is('feasibility/status*') ? 'active text-white fw-bold' : ''); ?>"
+                               href="<?php echo e(route('feasibility.index')); ?>">
+                               <i class="bi bi-list-ul me-2"></i> Feasibility Master
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
             <?php endif; ?>
+        </ul>
+    </div>
+</li>
+<?php endif; ?>
+
+            
+<?php
+    $operationsFeasibility = \App\Helpers\TemplateHelper::getUserMenuPermissions('Operations Feasibility');
+?>
+<?php if($operationsFeasibility && $operationsFeasibility->can_menu): ?>
+<li class="nav-item">
+    <a class="nav-link text-white d-flex justify-content-between align-items-center"
+       data-bs-toggle="collapse" href="#operationsMenu" role="button"
+       aria-expanded="<?php echo e(request()->is('operations*') || request()->is('feasibility/status*') ? 'true' : 'false'); ?>"
+       aria-controls="operationsMenu">
+        <span><i class="bi bi-gear-wide-connected"></i> Operations</span>
+        <i class="bi bi-chevron-down small"></i>
+    </a>
+
+    <div class="collapse <?php echo e(request()->is('operations*') || request()->is('feasibility/status*') ? 'show' : ''); ?>" id="operationsMenu">
+        <ul class="nav flex-column ms-3 mt-1">
+
+            
+            <li>
+                <a class="nav-link text-white d-flex justify-content-between align-items-center"
+                   data-bs-toggle="collapse" href="#feasibilityStatusMenu" role="button"
+                   aria-expanded="<?php echo e(request()->is('feasibility/status*') ? 'true' : 'false'); ?>"
+                   aria-controls="feasibilityStatusMenu">
+                    <span><i class="bi bi-kanban me-2"></i> Feasibility Status</span>
+                    <i class="bi bi-chevron-right small"></i>
+                </a>
+
+                <div class="collapse <?php echo e(request()->is('feasibility/status*') ? 'show' : ''); ?>" id="feasibilityStatusMenu">
+                    <ul class="nav flex-column ms-4">
+                        
+                        <li>
+                            <a class="nav-link text-white-50 menu-item <?php echo e(request()->is('feasibility/status/open') ? 'active text-white fw-bold' : ''); ?>"
+                               href="<?php echo e(route('feasibility.status', 'open')); ?>">
+                               <i class="bi bi-hourglass-split me-2"></i> Open
+                            </a>
+                        </li>
+
+                        
+                        <li>
+                            <a class="nav-link text-white-50 menu-item <?php echo e(request()->is('feasibility/status/inprogress') ? 'active text-white fw-bold' : ''); ?>"
+                               href="<?php echo e(route('feasibility.status', 'inprogress')); ?>">
+                               <i class="bi bi-clock-history me-2"></i> In Progress
+                            </a>
+                        </li>
+
+                        
+                        <li>
+                            <a class="nav-link text-white-50 menu-item <?php echo e(request()->is('feasibility/status/closed') ? 'active text-white fw-bold' : ''); ?>"
+                               href="<?php echo e(route('feasibility.status', 'closed')); ?>">
+                               <i class="bi bi-check-circle me-2"></i> Closed
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+        </ul>
+    </div>
+</li>
+<?php endif; ?>
+
+            
 
             
             <?php

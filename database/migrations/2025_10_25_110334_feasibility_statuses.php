@@ -14,11 +14,32 @@ return new class extends Migration
         Schema::create('feasibility_statuses', function (Blueprint $table) {
     $table->id();
     $table->foreignId('feasibility_id')->constrained('feasibilities')->onDelete('cascade');
-    $table->string('vendor_name')->nullable();
-    $table->string('arc')->nullable();
-    $table->string('otc')->nullable();
-    $table->string('static_ip_cost')->nullable();
-    $table->string('delivery_timeline')->nullable();
+     // Vendor details (max 4 as per your sheet)
+    $table->string('vendor1_name')->nullable();
+    $table->string('vendor1_arc')->nullable();
+    $table->string('vendor1_otc')->nullable();
+    $table->string('vendor1_static_ip_cost')->nullable();
+    $table->string('vendor1_delivery_timeline')->nullable();
+
+    $table->string('vendor2_name')->nullable();
+    $table->string('vendor2_arc')->nullable();
+    $table->string('vendor2_otc')->nullable();
+    $table->string('vendor2_static_ip_cost')->nullable();
+    $table->string('vendor2_delivery_timeline')->nullable();
+
+    $table->string('vendor3_name')->nullable();
+    $table->string('vendor3_arc')->nullable();
+    $table->string('vendor3_otc')->nullable();
+    $table->string('vendor3_static_ip_cost')->nullable();
+    $table->string('vendor3_delivery_timeline')->nullable();
+
+    $table->string('vendor4_name')->nullable();
+    $table->string('vendor4_arc')->nullable();
+    $table->string('vendor4_otc')->nullable();
+    $table->string('vendor4_static_ip_cost')->nullable();
+    $table->string('vendor4_delivery_timeline')->nullable();
+
+    // Status management
     $table->enum('status', ['Open', 'InProgress', 'Closed'])->default('Open');
     $table->timestamps();
 });

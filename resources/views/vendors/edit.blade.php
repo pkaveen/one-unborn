@@ -25,7 +25,7 @@
     <input type="text" id="pan_number" name="pan_number" class="form-control" 
            placeholder="Enter PAN Number">
            <!-- Button commented out (optional verification trigger) -->
-           <button type="button" id="verifyPanBtn" class="btn btn-primary">Verify</button>
+           <!-- <button type="button" id="verifyPanBtn" class="btn btn-primary">Verify</button> -->
 </div>
 <!--  PAN status message area -->
   <small id="panStatus" class="text-muted mt-1 d-block"></small>
@@ -136,13 +136,15 @@
             </div>
 
             {{-- Status Dropdown--}}
-            <div class="mb-3">
+            <!-- <div class="mb-3">
                 <label>Status</label>
                 <select name="status" class="form-control">
                     <option value="Active" {{ old('status', $vendor->status) == 'Active' ? 'selected' : '' }}>Active</option>
                     <option value="Inactive" {{ old('status', $vendor->status) == 'Inactive' ? 'selected' : '' }}>Inactive</option>
                 </select>
-            </div>
+            </div> -->
+            <input type="hidden" name="status" value="Active">
+
 
             {{-- Buttons --}}
             <button type="submit" class="btn btn-primary mt-3">Update Vendor</button>

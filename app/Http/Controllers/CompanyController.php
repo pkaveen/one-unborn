@@ -50,23 +50,37 @@ public function index()
 
     public function store(Request $request, Company $company)
     {
-        $validated = $request->validate([
-            'company_name' => 'required|string|max:255',
-            'email_1' => 'nullable|email',
-            'email_2' => 'nullable|email',
-            'billing_logo' => 'nullable|image|max:2048',
-            'billing_sign_normal' => 'nullable|image|max:2048',
-            'billing_sign_digital' => 'nullable|image|max:2048',
-        ]);
+       $validated = $request->validate([
+    'trade_name' => 'nullable|string|max:255',
+    'company_name' => 'required|string|max:255',
+    'business_number' => 'nullable|string|max:255',
+    'company_phone' => 'nullable|string|max:20',
+    'company_email' => 'nullable|email|max:255',
+    // 'secondary_email' => 'nullable|email|max:255',
+    'alternative_contact_number' => 'nullable|string|max:20',
+    'website' => 'nullable|string|max:255',
+    'gstin' => 'nullable|string|max:15',
+    'pan_number' => 'nullable|string|max:10',
+    'address' => 'nullable|string',
+    'branch_location' => 'nullable|string|max:255',
+    'store_location_url' => 'nullable|string|max:255',
+    'google_place_id' => 'nullable|string|max:255',
+    'instagram' => 'nullable|string|max:255',
+    'youtube' => 'nullable|string|max:255',
+    'facebook' => 'nullable|string|max:255',
+    'linkedin' => 'nullable|string|max:255',
+    'account_number' => 'nullable|string|max:50',
+    'ifsc_code' => 'nullable|string|max:11',
+    'branch_name' => 'nullable|string|max:255',
+    'bank_name' => 'nullable|string|max:255',
+    'upi_id' => 'nullable|string|max:255',
+    'upi_number' => 'nullable|string|max:20',
+    'opening_balance' => 'nullable|numeric',
+     'status'           => 'required|in:Active,Inactive',
+]);
 
-        $data = $request->except(['billing_logo', 'billing_sign_normal', 'billing_sign_digital']);
-// ✅ Upload images to public/images/...
-        $data['billing_logo'] = $this->uploadImage($request, 'billing_logo', 'logos');
-        $data['billing_sign_normal'] = $this->uploadImage($request, 'billing_sign_normal', 'n_signs');
-        $data['billing_sign_digital'] = $this->uploadImage($request, 'billing_sign_digital', 'd_signs');
-
-
-        Company::create($data);
+// ✅ Insert into database
+    Company::create($validated);
 
         return redirect()->route('companies.index')->with('success', 'Company created successfully!');
     }
@@ -85,37 +99,68 @@ public function index()
 
     public function update(Request $request, Company $company)
     {
-        $validated = $request->validate([
-            'company_name' => 'required|string|max:255',
-            'email_1' => 'nullable|email',
-            'email_2' => 'nullable|email',
-            'billing_logo' => 'nullable|image|max:2048',
-            'billing_sign_normal' => 'nullable|image|max:2048',
-            'billing_sign_digital' => 'nullable|image|max:2048',
-        ]);
+        try {
+            $validated = $request->validate([
+                'trade_name' => 'nullable|string|max:255',
+                'company_name' => 'required|string|max:255',
+                'business_number' => 'nullable|string|max:255',
+                'company_phone' => 'nullable|string|max:20',
+                'company_email' => 'nullable|email|max:255',
+                'alternative_contact_number' => 'nullable|string|max:20',
+                'website' => 'nullable|string|max:255',
+                'gstin' => 'nullable|string|max:15',
+                'pan_number' => 'nullable|string|max:10',
+                'address' => 'nullable|string',
+                'branch_location' => 'nullable|string|max:255',
+                'store_location_url' => 'nullable|string|max:255',
+                'google_place_id' => 'nullable|string|max:255',
+                'instagram' => 'nullable|string|max:255',
+                'youtube' => 'nullable|string|max:255',
+                'facebook' => 'nullable|string|max:255',
+                'linkedin' => 'nullable|string|max:255',
+                'account_number' => 'nullable|string|max:50',
+                'ifsc_code' => 'nullable|string|max:11',
+                'branch_name' => 'nullable|string|max:255',
+                'bank_name' => 'nullable|string|max:255',
+                'upi_id' => 'nullable|string|max:255',
+                'upi_number' => 'nullable|string|max:20',
+                'opening_balance' => 'nullable|numeric',
+                'status' => 'required|in:Active,Inactive',
+            ]);
 
-        $data = $request->except(['billing_logo', 'billing_sign_normal', 'billing_sign_digital']);
-
-    // ✅ Replace images if new uploaded
-        $data['billing_logo'] = $this->updateImage($request, $company->billing_logo, 'billing_logo', 'logos');
-        $data['billing_sign_normal'] = $this->updateImage($request, $company->billing_sign_normal, 'billing_sign_normal', 'n_signs');
-        $data['billing_sign_digital'] = $this->updateImage($request, $company->billing_sign_digital, 'billing_sign_digital', 'd_signs');
-
-        $company->update($data);
-
-        return redirect()->route('companies.index')->with('success', 'Company updated successfully!');
+            // Log for debugging
+            Log::info('Company Update - ID: ' . $company->id . ', Data: ' . json_encode($validated));
+            
+            // Update the existing company
+            $company->update($validated);
+            
+            Log::info('Company Updated Successfully - ID: ' . $company->id);
+            
+            return redirect()->route('companies.index')->with('success', 'Company updated successfully!');
+            
+        } catch (\Exception $e) {
+            Log::error('Company Update Error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error updating company: ' . $e->getMessage())->withInput();
+        }
     }
-    
-    public function destroy(Company $company)
-    {
-        $this->deleteImage('images/logos/' . $company->billing_logo);
-        $this->deleteImage('images/n_signs/' . $company->billing_sign_normal);
-        $this->deleteImage('images/d_signs/' . $company->billing_sign_digital);
-
+        /**
+        * Remove the specified resource from storage.
+        */
+    public function destroy($id)
+{
+    try {
+        $company = Company::findOrFail($id);
         $company->delete();
 
-        return redirect()->route('companies.index')->with('success', 'Company deleted successfully!');
+        return redirect()->route('companies.index')
+            ->with('success', 'Company deleted successfully.');
+    } catch (\Exception $e) {
+        Log::error('Error deleting company: '.$e->getMessage());
+        return redirect()->route('companies.index')
+            ->with('error', 'Failed to delete company.');
     }
+}
+
 
     // Active or Inactive button
 
@@ -179,49 +224,7 @@ public function saveEmailConfig(Request $request, $id)
 
     return redirect()->route('companies.index')->with('success', 'Email configuration saved successfully.');
 }
-
- // 🔧 Helper methods
-    private function uploadImage($request, $field, $folder)
-{
-    if ($request->hasFile($field)) {
-        $path = public_path("images/{$folder}");
-        if (!file_exists($path)) {
-            mkdir($path, 0755, true);
-        }
-
-        $file = $request->file($field);
-        $filename = time() . '_' . $file->getClientOriginalName();
-        $file->move($path, $filename);
-        return $filename;
-    }
-    return null;
-}
-
-
-    private function updateImage($request, $oldFile, $field, $folder)
-    {
-        if ($request->hasFile($field)) {
-        $path = public_path("images/{$folder}");
-        if (!file_exists($path)) {
-            mkdir($path, 0755, true);
-        }
-
-        $file = $request->file($field);
-        $filename = time() . '_' . $file->getClientOriginalName();
-        $file->move($path, $filename);
-        return $filename;
-    }
-    return null;
-    }
-
-    private function deleteImage($path)
-    {
-         $fullPath = public_path($path);
-        if ($path && file_exists($fullPath) && is_file($fullPath)) {
-            unlink($fullPath);
-        }
-    }
-    // 
+    
   public function fetchByPan($pan)
 {
     try {
@@ -246,8 +249,9 @@ public function saveEmailConfig(Request $request, $id)
                 'success' => true,
                 'data' => [
                     'company_name' => $company->company_name,
-                    'gst_no'       => $company->gst_no,
-                    'email_1'      => $company->email_1 ?? '',
+
+                    'gstin'       => $company->gstin,
+                    'company_email'=> $company->company_email ?? '',
                     'address'      => $company->address ?? '',
                     'trade_name'   => $company->trade_name ?? '',
                     'company_phone'=> $company->company_phone ?? '',
@@ -275,65 +279,69 @@ public function saveEmailConfig(Request $request, $id)
 public function fetchGst($gst)
 {
     try {
-        // ✅ Basic GST validation
+        // ✅ Validate GST number format
         if (!preg_match("/^[0-9A-Z]{15}$/", $gst)) {
             return response()->json(['error' => 'Invalid GST number format'], 400);
         }
 
-        // Get API key from env
-        $apiKey = env('API_NINJAS_KEY');
-        
-        if (!$apiKey) {
-            Log::error('API Ninjas key not found in .env file');
-            return response()->json(['error' => 'API key not configured'], 500);
-        }
-
         Log::info("Fetching GST data for: {$gst}");
-        
-        // For now, let's return test data for Infosys GST to verify the frontend works
-        if ($gst === '29AABCI9011R1Z7') {
-            Log::info('Returning test data for Infosys GST');
-            return response()->json([
-                'trade_name' => 'Infosys Limited',
-                'legal_name' => 'Infosys Limited',
-                'pradr' => [
-                    'addr' => [
-                        'bno' => 'Electronics City',
-                        'st' => 'Hosur Road',
-                        'loc' => 'Bangalore',
-                        'dst' => 'Bangalore Urban',
-                        'stcd' => 'Karnataka',
-                        'pncd' => '560100'
-                    ]
-                ],
-                'status' => 'Active',
-                'source' => 'test_data'
-            ]);
+
+        // ✅ Try fetching from GSTINCheck (Free API)
+        $response = Http::timeout(10)->get("https://sheet.gstincheck.co.in/check/{$gst}");
+
+        if ($response->successful()) {
+            $data = $response->json();
+
+            if (isset($data['flag']) && $data['flag'] === true && isset($data['data'])) {
+                Log::info('✅ GST fetched successfully from GSTINCheck');
+
+                $gstData = [
+                    'trade_name' => $data['data']['tradeNam'] ?? '',
+                    'legal_name' => $data['data']['lgnm'] ?? '',
+                    'pradr' => [
+                        'addr' => [
+                            'bno'  => $data['data']['pradr']['addr']['bno'] ?? '',
+                            'st'   => $data['data']['pradr']['addr']['st'] ?? '',
+                            'loc'  => $data['data']['pradr']['addr']['loc'] ?? '',
+                            'dst'  => $data['data']['pradr']['addr']['dst'] ?? '',
+                            'stcd' => $data['data']['pradr']['addr']['stcd'] ?? '',
+                            'pncd' => $data['data']['pradr']['addr']['pncd'] ?? '',
+                        ]
+                    ],
+                    'status' => $data['data']['sts'] ?? '',
+                    'source' => 'gstincheck'
+                ];
+
+                // ✅ Build full address string for auto-fill
+                $gstData['address'] = implode(', ', array_filter([
+                    $gstData['pradr']['addr']['bno'] ?? '',
+                    $gstData['pradr']['addr']['st'] ?? '',
+                    $gstData['pradr']['addr']['loc'] ?? '',
+                    $gstData['pradr']['addr']['dst'] ?? '',
+                    $gstData['pradr']['addr']['stcd'] ?? '',
+                    $gstData['pradr']['addr']['pncd'] ?? ''
+                ]));
+
+                return response()->json($gstData);
+            }
         }
 
-        // Try multiple GST APIs for better reliability
-        $gstData = $this->fetchFromRealAPIs($gst);
-        
-        if ($gstData) {
-            Log::info('GST data fetched successfully');
-            return response()->json($gstData);
-        }
+        Log::warning("❌ GSTINCheck did not return valid data for {$gst}");
 
-        // If all APIs fail, return proper error
         return response()->json([
-            'error' => 'GST details not found or services are currently unavailable. Please fill the form manually.',
-            'gst_number' => $gst,
-            'suggestion' => 'You can still create the company by filling the form manually.'
+            'error' => 'GST details not found or unavailable. Please fill manually.',
+            'gst_number' => $gst
         ], 404);
-        
+
     } catch (\Exception $e) {
         Log::error('GST Fetch Error: ' . $e->getMessage());
         return response()->json([
-            'error' => 'GST service error: ' . $e->getMessage(),
-            'suggestion' => 'Please enter company details manually.'
+            'error' => 'Error fetching GST details. Please enter manually.',
+            'details' => $e->getMessage()
         ], 500);
     }
 }
+
 
 private function fetchFromRealAPIs($gst)
 {

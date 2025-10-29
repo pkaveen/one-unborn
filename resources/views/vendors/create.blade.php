@@ -35,7 +35,7 @@
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label class="form-label">Vendor Name</label>
-                    <input type="text" name="vendor_name" class="form-control" 
+                    <input type="text" name="vendor_name" id="vendor_name" class="form-control" 
                            value="{{ old('vendor_name') }}" required>
                 </div>
                 <div class="col-md-6">
@@ -47,13 +47,13 @@
             {{-- 🏢 Business Display Name --}}
             <div class="mb-3">
                 <label class="form-label">Business Display Name</label>
-                <input type="text" name="business_display_name" class="form-control"
+                <input type="text" name="business_display_name" id="business_display_name" class="form-control"
                        value="{{ old('business_display_name') }}">
             </div>
 
             {{-- Address Section--}}
             <h5 class="text-secondary mt-3">Address</h5>
-            <input type="text" name="address1" class="form-control mb-2" placeholder="Address Line 1"
+            <input type="text" name="address1" id="address1" class="form-control mb-2" placeholder="Address Line 1"
                    value="{{ old('address1') }}">
             <input type="text" name="address2" class="form-control mb-2" placeholder="Address Line 2"
                    value="{{ old('address2') }}">
@@ -104,11 +104,11 @@
                            value="{{ old('contact_person_name') }}">
                 </div>
                 <div class="col-md-4">
-                    <input type="text" name="contact_person_mobile" class="form-control mb-2" placeholder="Mobile Number"
+                    <input type="text" name="contact_person_mobile" id="contact_person_mobile" class="form-control mb-2" placeholder="Mobile Number"
                            value="{{ old('contact_person_mobile') }}">
                 </div>
                 <div class="col-md-4">
-                    <input type="email" name="contact_person_email" class="form-control mb-2" placeholder="Email"
+                    <input type="email" name="contact_person_email" id="contact_person_email" class="form-control mb-2" placeholder="Email"
                            value="{{ old('contact_person_email') }}">
                 </div>
             </div>
@@ -117,7 +117,7 @@
             <h5 class="text-secondary mt-3">Legal Details</h5>
             <div class="row">
                 <div class="col-md-6">
-                    <input type="text" name="gstin" class="form-control mb-2" placeholder="GSTIN"
+                    <input type="text" name="gstin" id="gstin" class="form-control mb-2" placeholder="GSTIN"
                            value="{{ old('gstin') }}">
                 </div>
                 <div class="col-md-6">
@@ -135,13 +135,16 @@
             </div>
 
             {{-- Status Dropdown--}}
-            <div class="mb-3">
+            <!-- <div class="mb-3">
                 <label>Status</label>
                 <select name="status" class="form-control">
                     <option value="Active" {{ old('status') == 'Active' ? 'selected' : '' }}>Active</option>
                     <option value="Inactive" {{ old('status') == 'Inactive' ? 'selected' : '' }}>Inactive</option>
                 </select>
-            </div>
+                
+            </div> -->
+            <input type="hidden" name="status" value="Active">
+    
 
             {{-- Submit Button --}}
             <button type="submit" class="btn btn-success mt-3">Save Vendor</button>
@@ -149,90 +152,66 @@
         </form>
     </div>
 </div>
-{{--JavaScript Section --}}
+{{-- 🚀 JavaScript for PAN Auto-fill from Companies Data --}}
 <script>
-document.addEventListener("DOMContentLoaded", function() {
+const panStatus = document.getElementById('panStatus');
+document.getElementById('pan_number').addEventListener('blur', function() {
+    let pan = this.value.trim();
+    panStatus.innerHTML = '';
 
-    // ✅ GST Auto-Fill
-    const gstInput = document.querySelector('[name="gstin"]');
-    gstInput.addEventListener('blur', function() {
-        let gstin = this.value.trim();
-        if (gstin.length === 15) {
-            fetch(`/gst/fetch/${gstin}`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        document.querySelector('[name="business_display_name"]').value = data.data.tradeNam || '';
-                        document.querySelector('[name="pan_no"]').value = data.pan || '';
-
-                        if (data.data.pradr && data.data.pradr.addr) {
-                            let addr = data.data.pradr.addr;
-                            document.querySelector('[name="address1"]').value = (addr.bnm || '') + ' ' + (addr.st || '');
-                            document.querySelector('[name="city"]').value = addr.loc || '';
-                            document.querySelector('[name="state"]').value = addr.stcd || '';
-                        }
-                        alert("✅ Company details filled successfully!");
-                    } else {
-                        alert("❌ Invalid GST Number");
-                    }
-                })
-                .catch(err => {
-                    console.error(err);
-                    alert("⚠️ Error fetching GST details");
-                });
-        }
-    });
-
-    // ✅ Verify PAN button click
-    const verifyPanBtn = document.getElementById('verifyPanBtn');
-    const panInput = document.getElementById('pan_number');
-    const panStatus = document.getElementById('panStatus');
-
-    verifyPanBtn.addEventListener('click', function() {
-        let pan = panInput.value.trim().toUpperCase();
-        // 🧩 Basic validation (PAN must be 10 chars)
-        if (pan.length !== 10) {
-            panStatus.innerHTML = '<span class="text-danger">⚠️ Enter a valid 10-character PAN number</span>';
-            return;
-        }
-
-        // 🕐 Disable button while verifying
-        verifyPanBtn.disabled = true;
-        verifyPanBtn.textContent = "Verifying...";
-        panStatus.textContent = "";
-
-        // 🌐 Call Laravel route for PAN check
+    if (pan.length === 10) {
+        panStatus.innerHTML = "⏳ Verifying PAN...";
         fetch(`/company/fetch/${pan}`)
-            .then(res => res.json())
+            .then(response => response.json())
             .then(data => {
-                verifyPanBtn.disabled = false;
-                verifyPanBtn.textContent = "Verify";
-
+                console.log('🔍 PAN Fetch Response:', data); // Debug log
+                
                 if (data.success) {
-                    // ✅ Fill data from company table
-                    let c = data.data;
-                    document.querySelector('[name="gstin"]').value = c.gst_no || '';
-                    document.querySelector('[name="business_display_name"]').value = c.company_name || '';
-                    document.querySelector('[name="contact_person_email"]').value = c.email_1 || '';
-                    document.querySelector('[name="address1"]').value = c.address_line1 || '';
+                    // 🏢 Map company data to vendor fields
+                    const companyData = data.data;
+                    
+                    // Basic Details
+                    document.getElementById('vendor_name').value = companyData.company_name || '';
+                    document.getElementById('business_display_name').value = companyData.trade_name || companyData.company_name || '';
+                    
+                    // Address
+                    document.getElementById('address1').value = companyData.address || '';
+                    
+                    // Contact Details (Map to contact person fields)
+                    document.getElementById('contact_person_email').value = companyData.company_email || '';
+                    document.getElementById('contact_person_mobile').value = companyData.company_phone || '';
+                    
+                    // Legal Details
+                    document.getElementById('gstin').value = companyData.gstin || '';
+                    
+                    // Also fill the PAN field in legal details section if it exists
+                    const panNoField = document.querySelector('[name="pan_no"]');
+                    if (panNoField) {
+                        panNoField.value = pan;
+                    }
 
-                    panStatus.innerHTML = '<span class="text-success">✅ PAN Verified & details filled!</span>';
+                    panStatus.innerHTML = "✅ Company details auto-filled to vendor form!";
+                    panStatus.classList.remove("text-danger");
+                    panStatus.classList.add("text-success");
                 } else {
-                    panStatus.innerHTML = '<span class="text-danger">❌ No company found for this PAN</span>';
+                    panStatus.innerHTML = "❌ No company found for this PAN.";
+                    panStatus.classList.add("text-danger");
+                    panStatus.classList.remove("text-success");
                 }
             })
             .catch(err => {
-                verifyPanBtn.disabled = false;
-                verifyPanBtn.textContent = "Verify";
-                console.error(err);
-                panStatus.innerHTML = '<span class="text-danger">⚠️ Error verifying PAN number</span>';
+                console.error('❌ Error fetching company by PAN:', err);
+                panStatus.innerHTML = "⚠️ Server error verifying PAN.";
+                panStatus.classList.add("text-danger");
+                panStatus.classList.remove("text-success");
             });
-    });
-
+    } else if (pan.length > 0) {
+        panStatus.innerHTML = "⚠️ Enter valid 10-character PAN.";
+        panStatus.classList.add("text-danger");
+        panStatus.classList.remove("text-success");
+    }
 });
+
+console.log('📋 Vendor PAN Auto-fill initialized');
 </script>
-
-{{-- Optional external JS --}}
-<script src="{{ asset('js/gst_pan_autofill.js') }}"></script>
-
 @endsection

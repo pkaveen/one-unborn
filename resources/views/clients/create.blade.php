@@ -47,13 +47,13 @@
 
             <div class="mb-3">
                 <label class="form-label">Business Display Name</label>
-                <input type="text" name="business_display_name" class="form-control"
+                <input type="text" name="business_display_name" id="business_display_name" class="form-control"
                        value="{{ old('business_display_name') }}">
             </div>
 
             {{--  Address Section --}}
             <h5 class="text-secondary mt-3">Address</h5>
-            <input type="text" name="address1" class="form-control mb-2" placeholder="Address Line 1"
+            <input type="text" name="address1" id="address1" class="form-control mb-2" placeholder="Address Line 1"
                    value="{{ old('address1') }}">
             <input type="text" name="address2" class="form-control mb-2" placeholder="Address Line 2"
                    value="{{ old('address2') }}">
@@ -106,11 +106,11 @@
                            value="{{ old('billing_spoc_name') }}">
                 </div>
                 <div class="col-md-4">
-                    <input type="text" name="billing_spoc_contact" class="form-control mb-2" placeholder="Contact Number"
+                    <input type="text" name="billing_spoc_contact" id="billing_spoc_contact" class="form-control mb-2" placeholder="Contact Number"
                            value="{{ old('billing_spoc_contact') }}">
                 </div>
                 <div class="col-md-4">
-                    <input type="email" name="billing_spoc_email" class="form-control mb-2" placeholder="Email"
+                    <input type="email" name="billing_spoc_email" id="billing_spoc_email" class="form-control mb-2" placeholder="Email"
                            value="{{ old('billing_spoc_email') }}">
                 </div>
             </div>
@@ -150,14 +150,17 @@
                 </div>
             </div>
 
-            {{--  Status Dropdown --}}
+            <!-- {{--  Status Dropdown --}}
             <div class="mb-3">
                 <label>Status</label>
                 <select name="status" class="form-control">
                     <option value="Active">Active</option>
                     <option value="Inactive">Inactive</option>
                 </select>
-            </div>
+            </div> -->
+             {{--  Status Dropdown --}}
+            <input type="hidden" name="status" value="Active">
+
 
             {{-- Form Buttons --}}
             <button type="submit" class="btn btn-success mt-3">Save Client</button> {{-- ✅ Save client data --}}
@@ -166,94 +169,45 @@
     </div>
 </div>
 <!-- GST API -->
+
 <script>
-document.addEventListener("DOMContentLoaded", () => {
+const panStatus = document.getElementById('panStatus');
+document.getElementById('pan_number').addEventListener('blur', function() {
+    let pan = this.value.trim();
+    panStatus.innerHTML = '';
 
-    const gstInput = document.querySelector('[name="gstin"]');
-    const panInput = document.querySelector('[name="pan_number"]');
-    const verifyPanBtn = document.getElementById("verifyPanBtn");
-    const panStatus = document.getElementById("panStatus");
+    if (pan.length === 10) {
+        panStatus.innerHTML = "⏳ Verifying PAN...";
+        fetch(`/company/fetch/${pan}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('business_display_name').value = data.data.trade_name || '';
+                    document.getElementById('billing_spoc_email').value = data.data.company_email || '';
+                    document.getElementById('gstin').value = data.data.gstin || '';
+                    document.getElementById('address1').value = data.data.address || '';
+                    document.getElementById('billing_spoc_contact').value = data.data.company_phone || '';
 
-    /**
-     * 🔹 GST Fetch & Auto-fill
-     */
-    gstInput?.addEventListener('blur', function() {
-        let gstin = this.value.trim();
-        if (gstin.length === 15) {
-            fetch(`/gst/fetch/${gstin}`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        // Auto-fill company info
-                        document.querySelector('[name="business_display_name"]').value = data.data.tradeNam || '';
-                        document.querySelector('[name="pan_number"]').value = data.pan || '';
-
-                        if (data.data.pradr && data.data.pradr.addr) {
-                            const addr = data.data.pradr.addr;
-                            document.querySelector('[name="address1"]').value = `${addr.bnm || ''} ${addr.st || ''}`.trim();
-                            document.querySelector('[name="city"]').value = addr.loc || '';
-                            document.querySelector('[name="state"]').value = addr.stcd || '';
-                        }
-
-                        alert("✅ GST details fetched successfully!");
-                    } else {
-                        alert("❌ Invalid GST Number");
-                    }
-                })
-                .catch(err => {
-                    console.error("GST Fetch Error:", err);
-                    alert("⚠️ Error fetching GST details");
-                });
-        }
-    });
-
-    /**
-     * 🔹 PAN Fetch & Auto-fill
-     */
-    const verifyPan = () => {
-        const pan = panInput.value.trim();
-        if (pan.length === 10) {
-            panStatus.innerHTML = "⏳ Verifying PAN...";
-            fetch(`/company/fetch/${pan}`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        const c = data.data;
-                        document.querySelector('[name="gstin"]').value = c.gst_no || '';
-                        document.querySelector('[name="business_display_name"]').value = c.company_name || '';
-                        document.querySelector('[name="billing_spoc_email"]').value = c.email_1 || '';
-                        document.querySelector('[name="address1"]').value = c.address || '';
-
-                        panStatus.innerHTML = "✅ Company details auto-filled!";
-                        panStatus.classList.add("text-success");
-                        panStatus.classList.remove("text-danger");
-                    } else {
-                        panStatus.innerHTML = "❌ No company found for this PAN";
-                        panStatus.classList.add("text-danger");
-                        panStatus.classList.remove("text-success");
-                    }
-                })
-                .catch(err => {
-                    console.error("PAN Fetch Error:", err);
-                    panStatus.innerHTML = "⚠️ Error verifying PAN";
+                    panStatus.innerHTML = "✅ Company details auto-filled!";
+                    panStatus.classList.remove("text-danger");
+                    panStatus.classList.add("text-success");
+                } else {
+                    panStatus.innerHTML = "❌ No company found for this PAN.";
                     panStatus.classList.add("text-danger");
                     panStatus.classList.remove("text-success");
-                });
-        } else {
-            panStatus.innerHTML = "⚠️ Enter valid 10-character PAN";
-            panStatus.classList.add("text-danger");
-        }
-    };
-
-    // 🔘 Click Verify button
-    verifyPanBtn?.addEventListener('click', verifyPan);
-
-    // 🧠 Also verify automatically on blur
-    panInput?.addEventListener('blur', verifyPan);
-
+                }
+            })
+            .catch(err => {
+                console.error('Error fetching company by PAN:', err);
+                panStatus.innerHTML = "⚠️ Server error verifying PAN.";
+                panStatus.classList.add("text-danger");
+            });
+    } else {
+        panStatus.innerHTML = "⚠️ Enter valid 10-character PAN.";
+        panStatus.classList.add("text-danger");
+    }
 });
+
 </script>
-<!-- GST & PAN Autofill Script -->
-<script src="{{ asset('js/gst_pan_autofill.js') }}"></script>
 
 @endsection

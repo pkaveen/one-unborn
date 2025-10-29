@@ -11,14 +11,38 @@ class FeasibilityStatus extends Model
 
     protected $fillable = [
         'feasibility_id',
-        'vendor_name',
-        'arc',
-        'otc',
-        'static_ip_cost',
-        'delivery_timeline',
-        'status', // Open, In Progress, Closed
+        // ✅ Vendor 1
+        'vendor1_name',
+        'vendor1_arc',
+        'vendor1_otc',
+        'vendor1_static_ip_cost',
+        'vendor1_delivery_timeline',
+
+        // ✅ Vendor 2
+        'vendor2_name',
+        'vendor2_arc',
+        'vendor2_otc',
+        'vendor2_static_ip_cost',
+        'vendor2_delivery_timeline',
+
+        // ✅ Vendor 3
+        'vendor3_name',
+        'vendor3_arc',
+        'vendor3_otc',
+        'vendor3_static_ip_cost',
+        'vendor3_delivery_timeline',
+
+        // ✅ Vendor 4
+        'vendor4_name',
+        'vendor4_arc',
+        'vendor4_otc',
+        'vendor4_static_ip_cost',
+        'vendor4_delivery_timeline',
+
+        'status', // Open, InProgress, Closed
     ];
 
+    // 🧩 Relationship — Each FeasibilityStatus belongs to one Feasibility
     public function feasibility()
     {
         return $this->belongsTo(Feasibility::class);

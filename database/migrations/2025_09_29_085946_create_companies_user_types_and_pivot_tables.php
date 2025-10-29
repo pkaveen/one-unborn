@@ -17,29 +17,31 @@ return new class extends Migration
              // 🏷️ Basic Details
             $table->string('trade_name')->nullable();              // Trade/Brand Name
             $table->string('company_name');                        // Company Name
-            $table->string('cin_llpin')->nullable();               // Business Number (CIN / LLPIN)
+            $table->string('business_number')->nullable();               // Business Number (CIN / LLPIN)
 
             // ☎️ Contact Details
             $table->string('company_phone')->nullable();           // Company Phone (landline)
-            $table->string('alternative_contact')->nullable();     // Alternative contact number
-            $table->string('email_1')->nullable();                 // Company Email
-            $table->string('email_2')->nullable();                 // Secondary email (optional)
+            $table->string('alternative_contact_number')->nullable();    // Alternative contact number
+            $table->string('company_email')->nullable();                 // Company Email
+            // $table->string('secondary_email')->nullable();                 // Secondary email (optional)
             $table->string('website')->nullable();                 // Company Website
 
             // 🏢 Address & Registration
-            $table->string('gst_no')->nullable();                  // GSTIN (fetched via API)
+            $table->string('gstin')->nullable();                  // GSTIN (fetched via API)
             $table->string('pan_number')->nullable();              // PAN Number
             $table->text('address')->nullable();                   // Address (fetched or typed manually)
 
             // 📍 Branch & Social Media
-            $table->string('branch_locations')->nullable();        // Store Location URL / Google Place ID
+            $table->string('branch_location')->nullable();        // Store Location URL / Google Place ID
+            $table->string('store_location_url')->nullable();
+            $table->string('google_place_id')->nullable();
             $table->string('instagram')->nullable();
             $table->string('youtube')->nullable();
             $table->string('facebook')->nullable();
             $table->string('linkedin')->nullable();
 
             // 🏦 Bank Details
-            $table->string('acc_number')->nullable();
+            $table->string('account_number')->nullable();
             $table->string('ifsc_code')->nullable();
             $table->string('branch_name')->nullable();
             $table->string('bank_name')->nullable();
@@ -50,9 +52,9 @@ return new class extends Migration
             $table->decimal('opening_balance', 15, 2)->nullable();
 
             // 🧾 Branding (Logos / Signatures)
-            $table->string('billing_logo')->nullable();
-            $table->string('billing_sign_normal')->nullable();
-            $table->string('billing_sign_digital')->nullable();
+            // $table->string('billing_logo')->nullable();
+            // $table->string('billing_sign_normal')->nullable();
+            // $table->string('billing_sign_digital')->nullable();
 
             // 🎨 Theme
             $table->string('color')->default('#333333');
@@ -64,15 +66,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // 2️⃣ User Types Table (renamed to user_types ✅)
-        // Schema::create('user_types', function (Blueprint $table) {
-        //     $table->id();
-        //     $table->string('name');
-        //     $table->string('description');
-        //     $table->enum('status', ['Active', 'Inactive'])->default('Active');
-        //     $table->timestamps();
-        // });
-
+        // 2️⃣ User Types Table (Commented Out)
         // 3️⃣ Pivot Table: company_user (Many-to-Many)
         Schema::create('company_user', function (Blueprint $table) {
             $table->id();

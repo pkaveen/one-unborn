@@ -33,6 +33,10 @@ return new class extends Migration
             $table->string('hardware_model_name')->nullable();
             $table->enum('status', ['Active', 'Inactive'])->default('Active');
 
+          // ✅ FIXED Foreign key order
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('set null');
+
             $table->timestamps();
         });
     }

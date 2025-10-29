@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\TemplateHelper;
 use App\Models\Vendor;
 use Illuminate\Http\Request;
+use App\Models\Company;
 
 class VendorController extends Controller
 {
@@ -167,5 +168,14 @@ class VendorController extends Controller
     return redirect()->route('vendors.index')
                      ->with('success', 'Vendor status updated successfully.');
 }
-
+// PAN Verification
+public function verifyPan(Request $request)
+{
+    $company = Company::where('pan_no', $request->pan)->first();
+    if ($company) {
+        return response()->json(['success' => true, 'data' => $company]);
+    } else {
+        return response()->json(['success' => false, 'message' => 'PAN not found']);
+    }
+}
 }

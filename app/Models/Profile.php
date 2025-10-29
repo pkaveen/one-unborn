@@ -14,10 +14,12 @@ class Profile extends Model
 
     protected $fillable = [
         'user_id',
+        'profile_photo',
         'fname', 
         'lname', 
         'designation', 
         'Date_of_Birth',
+        'email',
         'phone1', 
         'phone2', 
         'aadhaar_number', 

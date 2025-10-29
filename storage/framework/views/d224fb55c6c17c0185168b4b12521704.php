@@ -3,6 +3,26 @@
 <?php $__env->startSection('content'); ?>
 <div class="container py-4">
     <h3 class="mb-3 text-primary">Edit Company</h3>
+    
+    
+    <?php if($errors->any()): ?>
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <li><?php echo e($error); ?></li>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            </ul>
+        </div>
+    <?php endif; ?>
+    
+    
+    <?php if(session('success')): ?>
+        <div class="alert alert-success"><?php echo e(session('success')); ?></div>
+    <?php endif; ?>
+    <?php if(session('error')): ?>
+        <div class="alert alert-danger"><?php echo e(session('error')); ?></div>
+    <?php endif; ?>
+    
     <div class="card shadow border-0 p-4">
         <form action="<?php echo e(route('companies.update', $company->id)); ?>" method="POST" enctype="multipart/form-data">
             <?php echo csrf_field(); ?> <?php echo method_field('PUT'); ?>

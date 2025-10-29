@@ -204,11 +204,7 @@ document.getElementById('hardware_required').addEventListener('change', function
     document.getElementById('hardware_name_div').style.display = this.value == '1' ? 'block' : 'none';
 });
 </script>
-<style>
-    #hardware_name_div{
-        display: <?php echo e($feasibility->hardware_required ? 'block' : 'none'); ?>;
-    }
-</style>
+
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH F:\xampp\htdocs\new\multipleuserpage\resources\views/feasibility/edit.blade.php ENDPATH**/ ?>

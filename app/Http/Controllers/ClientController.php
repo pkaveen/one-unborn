@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Helpers\TemplateHelper;
 use Illuminate\Http\Request;
 use App\Models\Client;
+use App\Models\Company;
 
 class ClientController extends Controller
 {
@@ -179,5 +180,17 @@ public function getDetails($id)
     $client = Client::find($id);
     return response()->json($client);
 }
+
+// PAN Verification
+public function verifyPan(Request $request)
+{
+    $company = Company::where('pan_no', $request->pan)->first();
+    if ($company) {
+        return response()->json(['success' => true, 'data' => $company]);
+    } else {
+        return response()->json(['success' => false, 'message' => 'PAN not found']);
+    }
+}
+
 
 }

@@ -23,40 +23,97 @@ class FeasibilityStatusController extends Controller
     public function show($id)
     {
         $record = FeasibilityStatus::with('feasibility')->findOrFail($id);
-        return view('feasibility.feasibility_status.view', compact('record'));
+        return view('feasibility.feasibility_status.show', compact('record'));
     }
 
-    public function update(Request $request, $id)
-    {
-        $data = $request->validate([
-            'vendor_name' => 'required|string',
-            'arc' => 'nullable|string',
-            'otc' => 'nullable|string',
-            'static_ip_cost' => 'nullable|string',
-            'delivery_timeline' => 'nullable|string',
-            'status' => 'required|in:Open,InProgress,Closed'
-        ]);
+//     public function update(Request $request, $id)
+// {
+//     $data = $request->validate([
+//         'vendor1_name' => 'nullable|string',
+//         'vendor1_arc' => 'nullable|string',
+//         'vendor1_otc' => 'nullable|string',
+//         'vendor1_static_ip_cost' => 'nullable|string',
+//         'vendor1_delivery_timeline' => 'nullable|string',
 
-        $record = FeasibilityStatus::with('feasibility')->findOrFail($id);
+//         'vendor2_name' => 'nullable|string',
+//         'vendor2_arc' => 'nullable|string',
+//         'vendor2_otc' => 'nullable|string',
+//         'vendor2_static_ip_cost' => 'nullable|string',
+//         'vendor2_delivery_timeline' => 'nullable|string',
 
-    // 🕓 Store old status before updating
-    $oldStatus = $record->status;
+//         'vendor3_name' => 'nullable|string',
+//         'vendor3_arc' => 'nullable|string',
+//         'vendor3_otc' => 'nullable|string',
+//         'vendor3_static_ip_cost' => 'nullable|string',
+//         'vendor3_delivery_timeline' => 'nullable|string',
 
-    // 🔄 Update status
+//         'vendor4_name' => 'nullable|string',
+//         'vendor4_arc' => 'nullable|string',
+//         'vendor4_otc' => 'nullable|string',
+//         'vendor4_static_ip_cost' => 'nullable|string',
+//         'vendor4_delivery_timeline' => 'nullable|string',
+
+//         'status' => 'required|in:Open,InProgress,Closed'
+//     ]);
+
+//     $record = FeasibilityStatus::with('feasibility')->findOrFail($id);
+//     $oldStatus = $record->status;
+
+//     $record->update($data);
+
+//     if ($oldStatus !== $data['status']) {
+//         $feasibility = $record->feasibility;
+//         $recipient = $feasibility->spoc_email ?? 'admin@example.com';
+//         Mail::to($recipient)->send(new FeasibilityStatusMail($feasibility, $record));
+//     }
+
+//     return redirect()->route('feasibility.status.index', $data['status'])
+//         ->with('success', 'Feasibility status updated successfully.');
+// }
+
+public function edit($id)
+{
+    $record = FeasibilityStatus::with('feasibility')->findOrFail($id);
+    return view('feasibility.feasibility_status.edit', compact('record'));
+}
+
+public function editSave(Request $request, $id)
+{
+    $data = $request->validate([
+        'vendor1_name' => 'nullable|string',
+        'vendor1_arc' => 'nullable|string',
+        'vendor1_otc' => 'nullable|string',
+        'vendor1_static_ip_cost' => 'nullable|string',
+        'vendor1_delivery_timeline' => 'nullable|string',
+
+        'vendor2_name' => 'nullable|string',
+        'vendor2_arc' => 'nullable|string',
+        'vendor2_otc' => 'nullable|string',
+        'vendor2_static_ip_cost' => 'nullable|string',
+        'vendor2_delivery_timeline' => 'nullable|string',
+
+        'vendor3_name' => 'nullable|string',
+        'vendor3_arc' => 'nullable|string',
+        'vendor3_otc' => 'nullable|string',
+        'vendor3_static_ip_cost' => 'nullable|string',
+        'vendor3_delivery_timeline' => 'nullable|string',
+
+        'vendor4_name' => 'nullable|string',
+        'vendor4_arc' => 'nullable|string',
+        'vendor4_otc' => 'nullable|string',
+        'vendor4_static_ip_cost' => 'nullable|string',
+        'vendor4_delivery_timeline' => 'nullable|string',
+
+        'status' => 'required|in:Open,InProgress,Closed'
+    ]);
+
+    $record = FeasibilityStatus::findOrFail($id);
     $record->update($data);
 
-    // ✅ Send email only if the status actually changed
-    if ($oldStatus !== $data['status']) {
-        $feasibility = $record->feasibility;
+    return redirect()->route('feasibility.status.index', $data['status'])
+        ->with('success', 'Feasibility status updated successfully.');
+}
 
-        // Choose recipient
-        $recipient = $feasibility->spoc_email ?? 'admin@example.com';
 
-        // Send email
-        Mail::to($recipient)->send(new FeasibilityStatusMail($feasibility, $record));
-    }
 
-        return redirect()->route('feasibility.status.index', $data['status'])
-            ->with('success', 'Feasibility status updated successfully.');
-    }
 }

@@ -30,6 +30,7 @@ class Feasibility extends Model
         'hardware_required',
         'hardware_model_name',
         'status',
+        'created_by',
     ];
 
      // 🧩 Relationship — Each Feasibility has one Feasibility Status

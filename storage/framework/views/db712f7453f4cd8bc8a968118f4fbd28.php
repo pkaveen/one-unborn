@@ -68,34 +68,96 @@
     transition: margin-left 0.3s ease, width 0.3s ease;
     padding: 0; /* remove extra padding causing push */
 }
-    /* Sidebar collapsed (mobile) */
+
+    /* Mobile hamburger button */
+    @media (max-width: 767px) {
+        #sidebarToggle {
+            display: inline-block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            position: relative !important;
+            z-index: 1060 !important;
+        }
+    }
+    /* Sidebar collapsed (mobile) - Hide by default */
     @media (max-width: 768px) {
         #sidebar {
-            position: fixed;
-            left: -230px;
+            position: fixed !important;
+            left: -280px !important; /* Hidden off-screen by default */
             top: 0;
-            height: 100%;
-            z-index: 999;
+            height: 100vh !important;
+            width: 280px !important;
+            max-width: 80vw !important;
+            z-index: 1050 !important;
             transition: left 0.3s ease;
+            background-color: #121722ff !important;
+            overflow-y: auto;
+            transform: translateX(-100%); /* Extra ensure it's hidden */
         }
         #sidebar.active {
-            left: 0;
+            left: 0 !important;
+            transform: translateX(0); /* Slide in when active */
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
         }
         .content-wrapper {
             margin-left: 0 !important;
-             width: 100% !important;
-        /* transition: all 0.3s ease; */
+            width: 100% !important;
         }
+        
+        /* Mobile menu styling improvements */
+        #sidebar .nav-link {
+            font-size: 0.9rem !important;
+            padding: 8px 12px !important;
+            min-height: 44px !important;
+            display: flex !important;
+            align-items: center !important;
+        }
+        
+        #sidebar h5 {
+            font-size: 1.1rem !important;
+        }
+        
+        #sidebar .collapse .nav-link {
+            font-size: 0.85rem !important;
+            padding-left: 1.5rem !important;
+        }
+        
+        /* Touch-friendly menu items for mobile */
+        #sidebar .collapse {
+            padding-left: 0 !important;
+        }
+        
+        #sidebar .collapse .collapse {
+            padding-left: 10px !important;
+        }
+        
         /* ✅ Overlay for background dim */
-    #sidebarOverlay {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 998;
+        #sidebarOverlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1040;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        #sidebarOverlay.show {
+            display: block !important;
+            opacity: 1;
+        }
+    }
+    
+    /* Extra small mobile devices */
+    @media (max-width: 480px) {
+        #sidebar {
+            width: 260px !important;
+            max-width: 85vw !important;
+            left: -260px !important;
+        }
     }
 
     #sidebar.active + #sidebarOverlay {
@@ -109,7 +171,7 @@
     .form-group {
         margin-bottom: 15px;
     }
-    }
+    
     /* Fix action button alignment */
 .table td .btn {
     vertical-align: middle;
@@ -208,6 +270,18 @@
 
 <script>
 $(document).ready(function() {
+    // 🔍 Debug mobile hamburger button
+    console.log('Hamburger button exists:', $('#sidebarToggle').length > 0);
+    console.log('Hamburger button visible:', $('#sidebarToggle').is(':visible'));
+    console.log('Window width:', $(window).width());
+    
+    // 📱 Ensure sidebar is hidden on mobile initially
+    if ($(window).width() <= 768) {
+        $('#sidebar').removeClass('active');
+        $('#sidebarOverlay').hide().removeClass('show');
+        console.log('📱 Mobile detected - sidebar hidden initially');
+    }
+    
     // ✅ Initialize Select2 for multiple company selection
     $('#company_id').select2({
         theme: 'bootstrap-5',
@@ -220,16 +294,52 @@ $(document).ready(function() {
    // $('#sidebarToggle').on('click', function() {
      //   $('#sidebar').toggleClass('active');
    // });
-    // ✅ Sidebar toggle for mobile
-$('#sidebarToggle').on('click', function() {
-    $('#sidebar').toggleClass('active');
-    $('#sidebarOverlay').toggle();
-});
+    // ✅ Sidebar toggle for mobile - Real website behavior
+$('#sidebarToggle').on('click', function(e) {
+        e.preventDefault();
+        console.log('📱 Mobile menu toggle clicked');
+        
+        const sidebar = $('#sidebar');
+        const overlay = $('#sidebarOverlay');
+        
+        if (sidebar.hasClass('active')) {
+            // Close menu
+            sidebar.removeClass('active');
+            overlay.removeClass('show');
+            setTimeout(() => overlay.hide(), 300); // Hide after animation
+            console.log('📱 Menu closed');
+        } else {
+            // Open menu
+            sidebar.addClass('active');
+            overlay.show().addClass('show');
+            console.log('📱 Menu opened');
+        }
+    });
 
 // ✅ Close sidebar when overlay is clicked
 $('#sidebarOverlay').on('click', function() {
+    console.log('📱 Overlay clicked - closing menu');
     $('#sidebar').removeClass('active');
-    $(this).hide();
+    $(this).removeClass('show');
+    setTimeout(() => $(this).hide(), 300);
+});
+
+// ✅ Close sidebar when close button is clicked (mobile)
+$(document).on('click', '#sidebarClose', function() {
+    console.log('📱 Close button clicked');
+    $('#sidebar').removeClass('active');
+    $('#sidebarOverlay').removeClass('show');
+    setTimeout(() => $('#sidebarOverlay').hide(), 300);
+});
+
+// ✅ Close menu when clicking any menu item (mobile)
+$(document).on('click', '#sidebar .nav-link', function() {
+    if ($(window).width() <= 768) {
+        console.log('📱 Menu item clicked - auto closing menu');
+        $('#sidebar').removeClass('active');
+        $('#sidebarOverlay').removeClass('show');
+        setTimeout(() => $('#sidebarOverlay').hide(), 300);
+    }
 });
 
 

@@ -88,13 +88,14 @@
                             </td>
                             <!-- <td>{{ $index + 1 }}</td> -->
                             <td>{{ $company->company_name }}</td>
-                            <td>{{ $company->cin_llpin }}</td>
+                            <td>{{ $company->business_number }}</td>
                             <td>{{ $company->company_phone }}</td>
                             <td>
-                                {{ $company->email_1 }}<br>
-                                @if($company->email_2)<small>{{ $company->email_2 }}</small>@endif
+                                {{ $company->company_email }}
+                                <!-- <br> -->
+                                <!-- @if($company->email_2)<small>{{ $company->email_2 }}</small>@endif -->
                             </td>
-                            <td>{{ $company->gst_no }}</td>
+                            <td>{{ $company->gstin }}</td>
                             <td>{{ $company->pan_number }}</td>
                             <!-- <td>{{ $company->tan_number }}</td> -->
             

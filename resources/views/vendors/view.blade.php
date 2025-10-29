@@ -98,7 +98,7 @@
         {{-- Buttons --}}
         <div class="mt-4">
             <a href="{{ route('vendors.index') }}" class="btn btn-secondary">Back</a>
-            <a href="{{ route('vendors.edit', $vendor->id) }}" class="btn btn-primary">Edit Vendor</a>
+            <!-- <a href="{{ route('vendors.edit', $vendor->id) }}" class="btn btn-primary">Edit Vendor</a> -->
         </div>
     </div>
 </div>

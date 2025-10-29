@@ -14,10 +14,12 @@ return new class extends Migration
         Schema::create('profiles', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('profile_photo')->nullable();
             $table->string('fname')->nullable();
             $table->string('lname')->nullable();
             $table->string('designation')->nullable();
             $table->date('Date_of_Birth')->nullable();
+            $table->string('email')->nullable();
             $table->string('phone1')->nullable();
             $table->string('phone2')->nullable();
             $table->string('aadhaar_number')->nullable();

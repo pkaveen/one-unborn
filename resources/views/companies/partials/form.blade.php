@@ -16,8 +16,8 @@
     {{-- ✅ CIN / LLPIN --}}
     <div class="col-md-6 mb-3">
         <label class="form-label">Business Number (CIN / LLPIN)</label>
-        <input type="text" name="cin_llpin" class="form-control"
-            value="{{ old('cin_llpin', $company->cin_llpin ?? '') }}">
+        <input type="text" name="business_number" class="form-control"
+            value="{{ old('business_number', $company->business_number ?? '') }}">
     </div>
 
     {{--Company Phone--}}
@@ -30,27 +30,27 @@
 {{--Company Email 1--}}
     <div class="col-md-6 mb-3">
     <label class="form-label">Company Email (Primary)</label>
-    <input type="email" name="email_1" id="email_1" class="form-control"
-        value="{{ old('email_1', $company->email_1 ?? '') }}" required>
+    <input type="email" name="company_email" id="email_1" class="form-control"
+        value="{{ old('company_email', $company->company_email ?? '') }}" required>
 </div>
-{{--Company Email 2--}}
+<!-- {{--Company Email 2--}}
 <div class="col-md-6 mb-3">
     <label class="form-label">Company Email (Secondary)</label>
     <input type="email" name="email_2" id="email_2" class="form-control"
         value="{{ old('email_2', $company->email_2 ?? '') }}">
-</div>
+</div> -->
 {{--Alternative Contact number--}}
 <div class="col-md-6 mb-3">
     <label class="form-label">Alternative Contact Number</label>
-    <input type="text" name="alternative_contact" class="form-control"
-        value="{{ old('alternative_contact', $company->alternative_contact ?? '') }}">
+    <input type="text" name="alternative_contact_number" class="form-control"
+        value="{{ old('alternative_contact_number', $company->alternative_contact_number ?? '') }}">
 </div>
 
     {{-- ✅ GST No (Auto Fetch Details) --}}
     <div class="col-md-6 mb-3">
         <label class="form-label">GST Number</label>
-        <input type="text" name="gst_no" id="gst_no" class="form-control"
-            value="{{ old('gst_no', $company->gst_no ?? '') }}">
+        <input type="text" name="gstin" id="gst_no" class="form-control"
+            value="{{ old('gstin', $company->gstin ?? '') }}">
         <small class="text-muted">Fetch details from GST API automatically</small>
         <button type="button" id="fetch_gst_btn" class="btn btn-sm btn-primary mt-2">
   Fetch details from GST
@@ -65,7 +65,7 @@
         <small class="text-muted">If GST not available, enter address manually</small>
     </div>
 
-    {{-- ✅ Pincode & Auto Fetch Area --}}
+    <!-- {{-- ✅ Pincode & Auto Fetch Area --}}
     <div class="col-md-3 mb-3">
         <label class="form-label">Pincode</label>
         <input type="text" name="pincode" id="pincode" class="form-control"
@@ -85,7 +85,7 @@
         <label class="form-label">State</label>
         <input type="text" name="state" id="state" class="form-control"
             value="{{ old('state', $company->state ?? '') }}" readonly>
-    </div>
+    </div> -->
 
     {{-- ✅ Website --}}
     <div class="col-md-6 mb-3">
@@ -95,11 +95,32 @@
     </div>
 
     {{-- ✅ Branch Locations --}}
-    <div class="col-md-6 mb-3">
-        <label class="form-label">Branch Location (Google Place ID)</label>
+    <div class="row mb-3">
+    <!-- Branch Location -->
+    <div class="col-md-4">
+        <label class="form-label">Branch Location</label>
         <input type="text" name="branch_location" class="form-control"
-            value="{{ old('branch_location', $company->branch_location ?? '') }}">
+               value="{{ old('branch_location', $company->branch_location ?? '') }}"
+               placeholder="Eg: Anna Nagar, Chennai">
     </div>
+
+    <!-- Google Maps URL -->
+    <div class="col-md-4">
+        <label class="form-label">Google Maps URL</label>
+        <input type="url" name="store_location_url" class="form-control"
+               value="{{ old('store_location_url', $company->store_location_url ?? '') }}"
+               placeholder="https://maps.google.com/...">
+    </div>
+
+    <!-- Google Place ID -->
+    <div class="col-md-4">
+        <label class="form-label">Google Place ID</label>
+        <input type="text" name="google_place_id" class="form-control"
+               value="{{ old('google_place_id', $company->google_place_id ?? '') }}"
+               placeholder="Eg: ChIJN1t_tDeuEmsRUsoyG83frY4">
+    </div>
+</div>
+
 
     {{-- ✅ Social Media Links --}}
     <div class="col-md-3 mb-3">
@@ -129,11 +150,11 @@
         <input type="text" name="pan_number" class="form-control"
             value="{{ old('pan_number', $company->pan_number ?? '') }}">
     </div>
-    <div class="col-md-6 mb-3">
+    <!-- <div class="col-md-6 mb-3">
         <label class="form-label">TAN Number</label>
         <input type="text" name="tan_number" class="form-control"
             value="{{ old('tan_number', $company->tan_number ?? '') }}">
-    </div>
+    </div> -->
 
     {{-- ✅ Bank Details --}}
     <div class="col-md-3 mb-3">

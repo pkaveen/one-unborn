@@ -8,7 +8,7 @@
         <table class="table table-bordered">
             <tr>
                 <th>Trade / Brand Name</th>
-                <td>{{ $company->brand_name ?? '-' }}</td>
+                <td>{{ $company->trade_name ?? '-' }}</td>
             </tr>
             <tr>
                 <th>Company Name</th>
@@ -16,7 +16,7 @@
             </tr>
             <tr>
                 <th>Business Number (CIN / LLPIN)</th>
-                <td>{{ $company->cin_llpin ?? '-' }}</td>
+                <td>{{ $company->business_number ?? '-' }}</td>
             </tr>
             <tr>
                 <th>Company Phone</th>
@@ -28,17 +28,17 @@
             </tr>
             <tr>
                 <th>Alternative Contact Number</th>
-                <td>{{ $company->alt_contact ?? '-' }}</td>
+                <td>{{ $company->alternative_contact_number ?? '-' }}</td>
             </tr>
             <tr>
                 <th>GST Number</th>
-                <td>{{ $company->gst_no ?? '-' }}</td>
+                <td>{{ $company->gstin ?? '-' }}</td>
             </tr>
             <tr>
                 <th>Address</th>
                 <td>{{ $company->address ?? '-' }}</td>
             </tr>
-            <tr>
+            <!-- <tr>
                 <th>Pincode</th>
                 <td>{{ $company->pincode ?? '-' }}</td>
             </tr>
@@ -53,14 +53,22 @@
             <tr>
                 <th>State</th>
                 <td>{{ $company->state ?? '-' }}</td>
-            </tr>
-            <tr>
+            </tr> -->
+            <tr> 
                 <th>Website</th>
                 <td>{{ $company->website ?? '-' }}</td>
             </tr>
             <tr>
                 <th>Branch Location</th>
                 <td>{{ $company->branch_location ?? '-' }}</td>
+            </tr>
+            <tr>
+                <th>Google Maps URL</th>
+                <td>{{ $company->store_location_url ?? '-' }}</td>
+            </tr>
+            <tr>
+                <th>Google Place ID</th>
+                <td>{{ $company->google_place_id ?? '-' }}</td>
             </tr>
             <tr>
                 <th>Instagram</th>
@@ -82,10 +90,10 @@
                 <th>PAN Number</th>
                 <td>{{ $company->pan_number ?? '-' }}</td>
             </tr>
-            <tr>
+            <!-- <tr>
                 <th>TAN Number</th>
                 <td>{{ $company->tan_number ?? '-' }}</td>
-            </tr>
+            </tr> -->
             <tr>
                 <th>Bank Name</th>
                 <td>{{ $company->bank_name ?? '-' }}</td>
@@ -115,8 +123,8 @@
                 <td>{{ $company->opening_balance ?? '-' }}</td>
             </tr>
 
-            {{-- Billing Logo --}}
-            <tr>
+           <!-- {{-- Billing Logo --}}
+              <tr>
                 <th>Billing Logo</th>
                 <td>
                     @if(!empty($company->billing_logo))
@@ -125,9 +133,9 @@
                         -
                     @endif
                 </td>
-            </tr>
+            </tr> -->
 
-            {{-- Normal Sign --}}
+            <!-- {{-- Normal Sign --}}
             <tr>
                 <th>Normal Sign</th>
                 <td>
@@ -137,9 +145,9 @@
                         -
                     @endif
                 </td>
-            </tr>
+            </tr> -->
 
-            {{-- Digital Sign --}}
+            <!-- {{-- Digital Sign --}}
             <tr>
                 <th>Digital Sign</th>
                 <td>
@@ -149,7 +157,7 @@
                         -
                     @endif
                 </td>
-            </tr>
+            </tr> -->
 
             <tr>
                 <th>Status</th>

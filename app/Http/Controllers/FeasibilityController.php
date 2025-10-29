@@ -45,9 +45,16 @@ class FeasibilityController extends Controller
             'address' => 'required',
             'spoc_name' => 'required',
             'spoc_contact1' => 'required',
+            'spoc_contact2' => 'required',
+            'spoc_email' => 'required|email',
             'no_of_links' => 'required',
-            'vendor_type' => 'required',
             'speed' => 'required',
+            'vendor_type' => 'required',
+            'static_ip' => 'required',
+            'expected_delivery' => 'required|date',
+            'expected_activation' => 'required|date',
+            
+
             'status' => 'required|in:Active,Inactive',
         ]);
 
@@ -85,13 +92,20 @@ class FeasibilityController extends Controller
             'address' => 'required',
             'spoc_name' => 'required',
             'spoc_contact1' => 'required',
+            'spoc_contact2' => 'required',
+            'spoc_email' => 'required|email',
             'no_of_links' => 'required',
             'vendor_type' => 'required',
             'speed' => 'required',
+            'static_ip' => 'required',
+            'expected_delivery' => 'required|date',
+            'expected_activation' => 'required|date',
             'status' => 'required|in:Active,Inactive',
         ]);
 
-        
+        // 🧠 Convert DD-MM-YYYY to YYYY-MM-DD before saving
+    $validated['expected_delivery'] = date('Y-m-d', strtotime(str_replace('-', '/', $request->expected_delivery)));
+    $validated['expected_activation'] = date('Y-m-d', strtotime(str_replace('-', '/', $request->expected_activation)));
 
         $feasibility->update($validated);
         return redirect()->route('feasibility.index')->with('success', 'Feasibility updated successfully!');

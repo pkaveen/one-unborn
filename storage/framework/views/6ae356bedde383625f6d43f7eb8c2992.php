@@ -8,7 +8,7 @@
         <table class="table table-bordered">
             <tr>
                 <th>Trade / Brand Name</th>
-                <td><?php echo e($company->brand_name ?? '-'); ?></td>
+                <td><?php echo e($company->trade_name ?? '-'); ?></td>
             </tr>
             <tr>
                 <th>Company Name</th>
@@ -16,7 +16,7 @@
             </tr>
             <tr>
                 <th>Business Number (CIN / LLPIN)</th>
-                <td><?php echo e($company->cin_llpin ?? '-'); ?></td>
+                <td><?php echo e($company->business_number ?? '-'); ?></td>
             </tr>
             <tr>
                 <th>Company Phone</th>
@@ -28,17 +28,17 @@
             </tr>
             <tr>
                 <th>Alternative Contact Number</th>
-                <td><?php echo e($company->alt_contact ?? '-'); ?></td>
+                <td><?php echo e($company->alternative_contact_number ?? '-'); ?></td>
             </tr>
             <tr>
                 <th>GST Number</th>
-                <td><?php echo e($company->gst_no ?? '-'); ?></td>
+                <td><?php echo e($company->gstin ?? '-'); ?></td>
             </tr>
             <tr>
                 <th>Address</th>
                 <td><?php echo e($company->address ?? '-'); ?></td>
             </tr>
-            <tr>
+            <!-- <tr>
                 <th>Pincode</th>
                 <td><?php echo e($company->pincode ?? '-'); ?></td>
             </tr>
@@ -53,14 +53,22 @@
             <tr>
                 <th>State</th>
                 <td><?php echo e($company->state ?? '-'); ?></td>
-            </tr>
-            <tr>
+            </tr> -->
+            <tr> 
                 <th>Website</th>
                 <td><?php echo e($company->website ?? '-'); ?></td>
             </tr>
             <tr>
                 <th>Branch Location</th>
                 <td><?php echo e($company->branch_location ?? '-'); ?></td>
+            </tr>
+            <tr>
+                <th>Google Maps URL</th>
+                <td><?php echo e($company->store_location_url ?? '-'); ?></td>
+            </tr>
+            <tr>
+                <th>Google Place ID</th>
+                <td><?php echo e($company->google_place_id ?? '-'); ?></td>
             </tr>
             <tr>
                 <th>Instagram</th>
@@ -82,10 +90,10 @@
                 <th>PAN Number</th>
                 <td><?php echo e($company->pan_number ?? '-'); ?></td>
             </tr>
-            <tr>
+            <!-- <tr>
                 <th>TAN Number</th>
                 <td><?php echo e($company->tan_number ?? '-'); ?></td>
-            </tr>
+            </tr> -->
             <tr>
                 <th>Bank Name</th>
                 <td><?php echo e($company->bank_name ?? '-'); ?></td>
@@ -115,8 +123,8 @@
                 <td><?php echo e($company->opening_balance ?? '-'); ?></td>
             </tr>
 
-            
-            <tr>
+           <!-- 
+              <tr>
                 <th>Billing Logo</th>
                 <td>
                     <?php if(!empty($company->billing_logo)): ?>
@@ -125,9 +133,9 @@
                         -
                     <?php endif; ?>
                 </td>
-            </tr>
+            </tr> -->
 
-            
+            <!-- 
             <tr>
                 <th>Normal Sign</th>
                 <td>
@@ -137,9 +145,9 @@
                         -
                     <?php endif; ?>
                 </td>
-            </tr>
+            </tr> -->
 
-            
+            <!-- 
             <tr>
                 <th>Digital Sign</th>
                 <td>
@@ -149,7 +157,7 @@
                         -
                     <?php endif; ?>
                 </td>
-            </tr>
+            </tr> -->
 
             <tr>
                 <th>Status</th>

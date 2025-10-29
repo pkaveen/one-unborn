@@ -113,9 +113,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::get('/profile/create', [ProfileController::class, 'create'])->name('profile.create');
     Route::post('/profile', [ProfileController::class, 'store'])->name('profile.store');
-    Route::get('/profile/{id}/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile/{id}', [ProfileController::class, 'update'])->name('profile.update');
-    Route::get('/profile/{id}/view', [ProfileController::class, 'view'])->name('profile.view');
+    Route::get('/profile/view', [ProfileController::class, 'view'])->name('profile.view');
 });
 
 //
@@ -235,14 +235,16 @@ Route::post('/menus/privileges/{userId}', [MenuController::class, 'updatePrivile
     Route::get('/feasibility/{id}/view', [FeasibilityController::class, 'view'])->name('feasibility.view');
     Route::get('/get-client-details/{id}', [ClientController::class, 'getDetails']);
 
-    Route::prefix('operations/feasibility-status')->group(function () {
-    Route::get('/{status?}', [App\Http\Controllers\FeasibilityStatusController::class, 'index'])->name('feasibility.status.index');
-    Route::get('/view/{id}', [App\Http\Controllers\FeasibilityStatusController::class, 'show'])->name('feasibility.status.view');
-    Route::post('/update/{id}', [App\Http\Controllers\FeasibilityStatusController::class, 'update'])->name('feasibility.status.update');
+    // ✅ Operations Feasibility Status Routes (Simpler URLs for menu)
+    Route::get('/feasibility/status/{status}', [FeasibilityStatusController::class, 'index'])->name('feasibility.status');
     
+    Route::prefix('feasibility/feasibility-status')->group(function () {
+    Route::get('/{status?}', [App\Http\Controllers\FeasibilityStatusController::class, 'index'])->name('feasibility.status.index');
+    Route::get('/show/{id}', [App\Http\Controllers\FeasibilityStatusController::class, 'show'])->name('feasibility.status.show');
+    // Route::put('feasibility/feasibility-status/update/{id}', [FeasibilityStatusController::class, 'update'])->name('feasibility.status.update');
+    Route::get('/edit/{id}', [App\Http\Controllers\FeasibilityStatusController::class, 'edit'])->name('feasibility.status.edit');
+    Route::post('feasibility/feasibility-status/edit-save/{id}', [FeasibilityStatusController::class, 'editSave'])->name('feasibility.status.editSave');
 });
-
-
     // Fallback route to handle undefined routes
     Route::fallback(function () {
         return redirect('/welcome');

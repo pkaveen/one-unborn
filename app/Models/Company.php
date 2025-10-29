@@ -13,29 +13,31 @@ class Company extends Model
         // 🏷️ Basic Details
         'trade_name',
         'company_name',
-        'cin_llpin',
+        'business_number',
 
         // ☎️ Contact Details
         'company_phone',
-        'alternative_contact',
-        'email_1',
-        'email_2',
+        'alternative_contact_number',
+        'company_email',
+        // 'secondary_email',
         'website',
 
         // 🏢 Address & Registration
-        'gst_no',
+        'gstin',
         'pan_number',
         'address',
 
         // 📍 Branch & Social Media
-        'branch_locations',
+        'branch_location',
+        'store_location_url',
+        'google_place_id',
         'instagram',
         'youtube',
         'facebook',
         'linkedin',
 
         // 🏦 Bank Details
-        'acc_number',
+        'account_number',
         'ifsc_code',
         'branch_name',
         'bank_name',
@@ -46,9 +48,9 @@ class Company extends Model
         'opening_balance',
 
         // 🧾 Branding
-        'billing_logo',
-        'billing_sign_normal',
-        'billing_sign_digital',
+        // 'billing_logo',
+        // 'billing_sign_normal',
+        // 'billing_sign_digital',
 
         // 🎨 Theme
         'color',
@@ -79,3 +81,4 @@ public function setPanNumberAttribute($value)
     $this->attributes['pan_number'] = $value ? strtoupper(str_replace(' ', '', $value)) : null;
 }
 }
+

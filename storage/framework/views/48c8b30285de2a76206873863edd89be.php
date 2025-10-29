@@ -89,13 +89,15 @@
                             </td>
                             <!-- <td><?php echo e($index + 1); ?></td> -->
                             <td><?php echo e($company->company_name); ?></td>
-                            <td><?php echo e($company->cin_llpin); ?></td>
+                            <td><?php echo e($company->business_number); ?></td>
                             <td><?php echo e($company->company_phone); ?></td>
                             <td>
-                                <?php echo e($company->email_1); ?><br>
-                                <?php if($company->email_2): ?><small><?php echo e($company->email_2); ?></small><?php endif; ?>
+                                <?php echo e($company->company_email); ?>
+
+                                <!-- <br> -->
+                                <!-- <?php if($company->email_2): ?><small><?php echo e($company->email_2); ?></small><?php endif; ?> -->
                             </td>
-                            <td><?php echo e($company->gst_no); ?></td>
+                            <td><?php echo e($company->gstin); ?></td>
                             <td><?php echo e($company->pan_number); ?></td>
                             <!-- <td><?php echo e($company->tan_number); ?></td> -->
             
