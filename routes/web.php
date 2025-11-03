@@ -14,8 +14,10 @@ use App\Http\Controllers\MenuController;
 use App\Http\Controllers\CompanySettingsController;
 use App\Http\Controllers\TaxInvoiceSettingsController;
 use App\Http\Controllers\FeasibilityStatusController;
+use App\Http\Controllers\PincodeLookupController;
 use App\Http\Controllers\SystemSettingsController;
 use App\Http\Controllers\FeasibilityController;
+use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\GSTController;
 use App\Http\Middleware\CheckProfileCreated;
 use Illuminate\Http\Request;
@@ -237,22 +239,59 @@ Route::post('/menus/privileges/{userId}', [MenuController::class, 'updatePrivile
     // Route::get('/gst/fetch/{gstin}', [GSTController::class, 'fetch']);
     // Route::get('/company/fetch/{pan}', [GSTController::class, 'fetchByPAN']);
 
-    // ✅ Feasibility Module
-    Route::resource('feasibility', FeasibilityController::class);
-    Route::patch('/feasibility/{id}/toggle-status', [FeasibilityController::class, 'toggleStatus'])->name('feasibility.toggle-status');
-    Route::get('/feasibility/{id}/view', [FeasibilityController::class, 'view'])->name('feasibility.view');
-    Route::get('/get-client-details/{id}', [ClientController::class, 'getDetails']);
+    // ✅ Sales & Marketing Feasibility Routes
+    Route::get('/sm/feasibility/open', [FeasibilityStatusController::class, 'smOpen'])->name('sm.feasibility.open');
+    Route::get('/sm/feasibility/inprogress', [FeasibilityStatusController::class, 'smInProgress'])->name('sm.feasibility.inprogress');
+    Route::get('/sm/feasibility/closed', [FeasibilityStatusController::class, 'smClosed'])->name('sm.feasibility.closed');
+    Route::get('/sm/feasibility/{id}/view', [FeasibilityStatusController::class, 'smView'])->name('sm.feasibility.view');
+    Route::get('/sm/feasibility/{id}/edit', [FeasibilityStatusController::class, 'smEdit'])->name('sm.feasibility.edit');
+    Route::post('/sm/feasibility/{id}/save', [FeasibilityStatusController::class, 'smSave'])->name('sm.feasibility.save');
+    Route::post('/sm/feasibility/{id}/submit', [FeasibilityStatusController::class, 'smSubmit'])->name('sm.feasibility.submit');
 
-    // ✅ Operations Feasibility Status Routes (Simpler URLs for menu)
+    // ✅ operations Feasibility Routes (Full functionality like S&M)
+    Route::get('/operations/feasibility/open', [FeasibilityStatusController::class, 'operationsOpen'])->name('operations.feasibility.open');
+    Route::get('/operations/feasibility/inprogress', [FeasibilityStatusController::class, 'operationsInProgress'])->name('operations.feasibility.inprogress');
+    Route::get('/operations/feasibility/closed', [FeasibilityStatusController::class, 'operationsClosed'])->name('operations.feasibility.closed');
+    Route::get('/operations/feasibility/{id}/view', [FeasibilityStatusController::class, 'operationsView'])->name('operations.feasibility.view');
+    Route::get('/operations/feasibility/{id}/edit', [FeasibilityStatusController::class, 'operationsEdit'])->name('operations.feasibility.edit');
+    Route::post('/operations/feasibility/{id}/save', [FeasibilityStatusController::class, 'operationsSave'])->name('operations.feasibility.save');
+    Route::post('/operations/feasibility/{id}/submit', [FeasibilityStatusController::class, 'operationsSubmit'])->name('operations.feasibility.submit');
+
+    // ✅ Legacy operations Feasibility Status Routes (Keep for backward compatibility)
     Route::get('/feasibility/status/{status}', [FeasibilityStatusController::class, 'index'])->name('feasibility.status');
     
     Route::prefix('feasibility/feasibility-status')->group(function () {
     Route::get('/{status?}', [App\Http\Controllers\FeasibilityStatusController::class, 'index'])->name('feasibility.status.index');
     Route::get('/show/{id}', [App\Http\Controllers\FeasibilityStatusController::class, 'show'])->name('feasibility.status.show');
+    
     // Route::put('feasibility/feasibility-status/update/{id}', [FeasibilityStatusController::class, 'update'])->name('feasibility.status.update');
     Route::get('/edit/{id}', [App\Http\Controllers\FeasibilityStatusController::class, 'edit'])->name('feasibility.status.edit');
     Route::post('feasibility/feasibility-status/edit-save/{id}', [FeasibilityStatusController::class, 'editSave'])->name('feasibility.status.editSave');
 });
+
+    // ✅ Feasibility Module (Resource routes should come after specific routes)
+    Route::resource('feasibility', FeasibilityController::class);
+    Route::patch('/feasibility/{id}/toggle-status', [FeasibilityController::class, 'toggleStatus'])->name('feasibility.toggle-status');
+    Route::get('/feasibility/{id}/view', [FeasibilityController::class, 'view'])->name('feasibility.view');
+    Route::get('/get-client-details/{id}', [ClientController::class, 'getDetails']);
+
+    // ✅ Purchase Order Routes (SM Section)
+    Route::prefix('sm/purchaseorder')->name('sm.purchaseorder.')->group(function () {
+        Route::get('/', [PurchaseOrderController::class, 'index'])->name('index');
+        Route::get('/create', [PurchaseOrderController::class, 'create'])->name('create');
+        Route::post('/store', [PurchaseOrderController::class, 'store'])->name('store');
+        Route::get('/{id}', [PurchaseOrderController::class, 'show'])->name('show');
+        Route::get('/{id}/view', [PurchaseOrderController::class, 'show'])->name('view');
+        Route::get('/{id}/edit', [PurchaseOrderController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [PurchaseOrderController::class, 'update'])->name('update');
+        Route::post('/{id}/toggle-status', [PurchaseOrderController::class, 'toggleStatus'])->name('toggleStatus');
+        Route::delete('/{id}', [PurchaseOrderController::class, 'destroy'])->name('destroy');
+        Route::get('/feasibility/{id}/details', [PurchaseOrderController::class, 'getFeasibilityDetails'])->name('feasibility.details');
+        
+    });
+
+// Pincode Lookup
+
     // Fallback route to handle undefined routes
     Route::fallback(function () {
         return redirect('/welcome');

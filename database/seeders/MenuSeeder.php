@@ -26,11 +26,11 @@ class MenuSeeder extends Seeder
             ['module_name' => 'Company', 'user_type' => 'admin', 'name' => 'Company Details', 'route' => 'company.index', 'icon' => 'bi bi-building', 'can_add' => 0, 'can_edit' => 1, 'can_delete' => 0, 'can_view' => 1],
 
             // 📂 Master Module
-            ['module_name' => 'Master', 'user_type' => 'superadmin', 'name' => 'Template Master', 'route' => 'template.index', 'icon' => 'bi bi-file-earmark-text', 'can_add' => 1, 'can_edit' => 1, 'can_delete' => 1, 'can_view' => 1],
+            ['module_name' => 'Master', 'user_type' => 'superadmin', 'name' => 'Template Master', 'route' => 'emails.index', 'icon' => 'bi bi-file-earmark-text', 'can_add' => 1, 'can_edit' => 1, 'can_delete' => 1, 'can_view' => 1],
             ['module_name' => 'Master', 'user_type' => 'superadmin', 'name' => 'Client Master', 'route' => 'client.index', 'icon' => 'bi bi-person-badge', 'can_add' => 1, 'can_edit' => 1, 'can_delete' => 1, 'can_view' => 1],
             ['module_name' => 'Master', 'user_type' => 'superadmin', 'name' => 'Vendor Master', 'route' => 'vendor.index', 'icon' => 'bi bi-truck', 'can_add' => 1, 'can_edit' => 1, 'can_delete' => 1, 'can_view' => 1],
 
-            ['module_name' => 'Master', 'user_type' => 'admin', 'name' => 'Template Master', 'route' => 'template.index', 'icon' => 'bi bi-file-earmark-text', 'can_add' => 1, 'can_edit' => 1, 'can_delete' => 0, 'can_view' => 1],
+            ['module_name' => 'Master', 'user_type' => 'admin', 'name' => 'Template Master', 'route' => 'emails.index', 'icon' => 'bi bi-file-earmark-text', 'can_add' => 1, 'can_edit' => 1, 'can_delete' => 0, 'can_view' => 1],
             ['module_name' => 'Master', 'user_type' => 'admin', 'name' => 'Client Master', 'route' => 'client.index', 'icon' => 'bi bi-person-badge', 'can_add' => 1, 'can_edit' => 1, 'can_delete' => 0, 'can_view' => 1],
             ['module_name' => 'Master', 'user_type' => 'admin', 'name' => 'Vendor Master', 'route' => 'vendor.index', 'icon' => 'bi bi-truck', 'can_add' => 1, 'can_edit' => 1, 'can_delete' => 0, 'can_view' => 1],
 
@@ -39,10 +39,15 @@ class MenuSeeder extends Seeder
             ['module_name' => 'Sales & Marketing', 'user_type' => 'admin', 'name' => 'Feasibility Master', 'route' => 'feasibility.index', 'icon' => 'bi bi-diagram-3', 'can_add' => 1, 'can_edit' => 1, 'can_delete' => 0, 'can_view' => 1],
             ['module_name' => 'Sales & Marketing', 'user_type' => 'users', 'name' => 'Feasibility Master', 'route' => 'feasibility.index', 'icon' => 'bi bi-diagram-3', 'can_add' => 1, 'can_edit' => 1, 'can_delete' => 0, 'can_view' => 1],
 
-            // 🛠️ Operations Module - Feasibility Status
-            ['module_name' => 'Operations', 'user_type' => 'superadmin', 'name' => 'Operations Feasibility', 'route' => 'feasibility.status', 'icon' => 'bi bi-kanban', 'can_add' => 1, 'can_edit' => 1, 'can_delete' => 1, 'can_view' => 1],
-            ['module_name' => 'Operations', 'user_type' => 'admin', 'name' => 'Operations Feasibility', 'route' => 'feasibility.status', 'icon' => 'bi bi-kanban', 'can_add' => 1, 'can_edit' => 1, 'can_delete' => 0, 'can_view' => 1],
-            ['module_name' => 'Operations', 'user_type' => 'users', 'name' => 'Operations Feasibility', 'route' => 'feasibility.status', 'icon' => 'bi bi-kanban', 'can_add' => 0, 'can_edit' => 1, 'can_delete' => 0, 'can_view' => 1],
+            // 🛒 Sales & Marketing - Purchase Order
+            ['module_name' => 'Sales & Marketing', 'user_type' => 'superadmin', 'name' => 'Purchase Order', 'route' => 'sm.purchaseorder.index', 'icon' => 'bi bi-receipt', 'can_add' => 1, 'can_edit' => 1, 'can_delete' => 1, 'can_view' => 1],
+            ['module_name' => 'Sales & Marketing', 'user_type' => 'admin', 'name' => 'Purchase Order', 'route' => 'sm.purchaseorder.index', 'icon' => 'bi bi-receipt', 'can_add' => 1, 'can_edit' => 1, 'can_delete' => 0, 'can_view' => 1],
+            ['module_name' => 'Sales & Marketing', 'user_type' => 'users', 'name' => 'Purchase Order', 'route' => 'sm.purchaseorder.index', 'icon' => 'bi bi-receipt', 'can_add' => 1, 'can_edit' => 1, 'can_delete' => 0, 'can_view' => 1],
+
+            // 🛠️ operations Module - Feasibility Status
+            ['module_name' => 'operations', 'user_type' => 'superadmin', 'name' => 'operations Feasibility', 'route' => 'feasibility.status', 'icon' => 'bi bi-kanban', 'can_add' => 1, 'can_edit' => 1, 'can_delete' => 1, 'can_view' => 1],
+            ['module_name' => 'operations', 'user_type' => 'admin', 'name' => 'operations Feasibility', 'route' => 'feasibility.status', 'icon' => 'bi bi-kanban', 'can_add' => 1, 'can_edit' => 1, 'can_delete' => 0, 'can_view' => 1],
+            ['module_name' => 'operations', 'user_type' => 'users', 'name' => 'operations Feasibility', 'route' => 'feasibility.status', 'icon' => 'bi bi-kanban', 'can_add' => 0, 'can_edit' => 1, 'can_delete' => 0, 'can_view' => 1],
 
             // ⚙️ Settings
             ['module_name' => 'Settings', 'user_type' => 'superadmin', 'name' => 'Common Settings', 'route' => 'settings.index', 'icon' => 'bi bi-gear', 'can_add' => 1, 'can_edit' => 1, 'can_delete' => 1, 'can_view' => 1],

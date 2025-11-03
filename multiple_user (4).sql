@@ -82,7 +82,7 @@ CREATE TABLE `clients` (
 --
 
 INSERT INTO `clients` (`id`, `client_code`, `client_name`, `business_display_name`, `address1`, `address2`, `address3`, `city`, `state`, `country`, `pincode`, `billing_spoc_name`, `billing_spoc_contact`, `billing_spoc_email`, `gstin`, `invoice_email`, `invoice_cc`, `support_spoc_name`, `support_spoc_mobile`, `support_spoc_email`, `status`, `created_at`, `updated_at`) VALUES
-(1, 'CL0001', 'divyam', 'MNC', 'Harur, tamil nadu', 'Harur, tamil nadu', 'Harur, tamil nadu', 'Bangalore', 'Karnataka', 'India', '636903', NULL, '09025012401', 'divyat.it21@scew.org', NULL, 'divyat.it21@scew.org', NULL, 'd', '09025012401', NULL, 'Active', '2025-10-17 04:51:50', '2025-10-17 05:25:27');
+(1, 'CL0001', 'operationsm', 'MNC', 'Harur, tamil nadu', 'Harur, tamil nadu', 'Harur, tamil nadu', 'Bangalore', 'Karnataka', 'India', '636903', NULL, '09025012401', 'operationst.it21@scew.org', NULL, 'operationst.it21@scew.org', NULL, 'd', '09025012401', NULL, 'Active', '2025-10-17 04:51:50', '2025-10-17 05:25:27');
 
 -- --------------------------------------------------------
 
@@ -117,9 +117,9 @@ CREATE TABLE `companies` (
 --
 
 INSERT INTO `companies` (`id`, `company_name`, `cin_llpin`, `contact_no`, `phone_no`, `email_1`, `email_2`, `address`, `billing_logo`, `billing_sign_normal`, `billing_sign_digital`, `gst_no`, `pan_number`, `tan_number`, `color`, `logo`, `status`, `created_at`, `updated_at`) VALUES
-(1, 'MNC', NULL, '9025012401', '09025012401', 'divyat.it21@scew.org', 'divyat.it21@scew.org', 'uthangarai, tamilnadu', 'logos/ntow3QbfKW4F8J1aZ8nXOVO8pvYhb13mYEjZe7nM.png', NULL, NULL, NULL, NULL, NULL, '#333333', NULL, 'Active', '2025-10-17 04:51:15', '2025-10-17 04:51:15'),
-(2, 'unborn technology', NULL, '9025012401', '09025012401', 'divyaofficial2124@gmail.com', 'divyaofficial2124@gmail.com', 'Harur, tamil nadu\r\nHarur, tamil nadu\r\nHarur, tamil nadu', NULL, NULL, NULL, NULL, NULL, NULL, '#333333', NULL, 'Active', '2025-10-17 04:51:37', '2025-10-17 04:51:37'),
-(3, 'palle technologym', '784541', '78945421', '23423543546', 'divyaofficial2124@gmail.com', 'divyaofficial2124@gmail.com', 'divyat.itdsfjj fh hfbc fhdsb kfjedsnjaknsssssssssjerwebd ehrrrh eirhuewihruihhnirubbefhjgerg ywwrgwh ww rweehi', 'logos/D2O9W5nLvSL2tKjjeSAG2Zu7dIWGKObXFCP63NK1.jpg', 'signs/UbVLLWYK7wiWEH75k8lMYXo1bZfaFLTQSo04LIFQ.jpg', 'signs/FHbYDiU9kQNM2dSHWMUFbFvllsCYDYXWaHMkQo6X.jpg', '1235684', '458784', '8845454', '#333333', NULL, 'Active', '2025-10-17 05:15:21', '2025-10-17 05:24:29');
+(1, 'MNC', NULL, '9025012401', '09025012401', 'operationst.it21@scew.org', 'operationst.it21@scew.org', 'uthangarai, tamilnadu', 'logos/ntow3QbfKW4F8J1aZ8nXOVO8pvYhb13mYEjZe7nM.png', NULL, NULL, NULL, NULL, NULL, '#333333', NULL, 'Active', '2025-10-17 04:51:15', '2025-10-17 04:51:15'),
+(2, 'unborn technology', NULL, '9025012401', '09025012401', 'operationsofficial2124@gmail.com', 'operationsofficial2124@gmail.com', 'Harur, tamil nadu\r\nHarur, tamil nadu\r\nHarur, tamil nadu', NULL, NULL, NULL, NULL, NULL, NULL, '#333333', NULL, 'Active', '2025-10-17 04:51:37', '2025-10-17 04:51:37'),
+(3, 'palle technologym', '784541', '78945421', '23423543546', 'operationsofficial2124@gmail.com', 'operationsofficial2124@gmail.com', 'operationst.itdsfjj fh hfbc fhdsb kfjedsnjaknsssssssssjerwebd ehrrrh eirhuewihruihhnirubbefhjgerg ywwrgwh ww rweehi', 'logos/D2O9W5nLvSL2tKjjeSAG2Zu7dIWGKObXFCP63NK1.jpg', 'signs/UbVLLWYK7wiWEH75k8lMYXo1bZfaFLTQSo04LIFQ.jpg', 'signs/FHbYDiU9kQNM2dSHWMUFbFvllsCYDYXWaHMkQo6X.jpg', '1235684', '458784', '8845454', '#333333', NULL, 'Active', '2025-10-17 05:15:21', '2025-10-17 05:24:29');
 
 -- --------------------------------------------------------
 
@@ -159,7 +159,7 @@ CREATE TABLE `company_settings` (
 --
 
 INSERT INTO `company_settings` (`id`, `company_id`, `company_name`, `company_email`, `contact_no`, `website`, `address`, `gst_number`, `company_logo`, `linkedin_url`, `facebook_url`, `instagram_url`, `whatsapp_number`, `is_default`, `mail_mailer`, `mail_host`, `mail_port`, `mail_username`, `mail_password`, `mail_encryption`, `mail_from_address`, `mail_from_name`, `created_at`, `updated_at`) VALUES
-(1, NULL, 'unborn technology', 'unborn@gmail.com', '9025012401', NULL, NULL, NULL, 'logos/FwtFyHjMt0PVJVRZtm4ODn9q2Qoxib7I6Cehvmm1.jpg', NULL, NULL, NULL, '9025012401', 0, 'smtp', 'smtp.gmail.com', '587', 'divyaoffical4@gmail.com', 'qwmrmwxiwwmmyuua', 'tls', 'divyaofficial4@gmail.com', 'unborn technology', '2025-10-17 04:52:58', '2025-10-17 05:14:01');
+(1, NULL, 'unborn technology', 'unborn@gmail.com', '9025012401', NULL, NULL, NULL, 'logos/FwtFyHjMt0PVJVRZtm4ODn9q2Qoxib7I6Cehvmm1.jpg', NULL, NULL, NULL, '9025012401', 0, 'smtp', 'smtp.gmail.com', '587', 'operationsoffical4@gmail.com', 'qwmrmwxiwwmmyuua', 'tls', 'operationsofficial4@gmail.com', 'unborn technology', '2025-10-17 04:52:58', '2025-10-17 05:14:01');
 
 -- --------------------------------------------------------
 
@@ -332,7 +332,7 @@ CREATE TABLE `profiles` (
 --
 
 INSERT INTO `profiles` (`id`, `user_id`, `fname`, `lname`, `designation`, `Date_of_Birth`, `phone1`, `phone2`, `aadhaar_number`, `aadhaar_upload`, `pan`, `pan_upload`, `bank_name`, `branch`, `bank_account_no`, `ifsc_code`, `created_at`, `updated_at`) VALUES
-(1, 2, 'Divya', 'T', 'user', '2025-10-15', '09025012401', '09025012401', '7885454421484', 'uploads/aadhaar/hYuTgpLg6k51aKdB5rKUEw82NNrKuWHPwufbioQ1.png', '987987264654', 'uploads/pan/Le9nu0EnOjBSJPS0ZCEFXlVhjylFvK5JE2oTrlqq.png', 'SBI', 'harur', '49528464987', 'sdfs54654', '2025-10-17 05:18:35', '2025-10-17 05:18:35');
+(1, 2, 'operations', 'T', 'user', '2025-10-15', '09025012401', '09025012401', '7885454421484', 'uploads/aadhaar/hYuTgpLg6k51aKdB5rKUEw82NNrKuWHPwufbioQ1.png', '987987264654', 'uploads/pan/Le9nu0EnOjBSJPS0ZCEFXlVhjylFvK5JE2oTrlqq.png', 'SBI', 'harur', '49528464987', 'sdfs54654', '2025-10-17 05:18:35', '2025-10-17 05:18:35');
 
 -- --------------------------------------------------------
 
@@ -419,7 +419,7 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `mobile`, `Date_of_Birth`, `Date_of_Joining`, `official_email`, `personal_email`, `email_template`, `profile_created`, `user_type_id`, `status`, `created_at`, `updated_at`, `remember_token`, `is_superuser`, `role`, `email_template_id`) VALUES
 (1, 'Super Admin', 'superadmin@example.com', NULL, '$2y$12$Nmo4vn2UnKTbe61vp5wG6eWy0AEKmeWQ7SAGaftk0P/8PiKl6Xgyy', NULL, '2000-01-01', NULL, NULL, NULL, NULL, 1, 1, 'Active', '2025-10-17 04:50:34', '2025-10-17 04:50:34', NULL, 1, 'superadmin', NULL),
-(2, 'divyat', 'divyaofficial2124@gmail.com', NULL, '$2y$12$u4qlxZpYiwSU18oZBugjveFElr7uedt7fPWPvR5cn/xxNTQZIb7du', '09398306293', '2025-05-20', '2025-05-20', 'divyaofficial2124@gmail.com', 'divyaofficial2124@gmail.com', NULL, 1, 2, 'Active', '2025-10-17 05:16:35', '2025-10-17 05:18:35', NULL, 1, 'user', NULL);
+(2, 'operationst', 'operationsofficial2124@gmail.com', NULL, '$2y$12$u4qlxZpYiwSU18oZBugjveFElr7uedt7fPWPvR5cn/xxNTQZIb7du', '09398306293', '2025-05-20', '2025-05-20', 'operationsofficial2124@gmail.com', 'operationsofficial2124@gmail.com', NULL, 1, 2, 'Active', '2025-10-17 05:16:35', '2025-10-17 05:18:35', NULL, 1, 'user', NULL);
 
 -- --------------------------------------------------------
 
@@ -522,7 +522,7 @@ CREATE TABLE `vendors` (
 --
 
 INSERT INTO `vendors` (`id`, `vendor_code`, `vendor_name`, `business_display_name`, `address1`, `address2`, `address3`, `city`, `state`, `country`, `pincode`, `contact_person_name`, `contact_person_mobile`, `contact_person_email`, `gstin`, `pan_no`, `bank_account_no`, `ifsc_code`, `status`, `created_at`, `updated_at`) VALUES
-(1, 'V0001', 'divyad', 'MNC', 'Harur, tamil nadu', 'Harur, tamil nadu', 'Harur, tamil nadu', NULL, NULL, NULL, '636903', NULL, '09025012401', 'divyat.it21@scew.org', '123123', NULL, NULL, NULL, 'Active', '2025-10-17 04:52:01', '2025-10-17 05:24:52');
+(1, 'V0001', 'operationsd', 'MNC', 'Harur, tamil nadu', 'Harur, tamil nadu', 'Harur, tamil nadu', NULL, NULL, NULL, '636903', NULL, '09025012401', 'operationst.it21@scew.org', '123123', NULL, NULL, NULL, 'Active', '2025-10-17 04:52:01', '2025-10-17 05:24:52');
 
 --
 -- Indexes for dumped tables

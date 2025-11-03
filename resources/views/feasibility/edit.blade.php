@@ -35,6 +35,19 @@
                     </select>
                 </div>
 
+                {{-- Company --}}
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Company *</label>
+                    <select name="company_id" id="company_id" class="form-select" required>
+                        <option value="">Select Company</option>
+                        @foreach($companies as $company)
+                            <option value="{{ $company->id }}" {{ $company->id == $feasibility->company_id ? 'selected' : '' }}>
+                                {{ $company->company_name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
                 {{-- Client Name --}}
                 <div class="col-md-4">
                     <label class="form-label fw-semibold">Client Name *</label>
@@ -42,7 +55,7 @@
                         <option value="">Select Client</option>
                         @foreach($clients as $client)
                             <option value="{{ $client->id }}" {{ $client->id == $feasibility->client_id ? 'selected' : '' }}>
-                                {{ $client->client_name }}
+                                {{ $client->business_name ?: $client->client_name }}
                             </option>
                         @endforeach
                     </select>
@@ -202,6 +215,8 @@ document.getElementById('hardware_required').addEventListener('change', function
     // Show or hide hardware model name field dynamically
     document.getElementById('hardware_name_div').style.display = this.value == '1' ? 'block' : 'none';
 });
+
+
 </script>
 
 @endsection

@@ -27,6 +27,7 @@ return new class extends Migration
             $table->integer('no_of_links')->nullable();
             $table->string('vendor_type');
             $table->string('speed');
+            $table->string('static_ip')->nullable();
             $table->date('expected_delivery')->nullable();
             $table->date('expected_activation')->nullable();
             $table->boolean('hardware_required')->default(false);
@@ -36,6 +37,9 @@ return new class extends Migration
           // ✅ FIXED Foreign key order
             $table->unsignedBigInteger('created_by')->nullable();
             $table->foreign('created_by')->references('id')->on('users')->onDelete('set null');
+
+            $table->string('feasibility_request_id')->unique()->nullable();
+
 
             $table->timestamps();
         });

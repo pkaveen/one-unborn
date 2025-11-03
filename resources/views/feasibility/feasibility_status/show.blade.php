@@ -1,85 +1,96 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container-fluid py-4">
-    <h4 class="fw-bold text-primary mb-3">View Feasibility Status</h4>
+<div class="container py-4">
+    <h3 class="mb-3 text-primary">View Feasibility</h3>
 
     <div class="card shadow border-0 p-4">
-        <div class="row mb-4">
-            <div class="col-md-4">
-                <label class="form-label fw-semibold">Client Name</label>
-                <input type="text" class="form-control" value="{{ $record->feasibility->client->client_name ?? '-' }}" readonly>
-            </div>
+        <table class="table table-bordered">
+            <tr>
+                <th>Type of Service</th>
+                <td>{{ $feasibility->type_of_service ?? '-' }}</td>
+            </tr>
+            <tr>
+                <th>Client Name</th>
+                <td>{{ $feasibility->client->client_name ?? '-' }}</td>
+            </tr>
+            <tr>
+                <th>Pincode</th>
+                <td>{{ $feasibility->pincode ?? '-' }}</td>
+            </tr>
+            <tr>
+                <th>State</th>
+                <td>{{ $feasibility->state ?? '-' }}</td>
+            </tr>
+            <tr>
+                <th>District</th>
+                <td>{{ $feasibility->district ?? '-' }}</td>
+            </tr>
+            <tr>
+                <th>Area</th>
+                <td>{{ $feasibility->area ?? '-' }}</td>
+            </tr>
+            <tr>
+                <th>Address</th>
+                <td>{{ $feasibility->address ?? '-' }}</td>
+            </tr>
+            <tr>
+                <th>SPOC Name</th>
+                <td>{{ $feasibility->spoc_name ?? '-' }}</td>
+            </tr>
+            <tr>
+                <th>SPOC Contact 1</th>
+                <td>{{ $feasibility->spoc_contact1 ?? '-' }}</td>
+            </tr>
+            <tr>
+                <th>SPOC Contact 2</th>
+                <td>{{ $feasibility->spoc_contact2 ?? '-' }}</td>
+            </tr>
+            <tr>
+                <th>SPOC Emai</th>
+                <td>{{ $feasibility->spoc_email ?? '-' }}</td>
+            </tr>
+            <tr>
+                <th>No. of Links</th>
+                <td>{{ $feasibility->no_of_links ?? '-' }}</td>
+            </tr>
+            <tr>
+                <th>Vendor Type</th>
+                <td>{{ $feasibility->vendor_type ?? '-' }}</td>
+            </tr>
+            <tr>
+                <th>Speed</th>
+                <td>{{ $feasibility->speed ?? '-' }}</td>
+            </tr>
+            <tr>
+                <th>Static IP</th>
+                <td>{{ $feasibility->static_ip ?? '-' }}</td>
+            </tr>
+            <tr>
+                <th>Expected Delivery</th>
+                <td>{{ $feasibility->expected_delivery ?? '-' }}</td>
+            </tr>
+            <tr>
+                <th>Expected Activation</th>
+                <td>{{ $feasibility->expected_activation ?? '-' }}</td>
+            </tr>
+            <tr>
+                <th>Hardware Required</th>
+                <td>{{ $feasibility->hardware_required ?? '-' }}</td>
+            </tr>
+            <tr>
+                <th>Hardware Model Name</th>
+                <td>{{ $feasibility->hardware_model_name ?? '-' }}</td>
+            </tr>
+            <tr>
+                <th>Status</th>
+                <td>{{ $feasibility->status ?? '-' }}</td>
+            </tr>
+        </table>
 
-            <div class="col-md-4">
-                <label class="form-label fw-semibold">Type of Service</label>
-                <input type="text" class="form-control" value="{{ $record->feasibility->type_of_service ?? '-' }}" readonly>
-            </div>
-
-            <div class="col-md-4">
-                <label class="form-label fw-semibold">Status</label>
-                <input type="text" class="form-control" value="{{ $record->status }}" readonly>
-            </div>
-        </div>
-
-        <hr>
-
-        {{-- 🧩 Vendor 1 --}}
-        <h5 class="fw-bold text-primary mt-3 mb-2">Vendor 1</h5>
-        <div class="row g-3 mb-4">
-            <div class="col-md-3"><label class="form-label fw-semibold">Name</label>
-                <input type="text" class="form-control" value="{{ $record->vendor1_name ?? '-' }}" readonly>
-            </div>
-            <div class="col-md-2"><label class="form-label fw-semibold">ARC</label>
-                <input type="text" class="form-control" value="{{ $record->vendor1_arc ?? '-' }}" readonly>
-            </div>
-            <div class="col-md-2"><label class="form-label fw-semibold">OTC</label>
-                <input type="text" class="form-control" value="{{ $record->vendor1_otc ?? '-' }}" readonly>
-            </div>
-            <div class="col-md-2"><label class="form-label fw-semibold">Static IP Cost</label>
-                <input type="text" class="form-control" value="{{ $record->vendor1_static_ip_cost ?? '-' }}" readonly>
-            </div>
-            <div class="col-md-3"><label class="form-label fw-semibold">Delivery Timeline</label>
-                <input type="text" class="form-control" value="{{ $record->vendor1_delivery_timeline ?? '-' }}" readonly>
-            </div>
-        </div>
-
-        {{-- 🧩 Vendor 2 --}}
-        <h5 class="fw-bold text-primary mt-3 mb-2">Vendor 2</h5>
-        <div class="row g-3 mb-4">
-            <div class="col-md-3"><input type="text" class="form-control" value="{{ $record->vendor2_name ?? '-' }}" readonly></div>
-            <div class="col-md-2"><input type="text" class="form-control" value="{{ $record->vendor2_arc ?? '-' }}" readonly></div>
-            <div class="col-md-2"><input type="text" class="form-control" value="{{ $record->vendor2_otc ?? '-' }}" readonly></div>
-            <div class="col-md-2"><input type="text" class="form-control" value="{{ $record->vendor2_static_ip_cost ?? '-' }}" readonly></div>
-            <div class="col-md-3"><input type="text" class="form-control" value="{{ $record->vendor2_delivery_timeline ?? '-' }}" readonly></div>
-        </div>
-
-        {{-- 🧩 Vendor 3 --}}
-        <h5 class="fw-bold text-primary mt-3 mb-2">Vendor 3</h5>
-        <div class="row g-3 mb-4">
-            <div class="col-md-3"><input type="text" class="form-control" value="{{ $record->vendor3_name ?? '-' }}" readonly></div>
-            <div class="col-md-2"><input type="text" class="form-control" value="{{ $record->vendor3_arc ?? '-' }}" readonly></div>
-            <div class="col-md-2"><input type="text" class="form-control" value="{{ $record->vendor3_otc ?? '-' }}" readonly></div>
-            <div class="col-md-2"><input type="text" class="form-control" value="{{ $record->vendor3_static_ip_cost ?? '-' }}" readonly></div>
-            <div class="col-md-3"><input type="text" class="form-control" value="{{ $record->vendor3_delivery_timeline ?? '-' }}" readonly></div>
-        </div>
-
-        {{-- 🧩 Vendor 4 --}}
-        <h5 class="fw-bold text-primary mt-3 mb-2">Vendor 4</h5>
-        <div class="row g-3 mb-4">
-            <div class="col-md-3"><input type="text" class="form-control" value="{{ $record->vendor4_name ?? '-' }}" readonly></div>
-            <div class="col-md-2"><input type="text" class="form-control" value="{{ $record->vendor4_arc ?? '-' }}" readonly></div>
-            <div class="col-md-2"><input type="text" class="form-control" value="{{ $record->vendor4_otc ?? '-' }}" readonly></div>
-            <div class="col-md-2"><input type="text" class="form-control" value="{{ $record->vendor4_static_ip_cost ?? '-' }}" readonly></div>
-            <div class="col-md-3"><input type="text" class="form-control" value="{{ $record->vendor4_delivery_timeline ?? '-' }}" readonly></div>
-        </div>
-
-        <div class="mt-4 text-end">
-            <a href="{{ route('feasibility.status.edit', $record->id) }}" class="btn btn-primary">
-                <i class="bi bi-pencil"></i> Edit
-            </a>
-            <a href="{{ route('feasibility.status.index', 'Open') }}" class="btn btn-secondary">
-                Back
+        <div class="text-end">
+           <a href="{{ route('feasibility.status.index') }}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Back
             </a>
         </div>
     </div>

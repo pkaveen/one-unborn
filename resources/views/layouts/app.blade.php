@@ -51,9 +51,11 @@
             font-weight: 600;
         }
         /* xx  */
-        .menu-item.active {
+        .menu-item.active { 
     background-color: #0d6efd !important;
     border-radius: 6px;
+
+    
 }
 #sidebar .collapse .nav-link {
     font-size: 0.95rem;
@@ -234,6 +236,15 @@
     border-color: #0dcaf0 !important;
     color: #000 !important;
 }
+.table-dark-primary {
+    background-color: #0A3D62 !important;
+    color: white !important;
+}
+
+.table-dark-primary th {
+    background-color: #0A3D62 !important;
+    color: white !important;
+}
 
     
 </style>
@@ -370,5 +381,7 @@ $(document).ready(function () {
 });
 
 </script>
+
+@yield('scripts')
 
 </html>

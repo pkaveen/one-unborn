@@ -61,18 +61,19 @@
 @php
     $feasibility = \App\Helpers\TemplateHelper::getUserMenuPermissions('Feasibility');
     $feasibilityMaster = \App\Helpers\TemplateHelper::getUserMenuPermissions('Feasibility Master');
+    $purchaseOrder = \App\Helpers\TemplateHelper::getUserMenuPermissions('Purchase Order');
 @endphp
-@if(($feasibility && $feasibility->can_menu) || ($feasibilityMaster && $feasibilityMaster->can_menu))
+@if(($feasibility && $feasibility->can_menu) || ($feasibilityMaster && $feasibilityMaster->can_menu) || ($purchaseOrder && $purchaseOrder->can_menu))
 <li class="nav-item">
     <a class="nav-link text-white d-flex justify-content-between align-items-center"
        data-bs-toggle="collapse" href="#salesMarketingMenu" role="button"
-       aria-expanded="{{ request()->is('feasibility*') ? 'true' : 'false' }}"
+       aria-expanded="{{ request()->is('sm/feasibility*') || request()->is('sm/purchaseorder*') ? 'true' : 'false' }}"
        aria-controls="salesMarketingMenu">
         <span><i class="bi bi-briefcase"></i> Sales & Marketing</span>
         <i class="bi bi-chevron-down small"></i>
     </a>
 
-    <div class="collapse {{ request()->is('feasibility*') ? 'show' : '' }}" id="salesMarketingMenu">
+    <div class="collapse {{ request()->is('sm/feasibility*') || request()->is('sm/purchaseorder*') ? 'show' : '' }}" id="salesMarketingMenu">
         <ul class="nav flex-column ms-3 mt-1">
 
             {{-- Feasibility Main Menu --}}
@@ -80,31 +81,98 @@
             <li>
                 <a class="nav-link text-white d-flex justify-content-between align-items-center"
                    data-bs-toggle="collapse" href="#feasibilityMainMenu" role="button"
-                   aria-expanded="{{ request()->is('feasibility*') ? 'true' : 'false' }}"
+                   aria-expanded="{{ request()->is('sm/feasibility*') ? 'true' : 'false' }}"
                    aria-controls="feasibilityMainMenu">
                     <span><i class="bi bi-diagram-3 me-2"></i> Feasibility</span>
                     <i class="bi bi-chevron-right small"></i>
                 </a>
 
-                <div class="collapse {{ request()->is('feasibility*') ? 'show' : '' }}" id="feasibilityMainMenu">
+                <div class="collapse {{ request()->is('sm/feasibility*') || request()->is('feasibility/create*') ? 'show' : '' }}" id="feasibilityMainMenu">
                     <ul class="nav flex-column ms-3">
                         {{-- Add Feasibility --}}
                         <li>
-                            <a class="nav-link text-white-50 menu-item {{ request()->is('feasibility/create') ? 'active text-white fw-bold' : '' }}"
+                            <a class="nav-link text-white menu-item {{ request()->is('feasibility/create*') ? 'active bg-primary fw-bold' : '' }}"
                                href="{{ route('feasibility.create') }}">
                                <i class="bi bi-plus-circle me-2"></i> Add Feasibility
                             </a>
                         </li>
-
-                        {{-- Feasibility Master (List) --}}
+                        
+                        @php
+                            // Determine which S&M menu item should be active
+                            $isSMOpenActive = false;
+                            $isSMInProgressActive = false;
+                            $isSMClosedActive = false;
+                            
+                            // Check for direct S&M page routes
+                            if (request()->is('sm/feasibility/open')) {
+                                $isSMOpenActive = true;
+                            } elseif (request()->is('sm/feasibility/inprogress')) {
+                                $isSMInProgressActive = true;
+                            } elseif (request()->is('sm/feasibility/closed')) {
+                                $isSMClosedActive = true;
+                            }
+                            
+                            // For S&M view and edit pages, check the record status
+                            if (request()->is('sm/feasibility/*/view') || request()->is('sm/feasibility/*/edit')) {
+                                $recordId = request()->segment(3); // Get the ID from URL
+                                if ($recordId) {
+                                    try {
+                                        $record = \App\Models\FeasibilityStatus::find($recordId);
+                                        if ($record && $record->status) {
+                                            switch ($record->status) {
+                                                case 'Open':
+                                                    $isSMOpenActive = true;
+                                                    break;
+                                                case 'InProgress':
+                                                    $isSMInProgressActive = true;
+                                                    break;
+                                                case 'Closed':
+                                                    $isSMClosedActive = true;
+                                                    break;
+                                            }
+                                        }
+                                    } catch (Exception $e) {
+                                        // Fallback - no active state
+                                    }
+                                }
+                            }
+                        @endphp
+                        
+                        {{-- Open Status --}}
                         <li>
-                            <a class="nav-link text-white-50 menu-item {{ request()->is('feasibility') && !request()->is('feasibility/status*') ? 'active text-white fw-bold' : '' }}"
-                               href="{{ route('feasibility.index') }}">
-                               <i class="bi bi-list-ul me-2"></i> Feasibility Master
+                            <a class="nav-link text-white menu-item {{ $isSMOpenActive ? 'active' : '' }}"
+                               href="{{ route('sm.feasibility.open') }}">
+                               <i class="bi bi-hourglass-split me-2"></i> Open
+                            </a>
+                        </li>
+
+                        {{-- In Progress Status --}}
+                        <li>
+                            <a class="nav-link text-white menu-item {{ $isSMInProgressActive ? 'active' : '' }}"
+                               href="{{ route('sm.feasibility.inprogress') }}">
+                               <i class="bi bi-clock-history me-2"></i> In Progress
+                            </a>
+                        </li>
+
+                        {{-- Closed Status --}}
+                        <li>
+                            <a class="nav-link text-white menu-item {{ $isSMClosedActive ? 'active' : '' }}"
+                               href="{{ route('sm.feasibility.closed') }}">
+                               <i class="bi bi-check-circle me-2"></i> Closed
                             </a>
                         </li>
                     </ul>
                 </div>
+            </li>
+            @endif
+
+            {{-- Purchase Order Main Menu --}}
+            @if($purchaseOrder && $purchaseOrder->can_menu)
+            <li>
+                <a class="nav-link text-white menu-item {{ request()->is('sm/purchaseorder*') ? 'active' : '' }}"
+                   href="{{ route('sm.purchaseorder.index') }}">
+                    <span><i class="bi bi-receipt me-2"></i> Purchase Order</span>
+                </a>
             </li>
             @endif
         </ul>
@@ -112,67 +180,88 @@
 </li>
 @endif
 
-            {{-- Operations Dropdown --}}
+            {{-- operations Dropdown --}}
 @php
-    $operationsFeasibility = \App\Helpers\TemplateHelper::getUserMenuPermissions('Operations Feasibility');
+    $operationsFeasibility = \App\Helpers\TemplateHelper::getUserMenuPermissions('operations Feasibility');
+    
+    // Determine which operations menu item should be active
+    $isOpenActive = false;
+    $isInProgressActive = false;
+    $isClosedActive = false;
+    
+    // Check for direct page routes
+    if (request()->is('operations/feasibility/open')) {
+        $isOpenActive = true;
+    } elseif (request()->is('operations/feasibility/inprogress')) {
+        $isInProgressActive = true;
+    } elseif (request()->is('operations/feasibility/closed')) {
+        $isClosedActive = true;
+    }
+    
+    // For view/edit pages, check the record status
+    if (request()->is('operations/feasibility/*/view') || request()->is('operations/feasibility/*/edit')) {
+        $recordId = request()->segment(3); // Get the ID from URL
+        if ($recordId) {
+            try {
+                $record = \App\Models\FeasibilityStatus::find($recordId);
+                if ($record && $record->status) {
+                    switch ($record->status) {
+                        case 'Open':
+                            $isOpenActive = true;
+                            break;
+                        case 'InProgress':
+                            $isInProgressActive = true;
+                            break;
+                        case 'Closed':
+                            $isClosedActive = true;
+                            break;
+                    }
+                }
+            } catch (Exception $e) {
+                // Fallback - no active state
+            }
+        }
+    }
 @endphp
 @if($operationsFeasibility && $operationsFeasibility->can_menu)
 <li class="nav-item">
     <a class="nav-link text-white d-flex justify-content-between align-items-center"
        data-bs-toggle="collapse" href="#operationsMenu" role="button"
-       aria-expanded="{{ request()->is('operations*') || request()->is('feasibility/status*') ? 'true' : 'false' }}"
+       aria-expanded="{{ request()->is('operations/feasibility*') ? 'true' : 'false' }}"
        aria-controls="operationsMenu">
-        <span><i class="bi bi-gear-wide-connected"></i> Operations</span>
+        <span><i class="bi bi-gear-wide-connected"></i> operations</span>
         <i class="bi bi-chevron-down small"></i>
     </a>
 
-    <div class="collapse {{ request()->is('operations*') || request()->is('feasibility/status*') ? 'show' : '' }}" id="operationsMenu">
+    <div class="collapse {{ request()->is('operations/feasibility*') ? 'show' : '' }}" id="operationsMenu">
         <ul class="nav flex-column ms-3 mt-1">
-
-            {{-- Feasibility Status Submenu --}}
+            {{-- Open Status --}}
             <li>
-                <a class="nav-link text-white d-flex justify-content-between align-items-center"
-                   data-bs-toggle="collapse" href="#feasibilityStatusMenu" role="button"
-                   aria-expanded="{{ request()->is('feasibility/status*') ? 'true' : 'false' }}"
-                   aria-controls="feasibilityStatusMenu">
-                    <span><i class="bi bi-kanban me-2"></i> Feasibility Status</span>
-                    <i class="bi bi-chevron-right small"></i>
+                <a class="nav-link text-white menu-item {{ $isOpenActive ? 'active' : '' }}"
+                   href="{{ route('operations.feasibility.open') }}">
+                   <i class="bi bi-hourglass-split me-2"></i> Open
                 </a>
+            </li>
 
-                <div class="collapse {{ request()->is('feasibility/status*') ? 'show' : '' }}" id="feasibilityStatusMenu">
-                    <ul class="nav flex-column ms-4">
-                        {{-- Open Status --}}
-                        <li>
-                            <a class="nav-link text-white-50 menu-item {{ request()->is('feasibility/status/open') ? 'active text-white fw-bold' : '' }}"
-                               href="{{ route('feasibility.status', 'open') }}">
-                               <i class="bi bi-hourglass-split me-2"></i> Open
-                            </a>
-                        </li>
+            {{-- In Progress Status --}}
+            <li>
+                <a class="nav-link text-white menu-item {{ $isInProgressActive ? 'active' : '' }}"
+                   href="{{ route('operations.feasibility.inprogress') }}">
+                   <i class="bi bi-clock-history me-2"></i> In Progress
+                </a>
+            </li>
 
-                        {{-- In Progress Status --}}
-                        <li>
-                            <a class="nav-link text-white-50 menu-item {{ request()->is('feasibility/status/inprogress') ? 'active text-white fw-bold' : '' }}"
-                               href="{{ route('feasibility.status', 'inprogress') }}">
-                               <i class="bi bi-clock-history me-2"></i> In Progress
-                            </a>
-                        </li>
-
-                        {{-- Closed Status --}}
-                        <li>
-                            <a class="nav-link text-white-50 menu-item {{ request()->is('feasibility/status/closed') ? 'active text-white fw-bold' : '' }}"
-                               href="{{ route('feasibility.status', 'closed') }}">
-                               <i class="bi bi-check-circle me-2"></i> Closed
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+            {{-- Closed Status --}}
+            <li>
+                <a class="nav-link text-white menu-item {{ $isClosedActive ? 'active' : '' }}"
+                   href="{{ route('operations.feasibility.closed') }}">
+                   <i class="bi bi-check-circle me-2"></i> Closed
+                </a>
             </li>
         </ul>
     </div>
 </li>
 @endif
-
-            
 
             {{-- Finance Dropdown --}}
             @php

@@ -10,8 +10,28 @@ class Feasibility extends Model
 {
     use HasFactory;
 
+    protected static function boot()
+    {
+        parent::boot();
+        
+        static::creating(function ($feasibility) {
+            if (empty($feasibility->feasibility_request_id)) {
+                $feasibility->feasibility_request_id = self::generateRequestId();
+            }
+        });
+    }
+
+    public static function generateRequestId()
+    {
+        $lastFeasibility = self::orderBy('id', 'desc')->first();
+        $nextNumber = $lastFeasibility ? $lastFeasibility->id + 1 : 1;
+        return 'FR-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+    }
+
     protected $fillable = [
+        'feasibility_request_id',
         'type_of_service',
+        'company_id',
         'client_id',
         'pincode',
         'state',
@@ -25,12 +45,18 @@ class Feasibility extends Model
         'no_of_links',
         'vendor_type',
         'speed',
+        'static_ip',
         'expected_delivery',
         'expected_activation',
         'hardware_required',
         'hardware_model_name',
         'status',
         'created_by',
+    ];
+
+    protected $casts = [
+        'expected_delivery' => 'date',
+        'expected_activation' => 'date',
     ];
 
      // 🧩 Relationship — Each Feasibility has one Feasibility Status
@@ -48,6 +74,15 @@ class Feasibility extends Model
 public function createdBy()
 {
     return $this->belongsTo(User::class, 'created_by');
+}
+
+// 🧩 Relationship — Each Feasibility can have multiple Purchase Orders
+public function purchaseOrders()
+{
+    return $this->hasMany(PurchaseOrder::class);
+}
+public function company() {
+    return $this->belongsTo(Company::class);
 }
 
   

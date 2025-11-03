@@ -54,6 +54,7 @@ class EmailTemplateController extends Controller
         // Fetch company name automatically
          EmailTemplate::create([
         'company_id' => $request->company_id,
+        'name'       => 'User Created', // ✅ Fix: Set the name field
         'subject'    => $request->subject,
         'body'       => $request->body,
         'status'     => 'Active', // default
@@ -102,6 +103,7 @@ class EmailTemplateController extends Controller
 
     $template->update([
         'company_id' => $request->company_id,
+        'name'       => 'User Created', // ✅ Fix: Ensure name field is set
     'subject'    => $request->subject,
     'body'       => $request->body,
     'header'     => $request->header,

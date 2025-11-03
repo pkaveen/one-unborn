@@ -1,0 +1,67 @@
+@extends('layouts.app')
+
+@section('content')
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow border-0">
+                <div class="card-header text-dark d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>S&M - In Progress Feasibilities</h5>
+                </div>
+
+                <div class="card-body">
+                    @if($records->count() > 0)
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead class="table-dark-primary">
+                                    <tr>
+                                        <th>S.No</th>
+                                        <th>Request ID</th>
+                                        <th>Action</th>
+                                        <th>Name</th>
+                                        <th>Type of Service</th>
+                                        <th>Speed</th>
+                                        <th>Links</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($records as $index => $record)
+                                        <tr>
+                                            <td>{{ $index + 1 }}</td>
+                                            <td>
+                                                <span class="">{{ $record->feasibility->feasibility_request_id ?? 'N/A' }}</span>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <a href="{{ route('operations.feasibility.view', $record->id) }}" 
+                                                       class="btn btn-info btn-sm" title="View">
+                                                        <i class="bi bi-eye"></i> View
+                                                    </a>
+                                                    <a href="{{ route('operations.feasibility.edit', $record->id) }}" 
+                                                       class="btn btn-warning btn-sm" title="Update">
+                                                        <i class="bi bi-pencil"></i> Update
+                                                    </a>
+                                                </div>
+                                            </td>
+                                            <td>{{ $record->feasibility->client->client_name ?? 'N/A' }}</td>
+                                            <td>{{ $record->feasibility->type_of_service ?? 'N/A' }}</td>
+                                            <td>{{ $record->feasibility->speed ?? 'N/A' }}</td>
+                                            <td>{{ $record->feasibility->no_of_links ?? 'N/A' }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <div class="text-center py-4">
+                            <i class="bi bi-inbox text-muted" style="font-size: 3rem;"></i>
+                            <h5 class="text-muted mt-3">No in-progress feasibilities found</h5>
+                            <p class="text-muted">All feasibilities are either open or have been completed.</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection

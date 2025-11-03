@@ -13,6 +13,7 @@ class Client extends Model
         'client_code',
         'client_name',
         'business_display_name',
+        'company_id',
         'address1', 
         'address2', 
         'address3',
@@ -31,5 +32,10 @@ class Client extends Model
          'support_spoc_email',
          'status',
     ];
+    // Relationship with Company
+public function company() {
+    return $this->belongsTo(Company::class);
+}
+
 
 }

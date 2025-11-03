@@ -7,7 +7,6 @@ use App\Models\User;
 use App\Models\Menu;
 use App\Models\UserType;
 use App\Models\Company;
-use App\Mail\HrWelcomeMail;
 use App\Models\CompanySetting;
 use App\Helpers\TemplateHelper;
 use App\Models\EmailTemplate;

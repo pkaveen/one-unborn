@@ -80,5 +80,12 @@ public function setPanNumberAttribute($value)
 {
     $this->attributes['pan_number'] = $value ? strtoupper(str_replace(' ', '', $value)) : null;
 }
+// Relationships
+public function feasibilities() {
+    return $this->hasMany(Feasibility::class);
+}
+public function clients() {
+    return $this->hasMany(Client::class);
+}
 }
 
