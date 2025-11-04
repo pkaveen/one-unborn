@@ -19,17 +19,25 @@
                             <div class="col-md-6 mb-3">
                                 <label for="feasibility_id" class="form-label">
                                     <strong>Feasibility Request ID <span class="text-danger">*</span></strong>
+                                    <small class="text-muted">(Only unused feasibilities shown)</small>
                                 </label>
                                 <select class="form-select @error('feasibility_id') is-invalid @enderror" 
                                         id="feasibility_id" name="feasibility_id" required onchange="loadFeasibilityDetails()">
-                                    <option value="">Select Closed Feasibility</option>
-                                    @foreach($closedFeasibilities as $feasibilityStatus)
+                                    <option value="">Select Available Feasibility</option>
+                                    @forelse($closedFeasibilities as $feasibilityStatus)
                                         <option value="{{ $feasibilityStatus->feasibility->id }}" 
                                                 {{ old('feasibility_id') == $feasibilityStatus->feasibility->id ? 'selected' : '' }}>
-                                            {{ $feasibilityStatus->feasibility->feasibility_request_id }} - {{ $feasibilityStatus->feasibility->client->company_name ?? 'Unknown' }}
+                                            {{ $feasibilityStatus->feasibility->feasibility_request_id }} - {{ $feasibilityStatus->feasibility->client->client_name ?? 'Unknown' }}
                                         </option>
-                                    @endforeach
+                                    @empty
+                                        <option value="" disabled>No unused closed feasibilities available</option>
+                                    @endforelse
                                 </select>
+                                @if($closedFeasibilities->isEmpty())
+                                    <div class="form-text text-warning">
+                                        <i class="bi bi-info-circle"></i> All closed feasibilities already have purchase orders.
+                                    </div>
+                                @endif
                                 @error('feasibility_id')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -150,18 +158,6 @@
                                 <div class="form-control bg-light" id="totalCost">₹0.00</div>
                             </div>
                         </div>
-
-                        <!-- {{-- Remarks --}}
-                        <div class="mb-3">
-                            <label for="remarks" class="form-label">
-                                <strong>Remarks</strong>
-                            </label>
-                            <textarea class="form-control @error('remarks') is-invalid @enderror" 
-                                      id="remarks" name="remarks" rows="3" placeholder="Enter any additional remarks...">{{ old('remarks') }}</textarea>
-                            @error('remarks')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div> -->
 
                         {{-- Action Buttons --}}
                         <div class="row">

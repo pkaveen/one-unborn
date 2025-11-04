@@ -24,7 +24,7 @@
             <h5 class="mb-0 text-danger">MANAGE USER</h5>
             <input type="text" id="tableSearch" class="form-control form-control-sm w-25" placeholder="Search...">
         </div>
-        <div class="card-body p-0">
+        <div class="card-body table-responsive">
             <table class="table table-striped table-hover table-bordered align-middle mb-0" id="userTable">
                 <thead class="table-primary text-center">
                     <tr>
@@ -110,10 +110,10 @@
 
                             </td>
 
-                            <td><?php echo e(ucfirst($user->name)); ?></td>
+                            <td class="date-col"><?php echo e(ucfirst($user->name)); ?></td>
 
                             
-                            <td class="text-center">
+                            <td class="text-center ">
                                 <span class="badge <?php echo e($user->userType->name === 'superadmin' ? 'bg-dark' : 'bg-info'); ?>">
                                     <?php echo e(ucfirst($user->userType->name ?? '-')); ?>
 
@@ -130,8 +130,8 @@
                             </td>
 
                             
-                            <td><?php echo e($user->Date_of_Birth ? \Carbon\Carbon::parse($user->Date_of_Birth)->format('d M Y') : '-'); ?></td>
-                            <td><?php echo e($user->Date_of_Joining ? \Carbon\Carbon::parse($user->Date_of_Joining)->format('d M Y') : '-'); ?></td>
+                            <td class="date-col"><?php echo e($user->Date_of_Birth ? \Carbon\Carbon::parse($user->Date_of_Birth)->format('d M Y') : '-'); ?></td>
+                            <td class="date-col"><?php echo e($user->Date_of_Joining ? \Carbon\Carbon::parse($user->Date_of_Joining)->format('d M Y') : '-'); ?></td>
 
                             
                             <td class="text-center">
@@ -166,6 +166,13 @@ document.getElementById('selectAll').addEventListener('change', function() {
     document.querySelectorAll('.rowCheckbox').forEach(cb => cb.checked = isChecked);
 });
 </script>
+<style>
+    .date-col {
+    width: 130px;
+    white-space: nowrap;
+}
+
+</style>
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH F:\xampp\htdocs\multipleuserpage\resources\views/users/index.blade.php ENDPATH**/ ?>

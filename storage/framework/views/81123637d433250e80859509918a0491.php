@@ -29,7 +29,7 @@
         <div class="card-body table-responsive">
             <!-- <input type="text" id="tableSearch" class="form-control form-control-sm w-25" placeholder="Search..."> -->
             <table class="table table-bordered table-hover align-middle" id="userTable">
-                <thead class="table-primary">
+                <thead class="table-primary text-center">
                     <tr>
                         <th><input type="checkbox" id="selectAll"></th>
                         <th>S.No</th>

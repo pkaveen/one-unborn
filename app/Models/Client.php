@@ -9,6 +9,17 @@ class Client extends Model
 {
    use HasFactory;
 
+    protected static function boot()
+    {
+        parent::boot();
+        
+        static::creating(function ($client) {
+            if (empty($client->client_code)) {
+                $client->client_code = \App\Services\PrefixGenerator::generateClientCode();
+            }
+        });
+    }
+
     protected $fillable = [
         'client_code',
         'client_name',

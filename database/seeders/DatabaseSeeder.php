@@ -18,7 +18,7 @@ class DatabaseSeeder extends Seeder
             MenuSeeder::class,        // Create menus before assigning privileges
             SuperAdminSeeder::class,  // Then create admin and assign privileges
             EmailTemplateSeeder::class, // Finally add default email templates
-            
+            PrefixSystemSeeder::class, // Add prefix system data
         ]);
     }
 }

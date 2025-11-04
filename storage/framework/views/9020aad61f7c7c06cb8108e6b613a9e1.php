@@ -8,16 +8,10 @@
             $user = Auth::user();
             $role = strtolower(optional($user->userType)->name);
             $menus = \App\Http\Controllers\Controller::getUserMenus();
-
         ?>
 
         
-        <?php if($user->is_superuser || in_array($role, ['superadmin', 'admin'])): ?>
-            <?php echo $__env->make('layouts.partials.fullmenu', ['menus' => $menus], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
-
-        
-        <?php elseif($user->profile_created): ?>
-            
+        <?php if($user->profile_created): ?>
             <?php echo $__env->make('layouts.partials.fullmenu', ['menus' => $menus], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
         

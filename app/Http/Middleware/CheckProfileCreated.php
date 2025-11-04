@@ -21,22 +21,12 @@ class CheckProfileCreated
             return redirect()->route('login');
         }
 
-        // ✅ Allow if user is superuser
-        if ($user->is_superuser ?? false) {
-            return $next($request);
-        }
-        // ✅ Allow if user type is admin or superadmin
-        if (
-            $user->userType &&
-            in_array(strtolower($user->userType->name), ['superadmin', 'admin'])
-        ) {
-            return $next($request);
-        }
-        // 🚫 Redirect if profile not created
+        // 🚫 ALL users (including superusers and admins) must create profile first
         if (!$user->profile_created) {
             if (
                 !$request->is('profile/create') &&
-                !$request->is('profile/store')
+                !$request->is('profile/store') &&
+                !$request->is('logout')
             ) {
                 return redirect()
                     ->route('profile.create')

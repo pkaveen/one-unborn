@@ -24,7 +24,7 @@
             <h5 class="mb-0 text-danger">MANAGE USER</h5>
             <input type="text" id="tableSearch" class="form-control form-control-sm w-25" placeholder="Search...">
         </div>
-        <div class="card-body p-0">
+        <div class="card-body table-responsive">
             <table class="table table-striped table-hover table-bordered align-middle mb-0" id="userTable">
                 <thead class="table-primary text-center">
                     <tr>
@@ -109,10 +109,10 @@
 
                             </td>
 
-                            <td>{{ ucfirst($user->name) }}</td>
+                            <td class="date-col">{{ ucfirst($user->name) }}</td>
 
                             {{-- ✅ User Type Badge --}}
-                            <td class="text-center">
+                            <td class="text-center ">
                                 <span class="badge {{ $user->userType->name === 'superadmin' ? 'bg-dark' : 'bg-info' }}">
                                     {{ ucfirst($user->userType->name ?? '-') }}
                                 </span>
@@ -127,8 +127,8 @@
                             </td>
 
                             {{-- ✅ Formatted Dates --}}
-                            <td>{{ $user->Date_of_Birth ? \Carbon\Carbon::parse($user->Date_of_Birth)->format('d M Y') : '-' }}</td>
-                            <td>{{ $user->Date_of_Joining ? \Carbon\Carbon::parse($user->Date_of_Joining)->format('d M Y') : '-' }}</td>
+                            <td class="date-col">{{ $user->Date_of_Birth ? \Carbon\Carbon::parse($user->Date_of_Birth)->format('d M Y') : '-' }}</td>
+                            <td class="date-col">{{ $user->Date_of_Joining ? \Carbon\Carbon::parse($user->Date_of_Joining)->format('d M Y') : '-' }}</td>
 
                             {{-- ✅ Status Badge --}}
                             <td class="text-center">
@@ -162,4 +162,11 @@ document.getElementById('selectAll').addEventListener('change', function() {
     document.querySelectorAll('.rowCheckbox').forEach(cb => cb.checked = isChecked);
 });
 </script>
+<style>
+    .date-col {
+    width: 130px;
+    white-space: nowrap;
+}
+
+</style>
 @endsection

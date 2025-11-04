@@ -9,6 +9,17 @@ class Vendor extends Model
 {
      use HasFactory;
 
+    protected static function boot()
+    {
+        parent::boot();
+        
+        static::creating(function ($vendor) {
+            if (empty($vendor->vendor_code)) {
+                $vendor->vendor_code = \App\Services\PrefixGenerator::generateVendorCode();
+            }
+        });
+    }
+
     protected $fillable = [
         'vendor_code',
         'vendor_name',

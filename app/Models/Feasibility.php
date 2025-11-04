@@ -16,16 +16,14 @@ class Feasibility extends Model
         
         static::creating(function ($feasibility) {
             if (empty($feasibility->feasibility_request_id)) {
-                $feasibility->feasibility_request_id = self::generateRequestId();
+                $feasibility->feasibility_request_id = self::generateRequestId($feasibility->client_id);
             }
         });
     }
 
-    public static function generateRequestId()
+    public static function generateRequestId($clientId = null)
     {
-        $lastFeasibility = self::orderBy('id', 'desc')->first();
-        $nextNumber = $lastFeasibility ? $lastFeasibility->id + 1 : 1;
-        return 'FR-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        return \App\Services\PrefixGenerator::generateFeasibilityId($clientId);
     }
 
     protected $fillable = [

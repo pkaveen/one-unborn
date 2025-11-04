@@ -31,18 +31,9 @@ class PurchaseOrder extends Model
         return $this->belongsTo(Feasibility::class);
     }
 
-    // Generate PO Number automatically
-    public static function generatePONumber()
+    // Generate PO Number using new prefix system
+    public static function generatePONumber($vendorId = null)
     {
-        $year = date('Y');
-        $month = date('m');
-        $lastPO = self::whereYear('created_at', $year)
-                     ->whereMonth('created_at', $month)
-                     ->orderBy('id', 'desc')
-                     ->first();
-        
-        $sequence = $lastPO ? (int)substr($lastPO->po_number, -4) + 1 : 1;
-        
-        return 'PO' . $year . $month . str_pad($sequence, 4, '0', STR_PAD_LEFT);
+        return \App\Services\PrefixGenerator::generatePONumber($vendorId);
     }
 }

@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container-fluid py-4">
-    <h4 class="text-primary fw-bold mb-3">S&M - View Feasibility Details</h4>
+    <h4 class="text-primary fw-bold mb-3">View Feasibility Details</h4>
 
     <div class="card shadow border-0 p-4">
         {{-- ✅ Display Feasibility Details in Read-Only Text Format --}}

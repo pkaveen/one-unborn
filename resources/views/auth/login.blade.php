@@ -63,8 +63,11 @@
     <div class="login-container">
         <div class="login-box">
             <!--  Application title -->
-            <h2>Technologies</h2>
-            <h5>2025</h5>
+              <img src="{{ asset('images/unborn_logo.jpg') }}" alt="logo" style="width:50px;">Unborn Networks
+
+            <!-- <h2>Unborn</h2> -->
+            <!-- <link rel="icon" type="image/png" href="{{ asset('images/logo.jpg') }}"> -->
+            <!-- <h5>2025</h5> -->
 
             {{--  Show error if login fails --}}
             @if ($errors->any())

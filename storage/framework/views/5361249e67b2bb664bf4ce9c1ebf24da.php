@@ -3,6 +3,18 @@
 <?php $__env->startSection('content'); ?>
 <div class="container py-4">
     <h3 class="mb-3 text-primary">Add Company</h3>
+    
+    
+    <?php if($errors->any()): ?>
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <li><?php echo e($error); ?></li>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            </ul>
+        </div>
+    <?php endif; ?>
+    
     <div class="card shadow border-0 p-4">
         <form action="<?php echo e(route('companies.store')); ?>" method="POST" enctype="multipart/form-data">
             <?php echo csrf_field(); ?>

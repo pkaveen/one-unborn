@@ -29,7 +29,7 @@
         {{-- 📊 Table with vendor data --}}
         <div class="card-body table-responsive">
             <table class="table table-bordered table-hover align-middle" id="vendorTable">
-                <thead class="table-primary">
+                <thead class="table-primary text-center">
                     <tr>
                         {{-- ✅ Checkbox for bulk select --}}
                         <th><input type="checkbox" id="selectAll"></th>

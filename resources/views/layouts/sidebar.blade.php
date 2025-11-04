@@ -8,19 +8,13 @@
             $user = Auth::user();
             $role = strtolower(optional($user->userType)->name);
             $menus = \App\Http\Controllers\Controller::getUserMenus();
-
         @endphp
 
-        {{-- 🟩 Case 1: Superuser or Superadmin → Full Access --}}
-        @if($user->is_superuser || in_array($role, ['superadmin', 'admin']))
+        {{-- � Case 1: Profile Created → Show Full Menu (ALL user types) --}}
+        @if($user->profile_created)
             @include('layouts.partials.fullmenu', ['menus' => $menus])
 
-        {{-- 🟨 Case 2: Normal User → Check Profile --}}
-        @elseif($user->profile_created)
-            {{-- profile relation exists, so user created profile --}}
-            @include('layouts.partials.fullmenu', ['menus' => $menus])
-
-        {{-- 🟥 Case 3: Normal User without Profile --}}
+        {{-- � Case 2: Profile NOT Created → Show Only Profile Creation Menu (ALL user types) --}}
         @else
             @include('layouts.partials.createprofilemenu')
         @endif

@@ -6,7 +6,7 @@
         <div class="col-12">
             <div class="card shadow border-0">
                 <div class="card-header text-dark d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0"><i class="bi bi-hourglass-split me-2"></i>S&M - Open Feasibilities</h5>
+                    <h5 class="mb-0"><i class="bi bi-hourglass-split me-2"></i>Open Feasibilities</h5>
                 </div>
 
                 <div class="card-body">
@@ -18,6 +18,7 @@
                                         <th>S.No</th>
                                         <th>Request ID</th>
                                         <th>Action</th>
+                                        <th>Company Name</th>
                                         <th>Name</th>
                                         <th>Type of Service</th>
                                         <th>Speed</th>
@@ -43,6 +44,7 @@
                                                     </a>
                                                 </div>
                                             </td>
+                                            <td><?php echo e($record->feasibility->company->company_name ?? 'N/A'); ?></td>
                                             <td><?php echo e($record->feasibility->client->client_name ?? 'N/A'); ?></td>
                                             <td><?php echo e($record->feasibility->type_of_service ?? 'N/A'); ?></td>
                                             <td><?php echo e($record->feasibility->speed ?? 'N/A'); ?></td>

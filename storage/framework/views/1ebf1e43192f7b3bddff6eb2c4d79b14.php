@@ -19,6 +19,7 @@
                             <div class="col-md-6 mb-3">
                                 <label for="feasibility_id" class="form-label">
                                     <strong>Feasibility Request ID <span class="text-danger">*</span></strong>
+                                    <small class="text-muted">(Only unused feasibilities shown)</small>
                                 </label>
                                 <select class="form-select <?php $__errorArgs = ['feasibility_id'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -29,15 +30,22 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>" 
                                         id="feasibility_id" name="feasibility_id" required onchange="loadFeasibilityDetails()">
-                                    <option value="">Select Closed Feasibility</option>
-                                    <?php $__currentLoopData = $closedFeasibilities; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $feasibilityStatus): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <option value="">Select Available Feasibility</option>
+                                    <?php $__empty_1 = true; $__currentLoopData = $closedFeasibilities; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $feasibilityStatus): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                                         <option value="<?php echo e($feasibilityStatus->feasibility->id); ?>" 
                                                 <?php echo e(old('feasibility_id') == $feasibilityStatus->feasibility->id ? 'selected' : ''); ?>>
-                                            <?php echo e($feasibilityStatus->feasibility->feasibility_request_id); ?> - <?php echo e($feasibilityStatus->feasibility->client->company_name ?? 'Unknown'); ?>
+                                            <?php echo e($feasibilityStatus->feasibility->feasibility_request_id); ?> - <?php echo e($feasibilityStatus->feasibility->client->client_name ?? 'Unknown'); ?>
 
                                         </option>
-                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                                        <option value="" disabled>No unused closed feasibilities available</option>
+                                    <?php endif; ?>
                                 </select>
+                                <?php if($closedFeasibilities->isEmpty()): ?>
+                                    <div class="form-text text-warning">
+                                        <i class="bi bi-info-circle"></i> All closed feasibilities already have purchase orders.
+                                    </div>
+                                <?php endif; ?>
                                 <?php $__errorArgs = ['feasibility_id'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -263,32 +271,6 @@ unset($__errorArgs, $__bag); ?>
                                 <div class="form-control bg-light" id="totalCost">₹0.00</div>
                             </div>
                         </div>
-
-                        <!-- 
-                        <div class="mb-3">
-                            <label for="remarks" class="form-label">
-                                <strong>Remarks</strong>
-                            </label>
-                            <textarea class="form-control <?php $__errorArgs = ['remarks'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>" 
-                                      id="remarks" name="remarks" rows="3" placeholder="Enter any additional remarks..."><?php echo e(old('remarks')); ?></textarea>
-                            <?php $__errorArgs = ['remarks'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?>
-                                <div class="invalid-feedback"><?php echo e($message); ?></div>
-                            <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>
-                        </div> -->
 
                         
                         <div class="row">

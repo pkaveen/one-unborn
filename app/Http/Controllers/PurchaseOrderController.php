@@ -24,9 +24,12 @@ class PurchaseOrderController extends Controller
 
     public function create()
     {
-        // Get only closed feasibilities for dropdown
+        // Get only closed feasibilities that don't have a Purchase Order yet
+        $usedFeasibilityIds = PurchaseOrder::pluck('feasibility_id')->toArray();
+        
         $closedFeasibilities = FeasibilityStatus::with('feasibility.client')
             ->where('status', 'Closed')
+            ->whereNotIn('feasibility_id', $usedFeasibilityIds)
             ->get();
         
         return view('sm.purchaseorder.create', compact('closedFeasibilities'));
@@ -62,8 +65,13 @@ class PurchaseOrderController extends Controller
     public function edit($id)
     {
         $purchaseOrder = PurchaseOrder::findOrFail($id);
+        
+        // Get closed feasibilities excluding those already used, but include current PO's feasibility
+        $usedFeasibilityIds = PurchaseOrder::where('id', '!=', $id)->pluck('feasibility_id')->toArray();
+        
         $closedFeasibilities = FeasibilityStatus::with('feasibility.client')
             ->where('status', 'Closed')
+            ->whereNotIn('feasibility_id', $usedFeasibilityIds)
             ->get();
         
         return view('sm.purchaseorder.edit', compact('purchaseOrder', 'closedFeasibilities'));
@@ -91,14 +99,16 @@ class PurchaseOrderController extends Controller
     }
 
     public function toggleStatus($id)
-    {
-        $purchaseOrder = PurchaseOrder::findOrFail($id);
-        $newStatus = $purchaseOrder->status === 'Active' ? 'Inactive' : 'Active';
-        $purchaseOrder->update(['status' => $newStatus]);
+{
+    $purchaseOrder = PurchaseOrder::findOrFail($id);
 
-        return redirect()->route('sm.purchaseorder.index')
-            ->with('success', 'Purchase Order status updated to ' . $newStatus . ' successfully!');
-    }
+    // Toggle Active/Inactive
+    $purchaseOrder->status = $purchaseOrder->status === 'Active' ? 'Inactive' : 'Active';
+    $purchaseOrder->save();
+
+    return redirect()->route('sm.purchaseorder.index')
+                     ->with('success', 'Purchase Order status updated successfully.');
+}
 
     public function destroy($id)
     {

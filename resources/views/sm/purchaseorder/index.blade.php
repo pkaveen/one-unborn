@@ -14,12 +14,7 @@
                         </a>
                 </div>
                 <div class="card-body">
-                    <!-- {{-- Action Buttons --}}
-                    <div class="mb-3">
-                        <a href="{{ route('sm.purchaseorder.create') }}" class="btn btn-success">
-                            <i class="bi bi-plus-circle"></i> Create New Purchase Order
-                        </a>
-                    </div> -->
+              
 
                     {{-- Success/Error Messages --}}
                     @if(session('success'))
@@ -66,20 +61,13 @@
                                 @endif
 
                                 {{-- Toggle Status --}}
-                                @if($permissions->can_edit)
-                                <form action="{{ route('sm.purchaseorder.toggleStatus', $po->id) }}" method="POST" class="d-inline">
+                                <form action="{{ route('sm.purchaseorder.toggle-status', $po->id) }}" method="POST" class="d-inline">
                                     @csrf
-                                    <button class="btn btn-sm {{ $po->status === 'Active' ? 'btn-warning' : 'btn-success' }}" 
-                                            onclick="return confirm('Are you sure you want to change the status of this Purchase Order?')"
-                                            title="{{ $po->status === 'Active' ? 'Deactivate' : 'Activate' }}">
-                                        @if($po->status === 'Active')
-                                            <i class="bi bi-pause-circle"></i>
-                                        @else
-                                            <i class="bi bi-play-circle"></i>
-                                        @endif
+                                    @method('PATCH')
+                                     <button type="submit" class="btn btn-sm {{ $po->status == 'Active' ? 'btn-success' : 'btn-secondary' }}">
+                                {{ $po->status }}
                                     </button>
                                 </form>
-                                @endif
 
                                  {{-- Delete --}}
                                  @if($permissions->can_delete)
@@ -101,37 +89,7 @@
                                      @endif
 
                             </td>
-                                        <!-- <td>
-                                            <div class="btn-group" role="group">
-                                                <a href="{{ route('sm.purchaseorder.view', $po->id) }}" 
-                                                   class="btn btn-info btn-sm" title="View">
-                                                    <i class="bi bi-eye"></i> View
-                                                </a>
-                                                @if($po->status === 'Draft')
-                                                    <a href="{{ route('sm.purchaseorder.edit', $po->id) }}" 
-                                                       class="btn btn-warning btn-sm" title="Edit">
-                                                        <i class="bi bi-pencil"></i> Edit
-                                                    </a>
-                                                    <form action="{{ route('sm.purchaseorder.submit', $po->id) }}" 
-                                                          method="POST" class="d-inline" 
-                                                          onsubmit="return confirm('Are you sure you want to submit this PO?')">
-                                                        @csrf
-                                                        <button type="submit" class="btn btn-success btn-sm" title="Submit">
-                                                            <i class="bi bi-check-circle"></i> Submit
-                                                        </button>
-                                                    </form>
-                                                    <form action="{{ route('sm.purchaseorder.destroy', $po->id) }}" 
-                                                          method="POST" class="d-inline" 
-                                                          onsubmit="return confirm('Are you sure you want to delete this PO?')">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="btn btn-danger btn-sm" title="Delete">
-                                                            <i class="bi bi-trash"></i> Delete
-                                                        </button>
-                                                    </form>
-                                                @endif
-                                            </div>
-                                        </td> -->
+                                       
                                         <td>
                                             <strong class="text-primary">{{ $po->po_number }}</strong>
                                         </td>

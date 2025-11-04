@@ -256,7 +256,7 @@ Route::post('/menus/privileges/{userId}', [MenuController::class, 'updatePrivile
     Route::get('/operations/feasibility/{id}/edit', [FeasibilityStatusController::class, 'operationsEdit'])->name('operations.feasibility.edit');
     Route::post('/operations/feasibility/{id}/save', [FeasibilityStatusController::class, 'operationsSave'])->name('operations.feasibility.save');
     Route::post('/operations/feasibility/{id}/submit', [FeasibilityStatusController::class, 'operationsSubmit'])->name('operations.feasibility.submit');
-
+    
     // ✅ Legacy operations Feasibility Status Routes (Keep for backward compatibility)
     Route::get('/feasibility/status/{status}', [FeasibilityStatusController::class, 'index'])->name('feasibility.status');
     
@@ -271,8 +271,6 @@ Route::post('/menus/privileges/{userId}', [MenuController::class, 'updatePrivile
 
     // ✅ Feasibility Module (Resource routes should come after specific routes)
     Route::resource('feasibility', FeasibilityController::class);
-    Route::patch('/feasibility/{id}/toggle-status', [FeasibilityController::class, 'toggleStatus'])->name('feasibility.toggle-status');
-    Route::get('/feasibility/{id}/view', [FeasibilityController::class, 'view'])->name('feasibility.view');
     Route::get('/get-client-details/{id}', [ClientController::class, 'getDetails']);
 
     // ✅ Purchase Order Routes (SM Section)
@@ -284,9 +282,11 @@ Route::post('/menus/privileges/{userId}', [MenuController::class, 'updatePrivile
         Route::get('/{id}/view', [PurchaseOrderController::class, 'show'])->name('view');
         Route::get('/{id}/edit', [PurchaseOrderController::class, 'edit'])->name('edit');
         Route::put('/{id}', [PurchaseOrderController::class, 'update'])->name('update');
-        Route::post('/{id}/toggle-status', [PurchaseOrderController::class, 'toggleStatus'])->name('toggleStatus');
+        // Route::post('/{id}/toggle-status', [PurchaseOrderController::class, 'toggleStatus'])->name('toggleStatus');
         Route::delete('/{id}', [PurchaseOrderController::class, 'destroy'])->name('destroy');
         Route::get('/feasibility/{id}/details', [PurchaseOrderController::class, 'getFeasibilityDetails'])->name('feasibility.details');
+    Route::patch('/{id}/toggle-status', [PurchaseOrderController::class, 'toggleStatus'])->name('toggle-status');
+
         
     });
 

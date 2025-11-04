@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container-fluid py-4">
-    <h4 class="fw-bold text-primary mb-4">S&M - Edit Feasibility Status</h4>
+    <h4 class="fw-bold text-primary mb-4">Edit Feasibility Status</h4>
 
     <div class="card shadow border-0 p-4">
         {{-- Feasibility Details Header --}}

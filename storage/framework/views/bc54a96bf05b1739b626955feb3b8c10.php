@@ -14,12 +14,7 @@
                         </a>
                 </div>
                 <div class="card-body">
-                    <!-- 
-                    <div class="mb-3">
-                        <a href="<?php echo e(route('sm.purchaseorder.create')); ?>" class="btn btn-success">
-                            <i class="bi bi-plus-circle"></i> Create New Purchase Order
-                        </a>
-                    </div> -->
+              
 
                     
                     <?php if(session('success')): ?>
@@ -68,20 +63,14 @@
                                 <?php endif; ?>
 
                                 
-                                <?php if($permissions->can_edit): ?>
-                                <form action="<?php echo e(route('sm.purchaseorder.toggleStatus', $po->id)); ?>" method="POST" class="d-inline">
+                                <form action="<?php echo e(route('sm.purchaseorder.toggle-status', $po->id)); ?>" method="POST" class="d-inline">
                                     <?php echo csrf_field(); ?>
-                                    <button class="btn btn-sm <?php echo e($po->status === 'Active' ? 'btn-warning' : 'btn-success'); ?>" 
-                                            onclick="return confirm('Are you sure you want to change the status of this Purchase Order?')"
-                                            title="<?php echo e($po->status === 'Active' ? 'Deactivate' : 'Activate'); ?>">
-                                        <?php if($po->status === 'Active'): ?>
-                                            <i class="bi bi-pause-circle"></i>
-                                        <?php else: ?>
-                                            <i class="bi bi-play-circle"></i>
-                                        <?php endif; ?>
+                                    <?php echo method_field('PATCH'); ?>
+                                     <button type="submit" class="btn btn-sm <?php echo e($po->status == 'Active' ? 'btn-success' : 'btn-secondary'); ?>">
+                                <?php echo e($po->status); ?>
+
                                     </button>
                                 </form>
-                                <?php endif; ?>
 
                                  
                                  <?php if($permissions->can_delete): ?>
@@ -103,37 +92,7 @@
                                      <?php endif; ?>
 
                             </td>
-                                        <!-- <td>
-                                            <div class="btn-group" role="group">
-                                                <a href="<?php echo e(route('sm.purchaseorder.view', $po->id)); ?>" 
-                                                   class="btn btn-info btn-sm" title="View">
-                                                    <i class="bi bi-eye"></i> View
-                                                </a>
-                                                <?php if($po->status === 'Draft'): ?>
-                                                    <a href="<?php echo e(route('sm.purchaseorder.edit', $po->id)); ?>" 
-                                                       class="btn btn-warning btn-sm" title="Edit">
-                                                        <i class="bi bi-pencil"></i> Edit
-                                                    </a>
-                                                    <form action="<?php echo e(route('sm.purchaseorder.submit', $po->id)); ?>" 
-                                                          method="POST" class="d-inline" 
-                                                          onsubmit="return confirm('Are you sure you want to submit this PO?')">
-                                                        <?php echo csrf_field(); ?>
-                                                        <button type="submit" class="btn btn-success btn-sm" title="Submit">
-                                                            <i class="bi bi-check-circle"></i> Submit
-                                                        </button>
-                                                    </form>
-                                                    <form action="<?php echo e(route('sm.purchaseorder.destroy', $po->id)); ?>" 
-                                                          method="POST" class="d-inline" 
-                                                          onsubmit="return confirm('Are you sure you want to delete this PO?')">
-                                                        <?php echo csrf_field(); ?>
-                                                        <?php echo method_field('DELETE'); ?>
-                                                        <button type="submit" class="btn btn-danger btn-sm" title="Delete">
-                                                            <i class="bi bi-trash"></i> Delete
-                                                        </button>
-                                                    </form>
-                                                <?php endif; ?>
-                                            </div>
-                                        </td> -->
+                                       
                                         <td>
                                             <strong class="text-primary"><?php echo e($po->po_number); ?></strong>
                                         </td>

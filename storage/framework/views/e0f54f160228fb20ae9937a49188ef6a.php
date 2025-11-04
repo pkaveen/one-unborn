@@ -187,7 +187,7 @@
 
             <div class="mt-4 text-end">
                 <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Save</button>
-                <a href="<?php echo e(route('feasibility.index')); ?>" class="btn btn-secondary">Cancel</a>
+                <!-- <a href="<?php echo e(route('feasibility.index')); ?>" class="btn btn-secondary">Cancel</a> -->
             </div>
         </form>
     </div>
