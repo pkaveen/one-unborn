@@ -29,7 +29,7 @@
         <div class="card-body table-responsive">
             <!-- <input type="text" id="tableSearch" class="form-control form-control-sm w-25" placeholder="Search..."> -->
             <table class="table table-bordered table-hover align-middle" id="userTable">
-                <thead class="table-primary text-center">
+                <thead class="table-dark-primary text-center">
                     <tr>
                         <th><input type="checkbox" id="selectAll"></th>
                         <th>S.No</th>
@@ -92,14 +92,14 @@
                             </td>
                             <!-- <td><?php echo e($key+1); ?></td> -->
                             <td><?php echo e($client->client_code); ?></td>
-                            <td><?php echo e($client->client_name); ?></td>
+                            <td class="col"><?php echo e($client->client_name); ?></td>
                             <td class="col"><?php echo e($client->business_display_name ?? '-'); ?></td>
-                            <td><?php echo e($client->billing_spoc_name); ?></td>
+                            <td class="col"><?php echo e($client->billing_spoc_name); ?></td>
                             <td><?php echo e($client->billing_spoc_email); ?></td>
                             <td><?php echo e($client->gstin); ?></td>
-                            <td><?php echo e($client->invoice_email ?? '-'); ?></td> 
-                            <td><?php echo e($client->invoice_cc ?? '-'); ?></td>   
-                            <td><?php echo e($client->support_spoc_name ?? '-'); ?></td>
+                            <td class="col"><?php echo e($client->invoice_email ?? '-'); ?></td>
+                            <td class="col"><?php echo e($client->invoice_cc ?? '-'); ?></td>   
+                            <td class="col"><?php echo e($client->support_spoc_name ?? '-'); ?></td>
                             <td>
                                 <span class="badge <?php echo e($client->status == 'Active' ? 'bg-success' : 'bg-danger'); ?>">
                                 <?php echo e($client->status); ?>

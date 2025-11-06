@@ -30,7 +30,7 @@
         
         <div class="card-body table-responsive">
             <table class="table table-bordered table-hover align-middle" id="vendorTable">
-                <thead class="table-primary text-center">
+                <thead class="table-dark-primary text-center">
                     <tr>
                         
                         <th><input type="checkbox" id="selectAll"></th>
@@ -94,7 +94,7 @@
                             <td><?php echo e($vendor->vendor_code); ?></td>
                             <td class="col"><?php echo e($vendor->vendor_name); ?></td>
                             <td class="col"><?php echo e($vendor->business_display_name ?? '-'); ?></td>
-                            <td><?php echo e($vendor->contact_person_name ?? '-'); ?></td>
+                            <td class="col"><?php echo e($vendor->contact_person_name ?? '-'); ?></td>
                             <td><?php echo e($vendor->contact_person_email ?? '-'); ?></td>
                             <td><?php echo e($vendor->contact_person_mobile ?? '-'); ?></td>
                             <td><?php echo e($vendor->gstin ?? '-'); ?></td>

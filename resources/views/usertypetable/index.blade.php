@@ -28,7 +28,7 @@
 
         <div class="card-body p-0">
             <table class="table table-hover table-bordered mb-0" id="userTable">
-                <thead class="table-primary text-center">
+                <thead class="table-dark-primary text-center">
                     <tr>
                         <th><input type="checkbox" id="selectAll"></th>
                         {{-- ✅ Checkbox to select all rows --}}

@@ -28,7 +28,7 @@
         <div class="card-body table-responsive">
             <!-- <input type="text" id="tableSearch" class="form-control form-control-sm w-25" placeholder="Search..."> -->
             <table class="table table-bordered table-hover align-middle" id="userTable">
-                <thead class="table-primary text-center">
+                <thead class="table-dark-primary text-center">
                     <tr>
                         <th><input type="checkbox" id="selectAll"></th>
                         <th>S.No</th>
@@ -90,14 +90,14 @@
                             </td>
                             <!-- <td>{{ $key+1 }}</td> -->
                             <td>{{ $client->client_code }}</td>
-                            <td>{{ $client->client_name }}</td>
+                            <td class="col">{{ $client->client_name }}</td>
                             <td class="col">{{ $client->business_display_name ?? '-' }}</td>
-                            <td>{{ $client->billing_spoc_name }}</td>
+                            <td class="col">{{ $client->billing_spoc_name }}</td>
                             <td>{{ $client->billing_spoc_email }}</td>
                             <td>{{ $client->gstin }}</td>
-                            <td>{{ $client->invoice_email ?? '-' }}</td> 
-                            <td>{{ $client->invoice_cc ?? '-' }}</td>   
-                            <td>{{ $client->support_spoc_name ?? '-' }}</td>
+                            <td class="col">{{ $client->invoice_email ?? '-' }}</td>
+                            <td class="col">{{ $client->invoice_cc ?? '-' }}</td>   
+                            <td class="col">{{ $client->support_spoc_name ?? '-' }}</td>
                             <td>
                                 <span class="badge {{ $client->status == 'Active' ? 'bg-success' : 'bg-danger' }}">
                                 {{ $client->status }}
