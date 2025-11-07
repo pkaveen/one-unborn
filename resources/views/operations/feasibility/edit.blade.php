@@ -131,7 +131,7 @@
             <div class="mt-4">
                 <div class="row">
                    
-                    <div class="col-md-6 text-end">
+                    <div class="col-md-8">
                         {{-- Save → Move to InProgress --}}
                         <button type="button" class="btn btn-warning me-2" onclick="saveToInProgress()">
                             <i class="bi bi-save"></i> Save (Move to In Progress)

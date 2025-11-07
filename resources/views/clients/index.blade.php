@@ -33,15 +33,15 @@
                         <th><input type="checkbox" id="selectAll"></th>
                         <th>S.No</th>
                         <th>Action</th>
-                        <th>Client Code</th>
-                        <th>Client Name</th>
-                        <th>Business Name</th>
-                        <th>Billing SPOC</th>
-                        <th>Billing Email</th>
-                        <th>GSTIN</th>
+                        <th class="col">Client Code</th>
+                        <th class="col">Client Name</th>
+                        <th class="col">Business Name</th>
+                        <th class="col">Billing SPOC</th>
+                        <th class="col">Billing Email</th>
+                        <th class="col">GSTIN</th>
                         <th>Invoice Email</th>
                         <th>Invoice CC</th> 
-                        <th>Technical SPOC</th>
+                        <th class="col">Technical SPOC</th>
                         <th>Status</th>
                         <!-- <th>Created At</th> -->
                         <!-- <th class="text-center">Actions</th> -->

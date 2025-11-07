@@ -36,9 +36,9 @@
                         <th>Email</th>
                         <th>Mobile</th>
                         <th>Company</th>
-                        <th>Date of Birth</th>
-                        <th>Date of Join</th>
-                        <th>Status</th>
+                        <th class="col">Date of Birth</th>
+                        <th class="col">Date of Join</th>
+                        <th class="col">Status</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -109,10 +109,10 @@
 
                             </td>
 
-                            <td class="date-col">{{ ucfirst($user->name) }}</td>
+                            <td class="col">{{ ucfirst($user->name) }}</td>
 
                             {{-- ✅ User Type Badge --}}
-                            <td class="text-center ">
+                            <td class="text-center col ">
                                 <span class="badge {{ $user->userType->name === 'superadmin' ? 'bg-dark' : 'bg-info' }}">
                                     {{ ucfirst($user->userType->name ?? '-') }}
                                 </span>
@@ -122,13 +122,13 @@
                             <td>{{ $user->mobile ?? '-' }}</td>
 
                             {{-- ✅ Company Names (comma-separated) --}}
-                            <td class="date-col">
+                            <td class="col">
                                 {{ $user->companies->pluck('company_name')->join(', ') ?: 'No Company Assigned' }}
                             </td>
 
                             {{-- ✅ Formatted Dates --}}
-                            <td class="date-col">{{ $user->Date_of_Birth ? \Carbon\Carbon::parse($user->Date_of_Birth)->format('d M Y') : '-' }}</td>
-                            <td class="date-col">{{ $user->Date_of_Joining ? \Carbon\Carbon::parse($user->Date_of_Joining)->format('d M Y') : '-' }}</td>
+                            <td class="col">{{ $user->Date_of_Birth ? \Carbon\Carbon::parse($user->Date_of_Birth)->format('d M Y') : '-' }}</td>
+                            <td class="col">{{ $user->Date_of_Joining ? \Carbon\Carbon::parse($user->Date_of_Joining)->format('d M Y') : '-' }}</td>
 
                             {{-- ✅ Status Badge --}}
                             <td class="text-center">
@@ -163,7 +163,7 @@ document.getElementById('selectAll').addEventListener('change', function() {
 });
 </script>
 <style>
-    .date-col {
+    .col {
     width: 130px;
     white-space: nowrap;
 }

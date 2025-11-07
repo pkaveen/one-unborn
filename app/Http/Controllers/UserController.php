@@ -112,6 +112,11 @@ $firstCompany = Company::find($firstCompanyId);
 $template = EmailTemplate::where('company_id', $firstCompanyId)
     ->where('name', 'User Created')
     ->first();
+    // ?? EmailTemplate::where('company_id', 0)->where('name', 'User Created')->first();
+    
+Log::info('🟡 Email Template Check:', ['template_found' => (bool)$template]);
+
+
 
 // ✅ CASE 2: If no template exists, use system default content (don't create/store template)
 $useSystemDefault = false;

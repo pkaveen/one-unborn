@@ -180,6 +180,7 @@ Route::delete('users/{user}', [UserController::class, 'destroy'])
 
     //view path
     Route::get('/users/{id}/view', [UserController::class, 'view'])->name('users.view');
+    Route::get('/usertypetable/{id}/view', [App\Http\Controllers\UserTypeController::class, 'view'])->name('usertypetable.view');
     Route::get('/companies/{id}/view', [App\Http\Controllers\CompanyController::class, 'view'])->name('companies.view');
     Route::get('/clients/{id}/view', [App\Http\Controllers\ClientController::class, 'view'])->name('clients.view');
     Route::get('/vendors/{id}/view', [App\Http\Controllers\VendorController::class, 'view'])->name('vendors.view');

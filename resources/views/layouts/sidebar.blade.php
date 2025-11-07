@@ -1,6 +1,6 @@
 <!-- Sidebar -->
-<aside id="sidebar" class="bg-dark text-white p-3">
-    <h4 class="text-center mb-4">Menu</h4>
+<aside id="sidebar">
+    <!-- <h4 class="text-center mb-4">Menu</h4> -->
     
 
     @if(Auth::check())

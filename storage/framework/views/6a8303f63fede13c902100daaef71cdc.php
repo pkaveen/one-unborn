@@ -36,12 +36,12 @@
                         <th><input type="checkbox" id="selectAll"></th>
                         <th>S.No</th>
                         <th>Action</th>
-                        <th>Vendor Code</th>
-                        <th>Vendor Name</th>
-                        <th>Business Name</th>
-                        <th>Contact Person</th>
-                        <th>Contact Email</th>
-                        <th>Contact Mobile</th>
+                        <th class="col">Vendor Code</th>
+                        <th class="col">Vendor Name</th>
+                        <th class="col">Business Name</th>
+                        <th class="col">Contact Person</th>
+                        <th class="col">Contact Email</th>
+                        <th class="col">Contact Mobile</th>
                         <th>GSTIN</th>
                         <th>PAN No</th>
                         <th>bank_account_no</th>

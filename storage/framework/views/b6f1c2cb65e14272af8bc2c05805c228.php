@@ -26,7 +26,7 @@
             <input type="text" id="tableSearch" class="form-control form-control-sm w-25" placeholder="Search...">
         </div>
 
-        <div class="card-body p-0">
+        <div class="card-body p-0 table-responsive">
             <table class="table table-hover table-bordered mb-0" id="userTable">
                 <thead class="table-dark-primary text-center">
                     <tr>
@@ -82,11 +82,18 @@
                                     </button>
                                 </form>
 
+                                 
+                                   <?php if($permissions->can_view): ?>
+                                   <a href="<?php echo e(route('usertypetable.view', $usertypedata->id)); ?>" class="btn btn-sm btn-warning">
+                                    <i class="bi bi-eye"></i>
+                                    </a>
+                                     <?php endif; ?>
+
                             </td>
 
                             
-                            <td><?php echo e($usertypedata->name); ?></td>
-                            <td><?php echo e($usertypedata->Description ?? '-'); ?></td>
+                            <td class="col"><?php echo e($usertypedata->name); ?></td>
+                            <td class="col"><?php echo e($usertypedata->Description ?? '-'); ?></td>
                             
 
                             <td class="text-center">
@@ -128,6 +135,13 @@ document.getElementById('selectAll').addEventListener('change', function(){
 });
 </script>
 
+
+<style>
+    .col {
+    width: 130px;
+    white-space: nowrap;
+}
+</style>
 <?php $__env->stopSection(); ?> 
 
 

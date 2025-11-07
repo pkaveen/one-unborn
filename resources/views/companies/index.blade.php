@@ -27,12 +27,12 @@
                         <th><input type="checkbox" id="selectAll"></th>
                         <th>S.No</th>
                         <th>Action</th>
-                        <th>Company Name</th>
-                        <th>CIN / LLPIN</th>
-                        <th>Contact No</th>
-                        <th>Email</th>
-                        <th>GST No</th>
-                        <th>PAN No</th>
+                        <th class="col">Company Name</th>
+                        <th class="col">CIN / LLPIN</th>
+                        <th class="col">Contact No</th>
+                        <th class="col">Email</th>
+                        <th class="col">GST No</th>
+                        <th class="col">PAN No</th>
                         <!-- <th>TAN No</th>       
                         <th>Logo</th>
                         <th>Normal Sign</th>

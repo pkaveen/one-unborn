@@ -64,6 +64,16 @@ class UserTypeController extends Controller
         return view('usertypetable.edit', compact('usertypetable'));
     }
 
+     /**
+     * Display the specified resource.
+     */
+    public function view($id)
+{
+    $usertypetable = \App\Models\UserType::findOrFail($id);
+    return view('usertypetable.view', compact('usertypetable'));
+}
+
+
     /**
      * Update the specified resource in storage.
      */

@@ -1,5 +1,5 @@
 
-<div class="sidebar bg-dark text-white vh-100 overflow-auto" style="width: 250px; position: fixed; top: 0; left: 0;">
+<div class="sidebar bg-dark-primary text-white vh-100 overflow-auto" style="width: 240px; position: fixed; top: 0; left: 0;">
     <div class="p-3">
         <h5 class="text-center mb-4"><i class="bi bi-grid-3x3-gap"></i> ERP Menu</h5>
 

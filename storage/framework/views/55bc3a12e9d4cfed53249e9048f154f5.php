@@ -36,9 +36,9 @@
                         <th>Email</th>
                         <th>Mobile</th>
                         <th>Company</th>
-                        <th>Date of Birth</th>
-                        <th>Date of Join</th>
-                        <th>Status</th>
+                        <th class="col">Date of Birth</th>
+                        <th class="col">Date of Join</th>
+                        <th class="col">Status</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -110,10 +110,10 @@
 
                             </td>
 
-                            <td class="date-col"><?php echo e(ucfirst($user->name)); ?></td>
+                            <td class="col"><?php echo e(ucfirst($user->name)); ?></td>
 
                             
-                            <td class="text-center ">
+                            <td class="text-center col ">
                                 <span class="badge <?php echo e($user->userType->name === 'superadmin' ? 'bg-dark' : 'bg-info'); ?>">
                                     <?php echo e(ucfirst($user->userType->name ?? '-')); ?>
 
@@ -124,14 +124,14 @@
                             <td><?php echo e($user->mobile ?? '-'); ?></td>
 
                             
-                            <td class="date-col">
+                            <td class="col">
                                 <?php echo e($user->companies->pluck('company_name')->join(', ') ?: 'No Company Assigned'); ?>
 
                             </td>
 
                             
-                            <td class="date-col"><?php echo e($user->Date_of_Birth ? \Carbon\Carbon::parse($user->Date_of_Birth)->format('d M Y') : '-'); ?></td>
-                            <td class="date-col"><?php echo e($user->Date_of_Joining ? \Carbon\Carbon::parse($user->Date_of_Joining)->format('d M Y') : '-'); ?></td>
+                            <td class="col"><?php echo e($user->Date_of_Birth ? \Carbon\Carbon::parse($user->Date_of_Birth)->format('d M Y') : '-'); ?></td>
+                            <td class="col"><?php echo e($user->Date_of_Joining ? \Carbon\Carbon::parse($user->Date_of_Joining)->format('d M Y') : '-'); ?></td>
 
                             
                             <td class="text-center">
@@ -167,7 +167,7 @@ document.getElementById('selectAll').addEventListener('change', function() {
 });
 </script>
 <style>
-    .date-col {
+    .col {
     width: 130px;
     white-space: nowrap;
 }

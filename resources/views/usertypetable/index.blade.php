@@ -26,7 +26,7 @@
             <input type="text" id="tableSearch" class="form-control form-control-sm w-25" placeholder="Search...">
         </div>
 
-        <div class="card-body p-0">
+        <div class="card-body p-0 table-responsive">
             <table class="table table-hover table-bordered mb-0" id="userTable">
                 <thead class="table-dark-primary text-center">
                     <tr>
@@ -81,11 +81,18 @@
                                     </button>
                                 </form>
 
+                                 {{-- View --}}
+                                   @if($permissions->can_view)
+                                   <a href="{{ route('usertypetable.view', $usertypedata->id) }}" class="btn btn-sm btn-warning">
+                                    <i class="bi bi-eye"></i>
+                                    </a>
+                                     @endif
+
                             </td>
 
                             {{-- 🧾 Data columns --}}
-                            <td>{{ $usertypedata->name }}</td>
-                            <td>{{ $usertypedata->Description ?? '-'}}</td>
+                            <td class="col">{{ $usertypedata->name }}</td>
+                            <td class="col">{{ $usertypedata->Description ?? '-'}}</td>
                             {{-- ✅ Show description or “-” if null --}}
 
                             <td class="text-center">
@@ -126,5 +133,12 @@ document.getElementById('selectAll').addEventListener('change', function(){
 });
 </script>
 
+
+<style>
+    .col {
+    width: 130px;
+    white-space: nowrap;
+}
+</style>
 @endsection 
 {{-- ✅ Ends the content section --}}
