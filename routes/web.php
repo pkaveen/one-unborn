@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Artisan;
 use App\Models\Vendor;
 use Carbon\Carbon;
 use App\Models\Company;
@@ -298,5 +299,17 @@ Route::post('/menus/privileges/{userId}', [MenuController::class, 'updatePrivile
         return redirect('/welcome');
     });
 
+    
+
 }
+
+
 );
+
+Route::get('/fix-env', function () {
+    Artisan::call('config:clear');
+    Artisan::call('cache:clear');
+    Artisan::call('config:cache');
+
+    return "✅ ENV and CONFIG refreshed successfully.";
+});
