@@ -18,6 +18,7 @@ use App\Http\Controllers\PincodeLookupController;
 use App\Http\Controllers\SystemSettingsController;
 use App\Http\Controllers\FeasibilityController;
 use App\Http\Controllers\PurchaseOrderController;
+use App\Http\Controllers\DeliverablesController;
 use App\Http\Controllers\GSTController;
 use App\Http\Middleware\CheckProfileCreated;
 use Illuminate\Http\Request;
@@ -203,9 +204,13 @@ Route::get('/menus/{menu}/edit', [MenuController::class, 'edit'])->name('menus.e
 Route::put('/menus/{menu}', [MenuController::class, 'update'])->name('menus.update');
 Route::delete('/menus/{menu}', [MenuController::class, 'destroy'])->name('menus.destroy');
 
-// ✅ Privileges
+// ✅ User Privileges
 Route::get('/menus/privileges/{userId}', [MenuController::class, 'editPrivileges'])->name('menus.editPrivileges');
 Route::post('/menus/privileges/{userId}', [MenuController::class, 'updatePrivileges'])->name('menus.updatePrivileges');
+
+// ✅ User Type Privileges 
+Route::get('/menus/usertype-privileges/{userTypeId}', [MenuController::class, 'editUserTypePrivileges'])->name('menus.editUserTypePrivileges');
+Route::post('/menus/usertype-privileges/{userTypeId}', [MenuController::class, 'updateUserTypePrivileges'])->name('menus.updateUserTypePrivileges');
 
     // 🧩 User Type Master
     Route::resource('usertypetable', UserTypeController::class);
@@ -259,6 +264,18 @@ Route::post('/menus/privileges/{userId}', [MenuController::class, 'updatePrivile
     Route::post('/operations/feasibility/{id}/save', [FeasibilityStatusController::class, 'operationsSave'])->name('operations.feasibility.save');
     Route::post('/operations/feasibility/{id}/submit', [FeasibilityStatusController::class, 'operationsSubmit'])->name('operations.feasibility.submit');
     
+
+    // ✅ operations Feasibility Routes (Full functionality like S&M)
+    Route::get('/operations/deliverables/open', [DeliverablesController::class, 'operationsOpen'])->name('operations.deliverables.open');
+    Route::get('/operations/deliverables/inprogress', [DeliverablesController::class, 'operationsInProgress'])->name('operations.deliverables.inprogress');
+    Route::get('/operations/deliverables/delivery', [DeliverablesController::class, 'operationsDelivery'])->name('operations.deliverables.delivery');
+    Route::get('/operations/deliverables/{id}/view', [DeliverablesController::class, 'operationsView'])->name('operations.deliverables.view');
+    Route::get('/operations/deliverables/{id}/edit', [DeliverablesController::class, 'operationsEdit'])->name('operations.deliverables.edit');
+    Route::post('/operations/deliverables/{id}/save', [DeliverablesController::class, 'operationsSave'])->name('operations.deliverables.save');
+    Route::post('/operations/deliverables/{id}/submit', [DeliverablesController::class, 'operationsSubmit'])->name('operations.deliverables.submit');
+    Route::post('/operations/deliverables/create-from-feasibility/{feasibilityId}', [DeliverablesController::class, 'createFromFeasibility'])->name('operations.deliverables.create-from-feasibility');
+    
+
     // ✅ Legacy operations Feasibility Status Routes (Keep for backward compatibility)
     Route::get('/feasibility/status/{status}', [FeasibilityStatusController::class, 'index'])->name('feasibility.status');
     
@@ -293,6 +310,45 @@ Route::post('/menus/privileges/{userId}', [MenuController::class, 'updatePrivile
     });
 
 // Pincode Lookup
+
+    // 🧪 Debug route to test user type privilege system
+    Route::get('/debug-privileges', function () {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['error' => 'No authenticated user']);
+        }
+        
+        // Test permission checks for key menus
+        $manageUsersPermission = \App\Helpers\TemplateHelper::getUserMenuPermissions('Manage Users');
+        $dashboardPermission = \App\Helpers\TemplateHelper::getUserMenuPermissions('Dashboard');
+        $feasibilityPermission = \App\Helpers\TemplateHelper::getUserMenuPermissions('Feasibility Master');
+        
+        // Get privilege counts
+        $userPrivCount = \App\Models\UserMenuPrivilege::where('user_id', $user->id)->count();
+        $userTypePrivCount = \App\Models\UserTypeMenuPrivilege::where('user_type_id', $user->user_type_id)->count();
+        
+        return response()->json([
+            'user_info' => [
+                'name' => $user->name,
+                'user_type' => $user->userType->name ?? 'No type',
+                'user_type_id' => $user->user_type_id
+            ],
+            'privilege_counts' => [
+                'individual_user_privileges' => $userPrivCount,
+                'user_type_privileges' => $userTypePrivCount
+            ],
+            'permission_tests' => [
+                'manage_users' => $manageUsersPermission,
+                'dashboard' => $dashboardPermission,
+                'feasibility_master' => $feasibilityPermission
+            ],
+            'test_info' => [
+                'description' => 'Testing user type privilege fallback system',
+                'expected_behavior' => 'Should show permissions based on user type when no individual privileges exist',
+                'note' => 'Individual user privilege button has been commented out in users/index.blade.php'
+            ]
+        ]);
+    })->name('debug.privileges');
 
     // Fallback route to handle undefined routes
     Route::fallback(function () {

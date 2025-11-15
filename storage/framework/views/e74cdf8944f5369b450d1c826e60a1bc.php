@@ -1,0 +1,1 @@
+gffdgf<?php /**PATH F:\xampp\htdocs\wlcome\multipleuserpage\resources\views/operations/deliverables/inprogress.blade.php ENDPATH**/ ?>

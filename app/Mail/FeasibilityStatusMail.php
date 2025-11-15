@@ -15,23 +15,52 @@ class FeasibilityStatusMail extends Mailable
 
     public $feasibility;
     public $status;
+    public $previousStatus;
+    public $actionBy;
+    public $emailType;
+    
     /**
      * Create a new message instance.
      */
-    public function __construct($feasibility, $status)
+    public function __construct($feasibility, $status, $previousStatus = null, $actionBy = null, $emailType = 'status_update')
     {
         $this->feasibility = $feasibility;
         $this->status = $status;
+        $this->previousStatus = $previousStatus;
+        $this->actionBy = $actionBy;
+        $this->emailType = $emailType;
     }
 
     /**
      * Get the message building.
      */
-
     public function build()
     {
-        return $this->subject('Feasibility Status Updated')
-                    ->markdown('emails.feasibility.status');
+        $subject = $this->getEmailSubject();
+        
+        return $this->subject($subject)
+                    ->view('emails.feasibility.status')
+                    ->with([
+                        'feasibility' => $this->feasibility,
+                        'status' => $this->status,
+                        'previousStatus' => $this->previousStatus,
+                        'actionBy' => $this->actionBy,
+                        'emailType' => $this->emailType
+                    ]);
     }
     
+    /**
+     * Get email subject based on status change
+     */
+    private function getEmailSubject()
+    {
+        switch($this->status) {
+            case 'InProgress':
+                return 'Feasibility Status Updated - Now In Progress';
+            case 'Closed':
+                return 'Feasibility Request Completed - ' . $this->feasibility->feasibility_request_id;
+            default:
+                return 'Feasibility Status Updated - ' . $this->feasibility->feasibility_request_id;
+        }
+    }
 }

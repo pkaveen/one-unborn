@@ -14,8 +14,9 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            UserTypeSeeder::class,    // Run first
+            UserTypeSeeder::class,    // Run first - Create user types
             MenuSeeder::class,        // Create menus before assigning privileges
+            UserTypeMenuPrivilegeSeeder::class, // Set up default user type privileges  
             SuperAdminSeeder::class,  // Then create admin and assign privileges
             EmailTemplateSeeder::class, // Finally add default email templates
             PrefixSystemSeeder::class, // Add prefix system data

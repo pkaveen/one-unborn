@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Feasibility;
 use App\Models\FeasibilityStatus;
+use App\Models\Deliverables;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use App\Mail\FeasibilityStatusMail;
 
 class FeasibilityStatusController extends Controller
@@ -190,8 +193,13 @@ public function editSave(Request $request, $id)
         ]);
 
         $record = FeasibilityStatus::findOrFail($id);
+        $previousStatus = $record->status;
+        
         $record->update($data);
         $record->update(['status' => 'InProgress']);
+        
+        // 📧 Send email notification for status change
+        $this->sendStatusChangeEmail($record, 'InProgress', $previousStatus);
 
         return redirect()->route('sm.feasibility.inprogress')
             ->with('success', 'Feasibility moved to In Progress successfully.');
@@ -226,11 +234,19 @@ public function editSave(Request $request, $id)
         ]);
 
         $record = FeasibilityStatus::findOrFail($id);
+        $previousStatus = $record->status;
+        
         $record->update($data);
         $record->update(['status' => 'Closed']);
+        
+        // � Auto-create deliverable when feasibility is closed
+        $this->createDeliverableFromFeasibility($record);
+        
+        // �📧 Send email notification for status change
+        $this->sendStatusChangeEmail($record, 'Closed', $previousStatus);
 
         return redirect()->route('sm.feasibility.closed')
-            ->with('success', 'Feasibility submitted and moved to Closed successfully.');
+            ->with('success', 'Feasibility closed and deliverable created successfully!');
     }
 
     // ====================================
@@ -309,8 +325,13 @@ public function editSave(Request $request, $id)
         ]);
 
         $record = FeasibilityStatus::findOrFail($id);
+        $previousStatus = $record->status;
+        
         $record->update($data);
         $record->update(['status' => 'InProgress']);
+        
+        // 📧 Send email notification for status change
+        $this->sendStatusChangeEmail($record, 'InProgress', $previousStatus);
 
         return redirect()->route('operations.feasibility.inprogress')
             ->with('success', 'Feasibility moved to In Progress successfully.');
@@ -345,11 +366,19 @@ public function editSave(Request $request, $id)
         ]);
 
         $record = FeasibilityStatus::findOrFail($id);
+        $previousStatus = $record->status;
+        
         $record->update($data);
         $record->update(['status' => 'Closed']);
+        
+        // � Auto-create deliverable when feasibility is closed
+        $this->createDeliverableFromFeasibility($record);
+        
+        // �📧 Send email notification for status change
+        $this->sendStatusChangeEmail($record, 'Closed', $previousStatus);
 
         return redirect()->route('operations.feasibility.closed')
-            ->with('success', 'Feasibility submitted and moved to Closed successfully.');
+            ->with('success', 'Feasibility closed and deliverable created successfully!');
     }
 
     /**
@@ -378,6 +407,173 @@ public function editSave(Request $request, $id)
         
         return redirect()->route('sm.feasibility.open')
             ->with('success', 'Feasibility record moved to S&M successfully.');
+    }
+
+    /**
+ * Send email notification for status change
+ *
+ * @param \App\Models\FeasibilityStatus $feasibilityStatus
+ * @param string $newStatus
+ * @param string|null $previousStatus
+ * @return void
+ */
+    private function sendStatusChangeEmail($feasibilityStatus, $newStatus, $previousStatus = null)
+    {
+        try {
+            $feasibility = $feasibilityStatus->feasibility;
+            $actionBy = Auth::user();
+            
+            // 🔍 DEBUG: Log the status change attempt
+            Log::info('🔍 Email trigger attempt', [
+                'feasibility_id' => $feasibility->id,
+                'new_status' => $newStatus,
+                'previous_status' => $previousStatus,
+                'action_by' => $actionBy->name ?? 'Unknown'
+            ]);
+            
+            // Determine who should receive the email based on status
+            $recipients = $this->getEmailRecipients($feasibility, $newStatus, $previousStatus);
+            
+            // 🔍 DEBUG: Log recipients found
+            Log::info('🔍 Email recipients found', [
+                'recipients_count' => is_array($recipients) ? count($recipients) : 0,
+                'recipients' => $recipients ?? [],
+                'feasibility_spoc' => $feasibility->spoc_email ?? 'No SPOC',
+                'feasibility_creator' => $feasibility->createdBy->email ?? 'No creator email'
+            ]);
+            
+            if (empty($recipients)) {
+                Log::warning('⚠️ No email recipients found for feasibility status change', [
+                    'feasibility_id' => $feasibility->id,
+                    'new_status' => $newStatus,
+                    'previous_status' => $previousStatus
+                ]);
+                return; // Exit early if no recipients
+            }
+            
+            foreach ($recipients as $recipient) {
+                if ($recipient && filter_var($recipient, FILTER_VALIDATE_EMAIL)) {
+                    Mail::to($recipient)->send(new FeasibilityStatusMail(
+                        $feasibility, 
+                        $newStatus, 
+                        $previousStatus, 
+                        $actionBy, 
+                        'status_change'
+                    ));
+                }
+            }
+            
+            // Log the email sending for debugging
+            Log::info('✅ Feasibility status email sent successfully', [
+                'feasibility_id' => $feasibility->id,
+                'new_status' => $newStatus,
+                'previous_status' => $previousStatus,
+                'recipients' => $recipients
+            ]);
+            
+        } catch (\Exception $e) {
+            // Log error but don't break the flow since this is a live system
+            Log::error('Failed to send feasibility status email', [
+                'error' => $e->getMessage(),
+                'feasibility_id' => $feasibilityStatus->feasibility_id ?? 'unknown'
+            ]);
+        }
+    }
+    
+    /**
+     * Get email recipients based on status change
+     * 
+     * @param \App\Models\Feasibility $feasibility The feasibility record
+     * @param string $newStatus The new status
+     * @param string|null $previousStatus The previous status
+     * @return array Array of email addresses
+     */
+    private function getEmailRecipients($feasibility, $newStatus, $previousStatus = null)
+    {
+        $recipients = [];
+        
+        // Always include the SPOC email if available
+        if ($feasibility->spoc_email) {
+            $recipients[] = $feasibility->spoc_email;
+        }
+        
+        // Add the person who created the feasibility
+        if ($feasibility->createdBy && $feasibility->createdBy->email) {
+            $recipients[] = $feasibility->createdBy->email;
+        }
+        
+        // Status-specific recipients
+        switch ($newStatus) {
+            case 'InProgress':
+                // Notify S&M team when operations starts working
+                $smEmails = \App\Models\User::whereHas('userType', function($q) {
+                    $q->where('name', 'like', '%sales%')
+                      ->orWhere('name', 'like', '%marketing%');
+                })->pluck('email')->toArray();
+                $recipients = array_merge($recipients, $smEmails);
+                break;
+                
+            case 'Closed':
+                // Notify original requester and management when completed
+                if ($feasibility->createdBy && $feasibility->createdBy->email) {
+                    $recipients[] = $feasibility->createdBy->email;
+                }
+                
+                // 🎯 FIXED: If direct Open→Closed, also notify S&M team
+                if ($previousStatus === 'Open') {
+                    $smEmails = \App\Models\User::whereHas('userType', function($q) {
+                        $q->where('name', 'like', '%sales%')
+                          ->orWhere('name', 'like', '%marketing%');
+                    })->pluck('email')->toArray();
+                    $recipients = array_merge($recipients, $smEmails);
+                }
+                break;
+        }
+        
+        // Remove duplicates and empty emails
+        return array_unique(array_filter($recipients));
+    }
+
+    /**
+     * Create deliverable from feasibility when it's closed
+     */
+    private function createDeliverableFromFeasibility($feasibilityStatus)
+    {
+        try {
+            // Check if deliverable already exists
+            $existingDeliverable = Deliverables::where('feasibility_id', $feasibilityStatus->feasibility_id)->first();
+            
+            if ($existingDeliverable) {
+                Log::info("Deliverable already exists for feasibility ID: {$feasibilityStatus->feasibility_id}");
+                return;
+            }
+            
+            $feasibility = $feasibilityStatus->feasibility;
+            
+            if (!$feasibility) {
+                Log::error("Feasibility not found for FeasibilityStatus ID: {$feasibilityStatus->id}");
+                return;
+            }
+            
+            // Create new deliverable with feasibility data
+            $deliverable = Deliverables::create([
+                'feasibility_id' => $feasibility->id,
+                'status' => 'Open',
+                'site_address' => $feasibility->site_address ?? '',
+                'local_contact' => $feasibility->contact_person ?? '',
+                'state' => $feasibility->state ?? '',
+                'gst_number' => $feasibility->gst_number ?? '',
+                'link_type' => $feasibility->connection_type ?? '',
+                'speed_in_mbps' => $feasibility->bandwidth ?? '',
+                'no_of_links' => 1, // Default value
+                'vendor' => $feasibilityStatus->vendor1_name ?? '', // Use selected vendor from feasibility
+            ]);
+            
+            Log::info("Deliverable created successfully with ID: {$deliverable->id} for feasibility: {$feasibility->feasibility_request_id}");
+            
+        } catch (\Exception $e) {
+            Log::error("Failed to create deliverable from feasibility: " . $e->getMessage());
+        }
     }
 
 }

@@ -18,6 +18,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Mail\CustomUserMail;
 use App\Helpers\MailHelper;
 use Carbon\Carbon;
+use App\Models\UserTypeMenuPrivilege;
+use App\Models\UserMenuPrivilege;
 
 
 class UserController extends Controller
@@ -100,6 +102,25 @@ $doj = !empty($validated['Date_of_Joining'])
   
     // ✅ Attach selected companies
     $user->companies()->sync($validated['companies']);
+    
+    // ✅ AUTO-INHERIT USER TYPE PRIVILEGES
+    // When a user is created with a specific user type, automatically assign
+    // the default privileges configured for that user type
+    $userTypePrivileges = UserTypeMenuPrivilege::where('user_type_id', $validated['user_type_id'])->get();
+    
+    foreach ($userTypePrivileges as $typePriv) {
+        UserMenuPrivilege::create([
+            'user_id' => $user->id,
+            'menu_id' => $typePriv->menu_id,
+            'can_menu' => $typePriv->can_menu,
+            'can_add' => $typePriv->can_add,
+            'can_edit' => $typePriv->can_edit,
+            'can_delete' => $typePriv->can_delete,
+            'can_view' => $typePriv->can_view,
+        ]);
+    }
+    
+    Log::info("✅ User privileges inherited from user type. Assigned {$userTypePrivileges->count()} privilege records to user: {$user->name}");
 
     // ✅ Load first assigned company safely
 $firstCompanyId = $validated['companies'][0] ?? 1;

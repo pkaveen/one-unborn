@@ -6,7 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\PurchaseOrder;
 use App\Models\Feasibility;
 use App\Models\FeasibilityStatus;
+use App\Models\Deliverables;
 use App\Helpers\TemplateHelper;
+use Illuminate\Support\Facades\Log;
 
 class PurchaseOrderController extends Controller
 {
@@ -56,15 +58,24 @@ class PurchaseOrderController extends Controller
 
         $validated = $request->validate($rules);
         
+        // Get feasibility vendor minimum values
+        $feasibilityStatus = FeasibilityStatus::where('feasibility_id', $validated['feasibility_id'])->first();
+
         // Calculate totals from individual link pricing
         $totalARC = 0;
         $totalOTC = 0;
         $totalStaticIP = 0;
-        
-        for ($i = 1; $i <= $noOfLinks; $i++) {
-            $totalARC += $request->input("arc_link_{$i}");
-            $totalOTC += $request->input("otc_link_{$i}");
-            $totalStaticIP += $request->input("static_ip_link_{$i}");
+for ($i = 1; $i <= $noOfLinks; $i++) {
+    $totalARC += (float)$request->input("arc_link_{$i}");
+    $totalOTC += (float)$request->input("otc_link_{$i}");
+    $totalStaticIP += (float)$request->input("static_ip_link_{$i}");
+}
+
+        // ✅ Server-side validation: Check exact match and 20% minimum requirement
+        $error = $this->validatePricing($feasibilityStatus, $request, $noOfLinks);
+
+        if ($error) {
+            return back()->withInput()->with('error', $error);
         }
         
         // Prepare data for storage
@@ -87,10 +98,14 @@ class PurchaseOrderController extends Controller
             $poData["static_ip_link_{$i}"] = $request->input("static_ip_link_{$i}");
         }
 
-        PurchaseOrder::create($poData);
+        $purchaseOrder = PurchaseOrder::create($poData);
+
+        // 🚀 AUTO-CREATE DELIVERABLE when Purchase Order is created
+        $this->createDeliverableFromPurchaseOrder($purchaseOrder);
+        
 
         return redirect()->route('sm.purchaseorder.index')
-            ->with('success', 'Purchase Order created successfully!');
+            ->with('success', 'Purchase Order created successfully and deliverable generated!');
     }
 
     public function show($id)
@@ -139,15 +154,24 @@ class PurchaseOrderController extends Controller
         
         $request->validate($linkValidationRules);
         
-        // Calculate totals for backward compatibility
+        // Get feasibility vendor minimum values
+        $feasibilityStatus = FeasibilityStatus::where('feasibility_id', $validated['feasibility_id'])->first();
+
+        // Calculate totals from individual link pricing
         $totalARC = 0;
         $totalOTC = 0;
         $totalStaticIP = 0;
-        
-        for ($i = 1; $i <= $noOfLinks; $i++) {
-            $totalARC += $request->input("arc_link_{$i}");
-            $totalOTC += $request->input("otc_link_{$i}");
-            $totalStaticIP += $request->input("static_ip_link_{$i}");
+for ($i = 1; $i <= $noOfLinks; $i++) {
+    $totalARC += (float)$request->input("arc_link_{$i}");
+    $totalOTC += (float)$request->input("otc_link_{$i}");
+    $totalStaticIP += (float)$request->input("static_ip_link_{$i}");
+}
+
+        // ✅ Server-side validation: Check exact match and 20% minimum requirement
+        $error = $this->validatePricing($feasibilityStatus, $request, $noOfLinks);
+
+        if ($error) {
+            return back()->withInput()->with('error', $error);
         }
         
         // Prepare data for update
@@ -271,4 +295,139 @@ class PurchaseOrderController extends Controller
             'vendor_pricing' => $vendorPricing
         ]);
     }
+
+    /**
+     * Create deliverable from purchase order
+     */
+    private function createDeliverableFromPurchaseOrder($purchaseOrder)
+    {
+        try {
+            // Check if deliverable already exists for this feasibility
+            $existingDeliverable = Deliverables::where('feasibility_id', $purchaseOrder->feasibility_id)->first();
+            
+            if ($existingDeliverable) {
+                Log::info("Deliverable already exists for feasibility ID: {$purchaseOrder->feasibility_id}");
+                return;
+            }
+            
+            // Get feasibility and feasibility status data
+            $feasibility = $purchaseOrder->feasibility;
+            $feasibilityStatus = FeasibilityStatus::where('feasibility_id', $purchaseOrder->feasibility_id)->first();
+            
+            if (!$feasibility) {
+                Log::error("Feasibility not found for Purchase Order ID: {$purchaseOrder->id}");
+                return;
+            }
+            
+            // Create deliverable with data from feasibility and purchase order
+            $deliverable = Deliverables::create([
+                'feasibility_id' => $feasibility->id,
+                'purchase_order_id' => $purchaseOrder->id,
+                'status' => 'Open',
+                
+                // Site Information from Feasibility
+                'site_address' => $feasibility->site_address ?? '',
+                'local_contact' => $feasibility->contact_person ?? '',
+                'state' => $feasibility->state ?? '',
+                'gst_number' => $feasibility->gst_number ?? '',
+                
+                // Network Configuration from Feasibility
+                'link_type' => $feasibility->connection_type ?? '',
+                'speed_in_mbps' => $feasibility->bandwidth ?? '',
+                'no_of_links' => $purchaseOrder->no_of_links ?? 1,
+                
+                // Vendor Information from Feasibility Status
+                'vendor' => $feasibilityStatus->vendor1_name ?? '',
+                
+                // Pricing from Purchase Order
+                'arc_cost' => $purchaseOrder->arc_per_link ?? 0,
+                'otc_cost' => $purchaseOrder->otc_per_link ?? 0,
+                'static_ip_cost' => $purchaseOrder->static_ip_cost_per_link ?? 0,
+                
+                // PO Details
+                'po_number' => $purchaseOrder->po_number,
+                'po_date' => $purchaseOrder->po_date,
+            ]);
+            
+            Log::info("Deliverable created successfully with ID: {$deliverable->id} for Purchase Order: {$purchaseOrder->po_number}");
+            
+        } catch (\Exception $e) {
+            Log::error("Failed to create deliverable from purchase order: " . $e->getMessage());
+        }
+    }
+
+private function validatePricing($feas, $request, $noOfLinks)
+{
+    if (!$feas || !$noOfLinks) {
+        return null;
+    }
+
+    // Get minimum vendor values per link
+    $vendorARCs = [];
+    $vendorOTCs = [];
+    $vendorStaticIPs = [];
+
+    for ($v = 1; $v <= 4; $v++) {
+        $arc = $feas->{"vendor{$v}_arc"};
+        $otc = $feas->{"vendor{$v}_otc"};
+        $sip = $feas->{"vendor{$v}_static_ip_cost"};
+
+        if ($arc > 0) $vendorARCs[] = $arc;
+        if ($otc > 0) $vendorOTCs[] = $otc;
+        if ($sip > 0) $vendorStaticIPs[] = $sip;
+    }
+
+    // Prevent min() error: use 0 when empty
+    $minARC = !empty($vendorARCs) ? min($vendorARCs) : 0;
+    $minOTC = !empty($vendorOTCs) ? min($vendorOTCs) : 0;
+    $minSIP = !empty($vendorStaticIPs) ? min($vendorStaticIPs) : 0;
+
+    // PER-LINK VALIDATION
+    for ($i = 1; $i <= $noOfLinks; $i++) {
+
+        $arc = (float)$request->input("arc_link_{$i}");
+        $otc = (float)$request->input("otc_link_{$i}");
+        $sip = (float)$request->input("static_ip_link_{$i}");
+
+        // ARC
+        if ($minARC > 0) {
+
+            if (abs($arc - $minARC) < 0.01) {
+                return "MATCHED PRICE (NOT ALLOWED) - ARC for Link {$i} (₹{$arc}) matches feasibility ARC of ₹{$minARC}.";
+            }
+
+            if ($arc < ($minARC * 1.20)) {
+                return "LOW PRICE (NOT ALLOWED) - ARC for Link {$i} (₹{$arc}) must be at least 20% higher than feasibility ARC ₹{$minARC}. Minimum required: ₹" . ($minARC * 1.20);
+            }
+        }
+
+        // OTC
+        if ($minOTC > 0) {
+
+            if (abs($otc - $minOTC) < 0.01) {
+                return "MATCHED PRICE (NOT ALLOWED) - OTC for Link {$i} (₹{$otc}) matches feasibility OTC of ₹{$minOTC}.";
+            }
+
+            if ($otc < ($minOTC * 1.20)) {
+                return "LOW PRICE (NOT ALLOWED) - OTC for Link {$i} (₹{$otc}) must be at least 20% higher than feasibility OTC ₹{$minOTC}. Minimum required: ₹" . ($minOTC * 1.20);
+            }
+        }
+
+        // Static IP
+        if ($minSIP > 0) {
+
+            if (abs($sip - $minSIP) < 0.01) {
+                return "MATCHED PRICE (NOT ALLOWED) - Static IP for Link {$i} (₹{$sip}) matches feasibility Static IP of ₹{$minSIP}.";
+            }
+
+            if ($sip < ($minSIP * 1.20)) {
+                return "LOW PRICE (NOT ALLOWED) - Static IP for Link {$i} (₹{$sip}) must be at least 20% higher than feasibility Static IP ₹{$minSIP}. Minimum required: ₹" . ($minSIP * 1.20);
+            }
+        }
+    }
+
+    return null;
+}
+
+
 }
