@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use App\Models\User;
 use App\Helpers\TemplateHelper;
 use App\Models\Deliverables;
@@ -17,7 +18,13 @@ class DeliverablesController extends Controller
 
     public function operationsOpen()
     {
-        $records = Deliverables::with(['feasibility', 'feasibility.client', 'purchaseOrder'])
+        $records = Deliverables::with([
+            'feasibility', 
+            'feasibility.client', 
+            'feasibility.company',
+            'feasibility.feasibilityStatus', // Load vendors from feasibility status
+            'purchaseOrder'
+        ])
             ->where('status', 'Open')
             ->whereNotNull('purchase_order_id') // ✅ ONLY purchase order-based deliverables
             ->latest()
@@ -28,7 +35,13 @@ class DeliverablesController extends Controller
 
     public function operationsInProgress()
     {
-        $records = Deliverables::with(['feasibility', 'feasibility.client', 'purchaseOrder'])
+        $records = Deliverables::with([
+            'feasibility', 
+            'feasibility.client', 
+            'feasibility.company',
+            'feasibility.feasibilityStatus',
+            'purchaseOrder'
+        ])
             ->where('status', 'InProgress')
             ->whereNotNull('purchase_order_id') // ✅ ONLY purchase order-based deliverables
             ->latest()
@@ -39,7 +52,13 @@ class DeliverablesController extends Controller
 
     public function operationsDelivery()
     {
-        $records = Deliverables::with(['feasibility', 'feasibility.client', 'purchaseOrder'])
+        $records = Deliverables::with([
+            'feasibility', 
+            'feasibility.client', 
+            'feasibility.company',
+            'feasibility.feasibilityStatus',
+            'purchaseOrder'
+        ])
             ->where('status', 'Delivery')
             ->whereNotNull('purchase_order_id') // ✅ ONLY purchase order-based deliverables
             ->latest()
@@ -85,13 +104,17 @@ class DeliverablesController extends Controller
             'mode_of_delivery' => 'nullable|string',
             'pppoe_username' => 'nullable|string',
             'pppoe_password' => 'nullable|string',
+            'dhcp_ip_address' => 'nullable|string',
+            'dhcp_vlan' => 'nullable|string',
             'static_ip_address' => 'nullable|string',
             'static_vlan' => 'nullable|string',
+            'pppoe_vlan' => 'nullable|string',
             'static_subnet_mask' => 'nullable|string',
             'static_gateway' => 'nullable|string',
             'static_vlan_tag' => 'nullable|string',
             'status_of_link' => 'nullable|string',
             'otc_extra_charges' => 'nullable|numeric',
+            'otc_bill_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
             'delivery_notes' => 'nullable|string',
             'delivered_by' => 'nullable|string',
             'action' => 'required|string'
@@ -99,6 +122,17 @@ class DeliverablesController extends Controller
 
         $record = Deliverables::findOrFail($id);
         $previousStatus = $record->status;
+        
+        // Handle file upload for OTC bill
+        if ($request->hasFile('otc_bill_file')) {
+            // Delete old file if exists
+            if ($record->otc_bill_file && Storage::disk('public')->exists($record->otc_bill_file)) {
+                Storage::disk('public')->delete($record->otc_bill_file);
+            }
+            
+            // Store new file
+            $data['otc_bill_file'] = $request->file('otc_bill_file')->store('deliverables/otc_bills', 'public');
+        }
         
         // Update the record with form data
         $record->update($data);
@@ -154,31 +188,51 @@ class DeliverablesController extends Controller
     }
 
     // Method to create deliverable from feasibility
-    public function createFromFeasibility($feasibilityId)
+    // public function createFromFeasibility($feasibilityId)
+    // {
+    //     $feasibility = Feasibility::findOrFail($feasibilityId);
+        
+    //     // Check if deliverable already exists for this feasibility
+    //     $existingDeliverable = Deliverables::where('feasibility_id', $feasibilityId)->first();
+        
+    //     if ($existingDeliverable) {
+    //         return redirect()->route('operations.deliverables.view', $existingDeliverable->id)
+    //                        ->with('info', 'Deliverable already exists for this feasibility.');
+    //     }
+        
+    //     // Create new deliverable with feasibility data
+    //     $deliverable = Deliverables::create([
+    //         'feasibility_id' => $feasibilityId,
+    //         'status' => 'Open',
+    //         'site_address' => $feasibility->site_address ?? '',
+    //         'local_contact' => $feasibility->contact_person ?? '',
+    //         'state' => $feasibility->state ?? '',
+    //         'link_type' => $feasibility->connection_type ?? '',
+    //         'speed_in_mbps' => $feasibility->bandwidth ?? '',
+    //         'no_of_links' => 1, // Default
+    //     ]);
+        
+    //     return redirect()->route('operations.deliverables.edit', $deliverable->id)
+    //                     ->with('success', 'Deliverable created successfully! Please fill in the delivery details.');
+    // }
+
+    public function createFromPurchaseOrder($purchaseOrder, $oldStatus)
     {
-        $feasibility = Feasibility::findOrFail($feasibilityId);
-        
-        // Check if deliverable already exists for this feasibility
-        $existingDeliverable = Deliverables::where('feasibility_id', $feasibilityId)->first();
-        
-        if ($existingDeliverable) {
-            return redirect()->route('operations.deliverables.view', $existingDeliverable->id)
-                           ->with('info', 'Deliverable already exists for this feasibility.');
-        }
-        
-        // Create new deliverable with feasibility data
-        $deliverable = Deliverables::create([
-            'feasibility_id' => $feasibilityId,
-            'status' => 'Open',
-            'site_address' => $feasibility->site_address ?? '',
-            'local_contact' => $feasibility->contact_person ?? '',
-            'state' => $feasibility->state ?? '',
-            'link_type' => $feasibility->connection_type ?? '',
-            'speed_in_mbps' => $feasibility->bandwidth ?? '',
-            'no_of_links' => 1, // Default
-        ]);
-        
-        return redirect()->route('operations.deliverables.edit', $deliverable->id)
-                        ->with('success', 'Deliverable created successfully! Please fill in the delivery details.');
+        // If PO moved to Closed, create Deliverable automatically
+if ($oldStatus !== 'Closed' && $purchaseOrder->status === 'Closed') {
+
+    Deliverables::create([
+        'feasibility_id' => $purchaseOrder->feasibility_id,
+        'purchase_order_id' => $purchaseOrder->id,
+        'status' => 'Open',
+        'site_address' => $purchaseOrder->site_address,
+        'local_contact' => $purchaseOrder->local_contact,
+        'state' => $purchaseOrder->state,
+        'link_type' => $purchaseOrder->connection_type,
+        'speed_in_mbps' => $purchaseOrder->bandwidth,
+        'no_of_links' => $purchaseOrder->no_of_links,
+    ]);
+}
+
     }
 }

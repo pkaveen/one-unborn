@@ -76,7 +76,7 @@ class ClientController extends Controller
 
             //New Invoice Emails
             'invoice_email'        => 'nullable|email|max:255',
-            'invoice_cc'           => 'nullable|email|max:255',
+            'invoice_cc'           => 'nullable|string|max:500',  // Multiple emails with semicolon
 
             // Technical Support
             'support_spoc_name'    => 'nullable|string|max:255',
@@ -138,7 +138,7 @@ Client::create($validated);
 
         // Invoice
         'invoice_email'        => 'nullable|email|max:255',
-        'invoice_cc'           => 'nullable|email|max:255',
+        'invoice_cc'           => 'nullable|string|max:500',  // Multiple emails with semicolon
 
         // Technical Support
         'support_spoc_name'    => 'nullable|string|max:255',

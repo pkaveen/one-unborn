@@ -48,12 +48,22 @@ class PurchaseOrderController extends Controller
             'contract_period' => 'required|integer|min:1',
         ];
         
+        // ✅ Check if type_of_service is ILL - make static IP mandatory
+        $feasibility = Feasibility::find($request->feasibility_id);
+        $isILL = $feasibility && $feasibility->type_of_service === 'ILL';
+        
         // Dynamic validation for pricing fields based on number of links
         $noOfLinks = $request->input('no_of_links');
         for ($i = 1; $i <= $noOfLinks; $i++) {
             $rules["arc_link_{$i}"] = 'required|numeric|min:0';
             $rules["otc_link_{$i}"] = 'required|numeric|min:0';
-            $rules["static_ip_link_{$i}"] = 'required|numeric|min:0';
+            
+            // ✅ Static IP is required for ILL connections
+            if ($isILL) {
+                $rules["static_ip_link_{$i}"] = 'required|numeric|min:0.01';
+            } else {
+                $rules["static_ip_link_{$i}"] = 'required|numeric|min:0';
+            }
         }
 
         $validated = $request->validate($rules);
@@ -144,12 +154,22 @@ for ($i = 1; $i <= $noOfLinks; $i++) {
 
         $noOfLinks = $validated['no_of_links'];
         
+        // ✅ Check if type_of_service is ILL - make static IP mandatory
+        $feasibility = Feasibility::find($request->feasibility_id);
+        $isILL = $feasibility && $feasibility->type_of_service === 'ILL';
+        
         // Dynamic validation for link pricing
         $linkValidationRules = [];
         for ($i = 1; $i <= $noOfLinks; $i++) {
             $linkValidationRules["arc_link_{$i}"] = 'required|numeric|min:0';
             $linkValidationRules["otc_link_{$i}"] = 'required|numeric|min:0';
-            $linkValidationRules["static_ip_link_{$i}"] = 'required|numeric|min:0';
+            
+            // ✅ Static IP is required for ILL connections
+            if ($isILL) {
+                $linkValidationRules["static_ip_link_{$i}"] = 'required|numeric|min:0.01';
+            } else {
+                $linkValidationRules["static_ip_link_{$i}"] = 'required|numeric|min:0';
+            }
         }
         
         $request->validate($linkValidationRules);
@@ -200,7 +220,17 @@ for ($i = 1; $i <= $noOfLinks; $i++) {
             $poData["static_ip_link_{$i}"] = null;
         }
 
-        $purchaseOrder->update($poData);
+        // $purchaseOrder->update($poData);
+        $oldStatus = $purchaseOrder->status;
+
+// Update data
+$purchaseOrder->update($poData);
+
+// If PO is moved to Closed → create Deliverable
+if ($oldStatus !== 'Closed' && $request->status === 'Closed') {
+    $this->createDeliverableFromPurchaseOrder($purchaseOrder);
+}
+
 
         return redirect()->route('sm.purchaseorder.index')
             ->with('success', 'Purchase Order updated successfully!');
@@ -302,11 +332,11 @@ for ($i = 1; $i <= $noOfLinks; $i++) {
     private function createDeliverableFromPurchaseOrder($purchaseOrder)
     {
         try {
-            // Check if deliverable already exists for this feasibility
-            $existingDeliverable = Deliverables::where('feasibility_id', $purchaseOrder->feasibility_id)->first();
+            // Check if deliverable already exists for this SPECIFIC purchase order
+            $existingDeliverable = Deliverables::where('purchase_order_id', $purchaseOrder->id)->first();
             
             if ($existingDeliverable) {
-                Log::info("Deliverable already exists for feasibility ID: {$purchaseOrder->feasibility_id}");
+                Log::info("Deliverable already exists for Purchase Order ID: {$purchaseOrder->id}");
                 return;
             }
             
@@ -319,22 +349,25 @@ for ($i = 1; $i <= $noOfLinks; $i++) {
                 return;
             }
             
+            // Get client for GST number
+            $client = $feasibility->client;
+            
             // Create deliverable with data from feasibility and purchase order
             $deliverable = Deliverables::create([
                 'feasibility_id' => $feasibility->id,
                 'purchase_order_id' => $purchaseOrder->id,
                 'status' => 'Open',
                 
-                // Site Information from Feasibility
-                'site_address' => $feasibility->site_address ?? '',
-                'local_contact' => $feasibility->contact_person ?? '',
-                'state' => $feasibility->state ?? '',
-                'gst_number' => $feasibility->gst_number ?? '',
+                // ✅ Site Information from Feasibility table
+                'site_address' => $feasibility->address ?? '',           // feasibilities.address
+                'local_contact' => $feasibility->spoc_name ?? '',        // feasibilities.spoc_name
+                'state' => $feasibility->state ?? '',                    // feasibilities.state
+                'gst_number' => $client->gstin ?? '',                    // clients.gstin
                 
-                // Network Configuration from Feasibility
-                'link_type' => $feasibility->connection_type ?? '',
-                'speed_in_mbps' => $feasibility->bandwidth ?? '',
-                'no_of_links' => $purchaseOrder->no_of_links ?? 1,
+                // ✅ Network Configuration from Feasibility table
+                'link_type' => $feasibility->type_of_service ?? '',      // feasibilities.type_of_service
+                'speed_in_mbps' => $feasibility->speed ?? '',            // feasibilities.speed
+                'no_of_links' => $feasibility->no_of_links ?? $purchaseOrder->no_of_links ?? 1, // feasibilities.no_of_links
                 
                 // Vendor Information from Feasibility Status
                 'vendor' => $feasibilityStatus->vendor1_name ?? '',
@@ -361,6 +394,25 @@ private function validatePricing($feas, $request, $noOfLinks)
     if (!$feas || !$noOfLinks) {
         return null;
     }
+
+    // ✅ Get feasibility to check vendor_type (use relationship from FeasibilityStatus)
+    $feasibility = $feas->feasibility;
+    
+    // 🐛 Debug logging
+    Log::info('validatePricing called', [
+        'feasibility_id' => $feasibility ? $feasibility->id : 'null',
+        'vendor_type' => $feasibility ? $feasibility->vendor_type : 'null'
+    ]);
+    
+    // ✅ Skip 20% validation if vendor_type is Self (UBN, UBS, UBL, INF)
+    $selfVendors = ['UBN', 'UBS', 'UBL', 'INF'];
+    if ($feasibility && in_array($feasibility->vendor_type, $selfVendors)) {
+        Log::info('Self vendor detected - skipping validation', ['vendor_type' => $feasibility->vendor_type]);
+        // Self vendor - No 20% advance needed, skip validation
+        return null;
+    }
+    
+    Log::info('Proceeding with 20% validation', ['vendor_type' => $feasibility ? $feasibility->vendor_type : 'null']);
 
     // Get minimum vendor values per link
     $vendorARCs = [];

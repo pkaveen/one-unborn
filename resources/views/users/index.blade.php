@@ -188,7 +188,7 @@
 
 
 
-                                     <!-- @php
+                                     @php
 
                                      $role = strtolower(auth()->user()->userType->name ?? '');
 
@@ -200,7 +200,7 @@
 
                                     </a>
 
-                                    @endif -->
+                                    @endif
 
                                      <ul class="sidebar-menu">
 

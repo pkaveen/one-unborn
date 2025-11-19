@@ -29,9 +29,9 @@ class CompanySetting extends Model
         'mail_encryption',
         'mail_from_address',
         'mail_from_name',
-
         'mail_footer',
-    'mail_signature',
+        'mail_signature',
+        
     ];
 
 

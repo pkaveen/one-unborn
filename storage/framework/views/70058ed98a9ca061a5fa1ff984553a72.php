@@ -71,6 +71,7 @@
                         <th>Action</th>
 
                         <th>Name</th>
+                        <th>Email</th>
 
                         <th>Description</th>
 
@@ -193,10 +194,6 @@
                                     </a>
 
                                     <?php endif; ?>
-
-
-
-
                             </td>
 
 
@@ -204,6 +201,7 @@
                             
 
                             <td class="col"><?php echo e($usertypedata->name); ?></td>
+                            <td class="col"><?php echo e($usertypedata->email ?? '-'); ?></td>
 
                             <td class="col"><?php echo e($usertypedata->Description ?? '-'); ?></td>
 

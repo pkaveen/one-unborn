@@ -808,18 +808,15 @@
 
                                 <li><a class="nav-link text-white menu-item {{ request()->is('system-settings*') ? 'active' : '' }}" href="{{ route('system.settings') }}"><i class="bi bi-sliders"></i> System Settings</a></li>
 
+                                <li><a class="nav-link text-white menu-item {{ request()->is('whatsapp-settings*') ? 'active' : '' }}" href="{{ route('whatsapp.settings') }}"><i class="bi bi-sliders"></i> WhatsApp Settings</a></li>
+
                             @endif
 
                         </ul>
-
                     </div>
-
                 </li>
 
             @endif
-
-
-
             {{-- Logout --}}
 
             <li class="nav-item mt-4">

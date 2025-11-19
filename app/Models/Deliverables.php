@@ -62,7 +62,7 @@ class Deliverables extends Model
     // Relationship with Purchase Order
     public function purchaseOrder(): BelongsTo
     {
-        return $this->belongsTo(PurchaseOrder::class);
+        return $this->belongsTo(PurchaseOrder::class, 'purchase_order_id');
     }
 
     // Helper method to generate delivery ID

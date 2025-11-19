@@ -19,6 +19,7 @@ use App\Http\Controllers\SystemSettingsController;
 use App\Http\Controllers\FeasibilityController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\DeliverablesController;
+use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\GSTController;
 use App\Http\Middleware\CheckProfileCreated;
 use Illuminate\Http\Request;
@@ -65,59 +66,55 @@ Route::post('/logout', function () {
 //     return redirect()->route('login');
 // })->name('logout');
 
+// Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+
+// Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+
+
+
+Route::get('/forgot-password', [ForgotPasswordController::class, 'showForgotForm']);
+Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink']);
+
+
+Route::get('/reset-password/{token}', [ForgotPasswordController::class, 'showResetForm']);
+Route::post('/reset-password', [ForgotPasswordController::class, 'resetPassword']);
+
+
 // 🔑 PASSWORD RESET ROUTES (public)
-Route::middleware('guest')->group(function () {
-    Route::get('forgot-password', function () {
-        if (Auth::check()) {
-            return redirect()->route('welcome');
-        }
-        return view('auth.forgot-password');
-    })->name('password.request');
+// Route::get('reset-password/{token}', function ($token) {
+//     if (Auth::check()) {
+//         return redirect()->route('welcome');
+//     }
+//     return view('auth.reset-password', ['token' => $token, 'email' => request('email')]);
+// })->name('password.reset');
 
-Route::post('forgot-password', function (Request $request) {
-    $request->validate(['email' => 'required|email']);
-    $status = Password::sendResetLink($request->only('email'));
+// Route::post('reset-password', function (Request $request) {
+//     $request->validate([
+//         'token' => 'required',
+//         'email' => 'required|email',
+//         'password' => 'required|min:6|confirmed',
+//     ]);
 
-    return $status === Password::RESET_LINK_SENT
-        ? back()->with(['status' => __($status)])
-        : back()->withErrors(['email' => __($status)]);
-})->name('password.email');
+//     $status = Password::reset(
+//         $request->only('email', 'password', 'password_confirmation', 'token'),
+//         function ($user, $password) {
+//             $user->forceFill([
+//                 'password' => Hash::make($password)
+//             ])->save();
 
-Route::get('reset-password/{token}', function ($token) {
-    if (Auth::check()) {
-        return redirect()->route('welcome');
-    }
-    return view('auth.reset-password', ['token' => $token]);
-})->name('password.reset');
+//             Auth::login($user);
+//         }
+//     );
 
-Route::post('reset-password', function (Request $request) {
-    $request->validate([
-        'token' => 'required',
-        'email' => 'required|email',
-        'password' => 'required|min:6|confirmed',
-    ]);
+//     if ($status === Password::PASSWORD_RESET) {
+//         $resetUser = \App\Models\User::where('email', $request->email)->first();
+//         Mail::to($request->email)->send(new \App\Mail\PasswordChangedMail($resetUser));
+//         return redirect()->route('login')->with('status', __($status));
+//     }
 
-    $status = Password::reset(
-        $request->only('email', 'password', 'password_confirmation', 'token'),
-        function ($user, $password) {
-            $user->forceFill([
-                'password' => Hash::make($password)
-            ])->save();
+//     return back()->withErrors(['email' => [__($status)]]);
+// })->name('password.update');
 
-            Auth::login($user);
-        }
-    );
-
-    if ($status === Password::PASSWORD_RESET) {
-        $resetUser = \App\Models\User::where('email', $request->email)->first();
-        Mail::to($request->email)->send(new \App\Mail\PasswordChangedMail($resetUser));
-        return redirect()->route('login')->with('status', __($status));
-    }
-
-    return back()->withErrors(['email' => [__($status)]]);
-})->name('password.update');
-});
-//
 // 👤 PROFILE CREATION — allowed for all logged-in users
 //
 
@@ -194,6 +191,12 @@ Route::delete('users/{user}', [UserController::class, 'destroy'])
     Route::put('/tax-invoice-settings', [TaxInvoiceSettingsController::class, 'update'])->name('tax.invoice.update');
     Route::get('/system-settings', [SystemSettingsController::class, 'index'])->name('system.settings');
     Route::post('/system-settings', [SystemSettingsController::class, 'update'])->name('system.settings.update');
+    
+    // 📱 WhatsApp Settings
+    Route::get('/whatsapp-settings', [App\Http\Controllers\WhatsAppSettingsController::class, 'index'])->name('whatsapp.settings');
+    Route::post('/whatsapp-settings', [App\Http\Controllers\WhatsAppSettingsController::class, 'update'])->name('whatsapp.settings.update');
+    Route::get('/whatsapp-test', [App\Http\Controllers\WhatsAppSettingsController::class, 'showTestForm'])->name('whatsapp.test');
+    Route::post('/whatsapp-test', [App\Http\Controllers\WhatsAppSettingsController::class, 'sendTestMessage'])->name('whatsapp.test.send');
 
      // 📋 Menus (secured inside main app)
     
@@ -236,12 +239,12 @@ Route::post('/menus/usertype-privileges/{userTypeId}', [MenuController::class, '
 //
 // 📧 TEST EMAIL ROUTE
 //
-// Route::get('/test-email', function () {
-//     Mail::raw('This is a test email from Laravel!', function ($message) {
-//         $message->to('your_email@example.com')->subject('Test Email');
-//     });
-//     return 'Email sent!';
-// });
+Route::get('/test-email', function () {
+    Mail::raw('This is a test email from Laravel!', function ($message) {
+        $message->to('your_email@example.com')->subject('Test Email');
+    });
+    return 'Email sent!';
+});
     // 🧾 GST & PAN Fetch Routes
     // Route::get('/gst/fetch/{gstin}', [GSTController::class, 'fetch']);
     // Route::get('/company/fetch/{pan}', [GSTController::class, 'fetchByPAN']);
@@ -354,11 +357,7 @@ Route::post('/menus/usertype-privileges/{userTypeId}', [MenuController::class, '
     Route::fallback(function () {
         return redirect('/welcome');
     });
-
-    
-
 }
-
 
 );
 

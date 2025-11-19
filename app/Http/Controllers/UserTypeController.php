@@ -43,6 +43,7 @@ class UserTypeController extends Controller
     {
         $request->validate([
             'name'  => 'required|string|max:255',
+            'email' => 'required|email|max:255',
             'Description' => 'required|string|max:225',
             'status' => 'required|in:Active,Inactive',
         ]);
@@ -81,6 +82,7 @@ class UserTypeController extends Controller
     {
         $request->validate([
             'name'  => 'required|string|max:255',
+            'email' => 'required|email|max:255',
             'Description' => 'required|string|max:225',
             'status' => 'required|in:Active,Inactive',
         ]);

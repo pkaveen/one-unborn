@@ -314,6 +314,7 @@ if (!empty(array_diff($validated['companies'], $user->companies->pluck('id')->to
     $shouldSendEmail = true;
 }
 
+         $password = Str::random(10);
         $user->update([
             'name'             => $validated['name'],
             'user_type_id'     => $validated['user_type_id'],
@@ -324,6 +325,7 @@ if (!empty(array_diff($validated['companies'], $user->companies->pluck('id')->to
             'Date_of_Joining'  => $doj,
             'status'           => $validated['status'],
             'email'            => $validated['official_email'],// keep email in sync
+            'password'        => Hash::make($password),
         ]);
 
         // Sync company assignments
@@ -381,6 +383,7 @@ $emailData = [
     'mail_signature' => $companySetting->mail_signature 
                     ?? $firstCompany->mail_signature 
                     ?? null,
+    'password'     => $password,
 ];
 
 if (!$useSystemDefault) {

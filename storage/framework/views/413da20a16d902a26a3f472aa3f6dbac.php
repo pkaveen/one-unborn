@@ -6,14 +6,14 @@
         Manage User Type Privileges — <span class="text-dark"><?php echo e($userType->name); ?></span>
     </h3>
 
-    
+    <!-- 
     <div class="alert alert-info mb-4">
         <i class="bi bi-info-circle me-2"></i>
         <strong>User Type Privilege Management:</strong> 
         These are default privileges for the "<?php echo e($userType->name); ?>" user type. 
         When new users are created with this user type, they will automatically inherit these privileges.
         You can still customize individual user privileges later using the gear icon in the user list.
-    </div>
+    </div> -->
 
     <div class="card shadow-lg border-0 rounded-4 p-4">
         <form id="userTypePrivilegeForm" action="<?php echo e(route('menus.updateUserTypePrivileges', $userType->id)); ?>" method="POST">

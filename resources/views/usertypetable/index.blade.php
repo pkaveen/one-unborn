@@ -71,6 +71,7 @@
                         <th>Action</th>
 
                         <th>Name</th>
+                        <th>Email</th>
 
                         <th>Description</th>
 
@@ -192,10 +193,6 @@
                                     </a>
 
                                     @endif
-
-
-
-
                             </td>
 
 
@@ -203,6 +200,7 @@
                             {{-- 🧾 Data columns --}}
 
                             <td class="col">{{ $usertypedata->name }}</td>
+                            <td class="col">{{ $usertypedata->email ?? '-'}}</td>
 
                             <td class="col">{{ $usertypedata->Description ?? '-'}}</td>
 

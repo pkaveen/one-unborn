@@ -44,6 +44,7 @@ class Feasibility extends Model
         'vendor_type',
         'speed',
         'static_ip',
+        'static_ip_subnet',
         'expected_delivery',
         'expected_activation',
         'hardware_required',

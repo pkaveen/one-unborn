@@ -62,7 +62,7 @@
 
                     <label class="form-label fw-semibold">Type of Service *</label>
 
-                    <select name="type_of_service" class="form-select" required>
+                    <select name="type_of_service" id="type_of_service" class="form-select" required>
 
                         <option value="">Select</option>
 
@@ -276,11 +276,17 @@
 
                         <option>Different Vendor</option>
 
+                        <option>UBN</option>
+
+                        <option>UBS</option>
+
+                        <option>UBL</option>
+
+                        <option>INF</option>
+
                     </select>
 
                 </div>
-
-
 
                 <div class="col-md-3">
 
@@ -296,7 +302,7 @@
 
                     <label class="form-label fw-semibold">Static IP *</label>
 
-                    <select name="static_ip" class="form-select" required>
+                    <select name="static_ip" id="static_ip" class="form-select" required>
 
                         <option value="">Select</option>
 
@@ -307,6 +313,41 @@
                     </select>
 
                 </div>
+
+                <div class="col-md-3">
+
+                    <label class="form-label fw-semibold">Static IP Subnet</label>
+
+                    <select name="static_ip_subnet" id="static_ip_subnet" class="form-select" disabled>
+
+                        <option value="">Select Subnet</option>
+
+                        <option value="/32">/32</option>
+
+                        <option value="/31">/31</option>
+
+                        <option value="/30">/30</option>
+
+                        <option value="/29">/29</option>
+
+                        <option value="/28">/28</option>
+
+                        <option value="/27">/27</option>
+
+                        <option value="/26">/26</option>
+
+                        <option value="/25">/25</option>
+
+                        <option value="/24">/24</option>
+
+                    </select>
+
+                    <small class="text-muted">Select subnet only if Static IP is Yes</small>
+
+                </div>
+
+                
+
 
 
 
@@ -770,53 +811,43 @@ pincodeInput.addEventListener('input', function() {
 
 // Vendor Type Logic based on No. of Links
 
-document.querySelector('select[name="no_of_links"]').addEventListener('change', function() {
+// document.querySelector('select[name="no_of_links"]').addEventListener('change', function() {
 
-    const vendorTypeSelect = document.querySelector('select[name="vendor_type"]');
+//     const vendorTypeSelect = document.querySelector('select[name="vendor_type"]');
 
-    const noOfLinks = parseInt(this.value);
+//     const noOfLinks = parseInt(this.value);
+//     // Clear current selection
+//     vendorTypeSelect.selectedIndex = 0;
+//     if (noOfLinks === 1) {
 
-    
+//     vendorTypeSelect.value = 'Same Vendor';
 
-    // Clear current selection
+//     vendorTypeSelect.readOnly = true;
 
-    vendorTypeSelect.selectedIndex = 0;
+//     vendorTypeSelect.style.pointerEvents = "none";
 
-    
+//     vendorTypeSelect.style.background = "#e9ecef";
 
-    if (noOfLinks === 1) {
+// } else if (noOfLinks > 1) {
 
-    vendorTypeSelect.value = 'Same Vendor';
+//     vendorTypeSelect.value = 'Different Vendor';
 
-    vendorTypeSelect.readOnly = true;
+//     vendorTypeSelect.readOnly = true;
 
-    vendorTypeSelect.style.pointerEvents = "none";
+//     vendorTypeSelect.style.pointerEvents = "none";
 
-    vendorTypeSelect.style.background = "#e9ecef";
+//     vendorTypeSelect.style.background = "#e9ecef";
 
-} else if (noOfLinks > 1) {
+// } else {
 
-    vendorTypeSelect.value = 'Different Vendor';
+//     vendorTypeSelect.readOnly = false;
 
-    vendorTypeSelect.readOnly = true;
+//     vendorTypeSelect.style.pointerEvents = "auto";
 
-    vendorTypeSelect.style.pointerEvents = "none";
+//     vendorTypeSelect.style.background = "";
 
-    vendorTypeSelect.style.background = "#e9ecef";
-
-} else {
-
-    vendorTypeSelect.readOnly = false;
-
-    vendorTypeSelect.style.pointerEvents = "auto";
-
-    vendorTypeSelect.style.background = "";
-
-}
-
-
-
-});
+// }
+// });
 
 
 
@@ -837,6 +868,31 @@ document.addEventListener('DOMContentLoaded', function() {
         noOfLinksSelect.dispatchEvent(new Event('change'));
 
     }
+    
+    // ✅ Static IP Subnet dropdown logic
+    const staticIPSelect = document.getElementById('static_ip');
+    const subnetSelect = document.getElementById('static_ip_subnet');
+    
+    staticIPSelect.addEventListener('change', function() {
+        if (this.value === 'Yes') {
+            subnetSelect.disabled = false;
+            subnetSelect.required = true;
+        } else {
+            subnetSelect.disabled = true;
+            subnetSelect.required = false;
+            subnetSelect.value = '';
+        }
+    });
+    
+    // ✅ Auto-select Static IP = "Yes" when Type of Service = "ILL"
+    const typeOfServiceSelect = document.getElementById('type_of_service');
+    
+    typeOfServiceSelect.addEventListener('change', function() {
+        if (this.value === 'ILL') {
+            staticIPSelect.value = 'Yes';
+            staticIPSelect.dispatchEvent(new Event('change')); // Trigger change to enable subnet
+        }
+    });
 
 });
 

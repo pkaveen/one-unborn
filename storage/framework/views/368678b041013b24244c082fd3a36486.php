@@ -808,18 +808,15 @@
 
                                 <li><a class="nav-link text-white menu-item <?php echo e(request()->is('system-settings*') ? 'active' : ''); ?>" href="<?php echo e(route('system.settings')); ?>"><i class="bi bi-sliders"></i> System Settings</a></li>
 
+                                <li><a class="nav-link text-white menu-item <?php echo e(request()->is('whatsapp-settings*') ? 'active' : ''); ?>" href="<?php echo e(route('whatsapp.settings')); ?>"><i class="bi bi-sliders"></i> WhatsApp Settings</a></li>
+
                             <?php endif; ?>
 
                         </ul>
-
                     </div>
-
                 </li>
 
             <?php endif; ?>
-
-
-
             
 
             <li class="nav-item mt-4">

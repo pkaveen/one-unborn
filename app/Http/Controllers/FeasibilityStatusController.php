@@ -240,7 +240,7 @@ public function editSave(Request $request, $id)
         $record->update(['status' => 'Closed']);
         
         // � Auto-create deliverable when feasibility is closed
-        $this->createDeliverableFromFeasibility($record);
+        // $this->createDeliverableFromFeasibility($record);
         
         // �📧 Send email notification for status change
         $this->sendStatusChangeEmail($record, 'Closed', $previousStatus);
@@ -372,7 +372,7 @@ public function editSave(Request $request, $id)
         $record->update(['status' => 'Closed']);
         
         // � Auto-create deliverable when feasibility is closed
-        $this->createDeliverableFromFeasibility($record);
+        // $this->createDeliverableFromFeasibility($record);
         
         // �📧 Send email notification for status change
         $this->sendStatusChangeEmail($record, 'Closed', $previousStatus);
@@ -537,43 +537,43 @@ public function editSave(Request $request, $id)
     /**
      * Create deliverable from feasibility when it's closed
      */
-    private function createDeliverableFromFeasibility($feasibilityStatus)
-    {
-        try {
-            // Check if deliverable already exists
-            $existingDeliverable = Deliverables::where('feasibility_id', $feasibilityStatus->feasibility_id)->first();
+    // private function createDeliverableFromFeasibility($feasibilityStatus)
+    // {
+    //     try {
+    //         // Check if deliverable already exists
+    //         $existingDeliverable = Deliverables::where('feasibility_id', $feasibilityStatus->feasibility_id)->first();
             
-            if ($existingDeliverable) {
-                Log::info("Deliverable already exists for feasibility ID: {$feasibilityStatus->feasibility_id}");
-                return;
-            }
+    //         if ($existingDeliverable) {
+    //             Log::info("Deliverable already exists for feasibility ID: {$feasibilityStatus->feasibility_id}");
+    //             return;
+    //         }
             
-            $feasibility = $feasibilityStatus->feasibility;
+    //         $feasibility = $feasibilityStatus->feasibility;
             
-            if (!$feasibility) {
-                Log::error("Feasibility not found for FeasibilityStatus ID: {$feasibilityStatus->id}");
-                return;
-            }
+    //         if (!$feasibility) {
+    //             Log::error("Feasibility not found for FeasibilityStatus ID: {$feasibilityStatus->id}");
+    //             return;
+    //         }
             
-            // Create new deliverable with feasibility data
-            $deliverable = Deliverables::create([
-                'feasibility_id' => $feasibility->id,
-                'status' => 'Open',
-                'site_address' => $feasibility->site_address ?? '',
-                'local_contact' => $feasibility->contact_person ?? '',
-                'state' => $feasibility->state ?? '',
-                'gst_number' => $feasibility->gst_number ?? '',
-                'link_type' => $feasibility->connection_type ?? '',
-                'speed_in_mbps' => $feasibility->bandwidth ?? '',
-                'no_of_links' => 1, // Default value
-                'vendor' => $feasibilityStatus->vendor1_name ?? '', // Use selected vendor from feasibility
-            ]);
+    //         // Create new deliverable with feasibility data
+    //         $deliverable = Deliverables::create([
+    //             'feasibility_id' => $feasibility->id,
+    //             'status' => 'Open',
+    //             'site_address' => $feasibility->site_address ?? '',
+    //             'local_contact' => $feasibility->contact_person ?? '',
+    //             'state' => $feasibility->state ?? '',
+    //             'gst_number' => $feasibility->gst_number ?? '',
+    //             'link_type' => $feasibility->connection_type ?? '',
+    //             'speed_in_mbps' => $feasibility->bandwidth ?? '',
+    //             'no_of_links' => 1, // Default value
+    //             'vendor' => $feasibilityStatus->vendor1_name ?? '', // Use selected vendor from feasibility
+    //         ]);
             
-            Log::info("Deliverable created successfully with ID: {$deliverable->id} for feasibility: {$feasibility->feasibility_request_id}");
+    //         Log::info("Deliverable created successfully with ID: {$deliverable->id} for feasibility: {$feasibility->feasibility_request_id}");
             
-        } catch (\Exception $e) {
-            Log::error("Failed to create deliverable from feasibility: " . $e->getMessage());
-        }
-    }
+    //     } catch (\Exception $e) {
+    //         Log::error("Failed to create deliverable from feasibility: " . $e->getMessage());
+    //     }
+    // }
 
 }
