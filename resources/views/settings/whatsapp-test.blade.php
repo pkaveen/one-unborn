@@ -21,38 +21,22 @@
         </div>
     @endif
 
+
+
     <div class="card shadow border-0 p-4">
         <form action="{{ route('whatsapp.test.send') }}" method="POST">
             @csrf
 
             <div class="mb-3">
                 <label class="form-label fw-bold">Mobile Number <span class="text-danger">*</span></label>
-                <div class="input-group">
-        
-        <!-- Country Code Select -->
-        <select class="form-select" id="country_code" style="max-width: 100px;">
-            <option value="+91" selected>+91</option>
-            <option value="+1">+1</option>
-            <option value="+44">+44</option>
-            <option value="+971">+971</option>
-            <!-- Add more if needed -->
-        </select>
-
-        <!-- Input: 10 Digit Number -->
-        <input 
-            type="text" 
-            id="mobile_input" 
-            class="form-control" 
-            placeholder="Enter mobile number" 
-            maxlength="10" 
-            required
-        >
-
-        <!-- Hidden field: final combined WhatsApp number -->
-        <input type="hidden" name="mobile" id="final_mobile">
-
-    </div>
-                <!-- <small class="text-muted">Enter with country code (e.g., 919876543210)</small> -->
+                <input type="text" 
+                       name="mobile" 
+                       class="form-control" 
+                       placeholder="919876543210" 
+                       required
+                       pattern="[0-9]{10,12}"
+                       title="Enter 10-12 digit mobile number with country code">
+                <small class="text-muted">Enter with country code (e.g., 919876543210)</small>
             </div>
 
             <div class="mb-3">
@@ -81,16 +65,4 @@
     @endif
 </div>
 
-
-
-
-<script>
-    // Before submit → auto combine country code + number
-    document.querySelector("form").addEventListener("submit", function() {
-        const code = document.getElementById("country_code").value.replace("+", "");
-        const number = document.getElementById("mobile_input").value;
-
-        document.getElementById("final_mobile").value = code + number;
-    });
-</script>
 @endsection

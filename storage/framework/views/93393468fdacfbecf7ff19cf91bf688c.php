@@ -1,8 +1,8 @@
-@extends('layouts.app')
 
 
 
-@section('content')
+
+<?php $__env->startSection('content'); ?>
 
 <div class="container-fluid py-4">
 
@@ -12,11 +12,11 @@
 
             <div class="card shadow border-0">
 
-                {{-- ✅ Header Section --}}
+                
 
-                <div class="card-header  text-dark d-flex justify-content-between align-items-center">
+                <div class="card-header text-dark d-flex justify-content-between align-items-center">
 
-                    <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>In Progress Feasibilities</h5>
+                    <h5 class="mb-0"><i class="bi bi-check-circle me-2"></i>Closed Feasibilities</h5>
 
                 </div>
 
@@ -24,15 +24,15 @@
 
                 <div class="card-body">
 
-                    {{-- ✅ Check if any feasibility records exist --}}
+                    
 
-                    @if($records->count() > 0)
+                    <?php if($records->count() > 0): ?>
 
                         <div class="table-responsive">
 
                             <table class="table table-striped table-hover">
 
-                                {{-- ✅ Table Headers --}}
+                                
 
                                 <thead class="table-dark-primary">
 
@@ -61,37 +61,36 @@
 
                                 <tbody>
 
-                                    {{-- ✅ Loop through all records --}}
+                                    
 
-                                    @foreach($records as $index => $record)
+                                    <?php $__currentLoopData = $records; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $record): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
 
                                         <tr>
-
-                                        <td class="text-center">
-                                    <input type="checkbox" class="row-checkbox" value="{{ $record->id }}" style="width: 18px; height: 18px; cursor: pointer;">
+                                            <td class="text-center">
+                                    <input type="checkbox" class="row-checkbox" value="<?php echo e($record->id); ?>" style="width: 18px; height: 18px; cursor: pointer;">
                                 </td>
 
-                                            {{-- Serial No --}}
+                                            
 
-                                            <td>{{ $index + 1 }}</td>
+                                            <td><?php echo e($index + 1); ?></td>
 
-                                            {{-- Request ID --}}
+                                            
 
                                             <td>
 
-                                                <span class="">{{ $record->feasibility->feasibility_request_id ?? 'N/A' }}</span>
+                                                <span class=""><?php echo e($record->feasibility->feasibility_request_id ?? 'N/A'); ?></span>
 
                                             </td>
 
-                                            {{-- Action Buttons (View only) --}}
+                                            
 
                                             <td>
 
                                                 <div class="btn-group" role="group">
 
-                                                    {{-- View button --}}
+                                                    
 
-                                                    <a href="{{ route('sm.feasibility.view', $record->id) }}" 
+                                                    <a href="<?php echo e(route('sm.feasibility.view', $record->id)); ?>" 
 
                                                        class="btn btn-info btn-sm" title="View">
 
@@ -99,35 +98,35 @@
 
                                                     </a>
 
-                                                   
+                                                
 
                                                 </div>
 
                                             </td>
 
-                                            {{-- Company Name --}}
+                                            
 
-                                            <td>{{ $record->feasibility->company->company_name ?? 'N/A' }}</td>
+                                            <td><?php echo e($record->feasibility->company->company_name ?? 'N/A'); ?></td>
 
-                                            {{-- Client Name --}}
+                                            
 
-                                            <td>{{ $record->feasibility->client->client_name ?? 'N/A' }}</td>
+                                            <td><?php echo e($record->feasibility->client->client_name ?? 'N/A'); ?></td>
 
-                                            {{-- Type of Service --}}
+                                            
 
-                                            <td>{{ $record->feasibility->type_of_service ?? 'N/A' }}</td>
+                                            <td><?php echo e($record->feasibility->type_of_service ?? 'N/A'); ?></td>
 
-                                            {{-- Speed --}}
+                                            
 
-                                            <td>{{ $record->feasibility->speed ?? 'N/A' }}</td>
+                                            <td><?php echo e($record->feasibility->speed ?? 'N/A'); ?></td>
 
-                                            {{-- No of Links --}}
+                                            
 
-                                            <td>{{ $record->feasibility->no_of_links ?? 'N/A' }}</td>
+                                            <td><?php echo e($record->feasibility->no_of_links ?? 'N/A'); ?></td>
 
                                         </tr>
 
-                                    @endforeach
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
                                 </tbody>
 
@@ -135,21 +134,21 @@
 
                         </div>
 
-                    @else
+                    <?php else: ?>
 
-                    {{-- ✅ Show message when no records found --}}
+                    
 
                         <div class="text-center py-4">
 
                             <i class="bi bi-inbox text-muted" style="font-size: 3rem;"></i>
 
-                            <h5 class="text-muted mt-3">No in-progress feasibilities found</h5>
+                            <h5 class="text-muted mt-3">No closed feasibilities found</h5>
 
-                            <p class="text-muted">All feasibilities are either open or have been completed.</p>
+                            <p class="text-muted">No feasibilities have been completed yet.</p>
 
                         </div>
 
-                    @endif
+                    <?php endif; ?>
 
                 </div>
 
@@ -160,6 +159,7 @@
     </div>
 
 </div>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
     const selectAll = document.getElementById('select_all');
@@ -180,4 +180,5 @@
     });
 });
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH F:\xampp\htdocs\wlcome\multipleuserpage\resources\views/sm/feasibility/closed.blade.php ENDPATH**/ ?>

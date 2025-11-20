@@ -134,6 +134,23 @@
 
                             </div>
 
+                            {{-- PO Status --}}
+                            <div class="col-md-6 mb-3">
+                                <label for="status" class="form-label">
+                                    <strong>PO Status <span class="text-danger">*</span></strong>
+                                </label>
+                                <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
+                                    <option value="Active" {{ old('status', $purchaseOrder->status) == 'Active' ? 'selected' : '' }}>Active</option>
+                                    <option value="Inactive" {{ old('status', $purchaseOrder->status) == 'Inactive' ? 'selected' : '' }}>Inactive</option>
+                                </select>
+                                @error('status')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                                <div class="form-text">
+                                    <i class="bi bi-info-circle"></i> Changing status to <strong>"Active"</strong> will automatically create a Deliverable record.
+                                </div>
+                            </div>
+
                         </div>
 
 

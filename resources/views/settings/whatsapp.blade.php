@@ -72,30 +72,30 @@
                     <div class="row mb-3">
                         <div class="col-md-6 p-4">
                             <label class="form-label fw-bold">API URL <span class="text-danger">*</span></label>
-                            <input type="url" name="unofficial_api_url" value="{{ old('unofficial_api_url', $settings->unofficial_api_url ?? 'https://wa.unbornsms.in/api/send.php') }}" 
-                                   class="form-control" placeholder="https://wa.unbornsms.in/api/send.php" required readonly>
-                            <!-- <small class="text-muted">Default: https://wa.unbornsms.in/api/send.php</small> -->
+                            <input type="url"
+                                   name="unofficial_api_url"
+                                   value="{{ old('unofficial_api_url', $settings->unofficial_api_url ?? 'https://wahub.pro/api/send') }}"
+                                   class="form-control"
+                                   required readonly>
+                           
                         </div>
                   
                         <div class="col-md-6 p-4">
                             <label class="form-label fw-bold">Mobile Number <span class="text-danger">*</span></label>
                             <input type="text" name="unofficial_mobile" value="{{ old('unofficial_mobile', $settings->unofficial_mobile ?? '') }}" 
                                    class="form-control" placeholder="919876543210" required>
-                            <!-- <small class="text-muted">Without + or spaces (e.g., 919876543210)</small> -->
                         </div>
 
                         <div class="col-md-6 p-4">
                             <label class="form-label fw-bold">Instance ID <span class="text-danger">*</span></label>
                             <input type="text" name="unofficial_instance_id" value="{{ old('unofficial_instance_id', $settings->unofficial_instance_id ?? '691AEEF33256E') }}" 
                                    class="form-control" placeholder="691AEEF33256E" required readonly>
-                            <!-- <small class="text-muted">Hardcoded: 691AEEF33256E</small> -->
                         </div>
 
                         <div class="col-md-6 p-4">
                             <label class="form-label fw-bold">Access Token <span class="text-danger">*</span></label>
                             <input type="text" name="unofficial_access_token" value="{{ old('unofficial_access_token', $settings->unofficial_access_token ?? '68f9df1ac354c') }}" 
                                    class="form-control" placeholder="68f9df1ac354c" required readonly>
-                            <!-- <small class="text-muted">Hardcoded: 68f9df1ac354c</small> -->
                         </div>
                     </div>
 

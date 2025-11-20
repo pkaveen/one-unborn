@@ -9,7 +9,7 @@ class Deliverables extends Model
 {
     protected $fillable = [
         'feasibility_id',
-        'purchase_order_id',
+        'purchase_order_id',   // IMPORTANT FIX
         'status',
         'delivery_id',
         'site_address',
@@ -29,6 +29,12 @@ class Deliverables extends Model
         'mode_of_delivery',
         'pppoe_username',
         'pppoe_password',
+
+        // If required
+        'dhcp_ip_address',
+        'dhcp_vlan',
+        'pppoe_vlan',
+
         'static_ip_address',
         'static_vlan',
         'static_subnet_mask',
@@ -53,19 +59,11 @@ class Deliverables extends Model
         'otc_extra_charges' => 'decimal:2'
     ];
 
-    // Relationship with Feasibility
     public function feasibility(): BelongsTo
     {
         return $this->belongsTo(Feasibility::class);
     }
 
-    // Relationship with Purchase Order
-    public function purchaseOrder(): BelongsTo
-    {
-        return $this->belongsTo(PurchaseOrder::class, 'purchase_order_id');
-    }
-
-    // Helper method to generate delivery ID
     public static function generateDeliveryId()
     {
         $prefix = 'DEL';
@@ -79,7 +77,6 @@ class Deliverables extends Model
         return $prefix . $year . str_pad($sequence, 4, '0', STR_PAD_LEFT);
     }
 
-    // Boot method to auto-generate delivery ID
     protected static function boot()
     {
         parent::boot();
@@ -91,7 +88,6 @@ class Deliverables extends Model
         });
     }
 
-    // Scope for different statuses
     public function scopeOpen($query)
     {
         return $query->where('status', 'Open');

@@ -1,20 +1,18 @@
-@extends('layouts.app')
 
-@section('content')
+
+<?php $__env->startSection('content'); ?>
 <div class="container-fluid py-4">
     <div class="card shadow border-0">
-        <div class="card-header bg-warning text-dark">
-            <h5 class="mb-0">
-                <i class="bi bi-hourglass-half me-2 float-start"></i>In Progress Deliverables
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0 float-start"><i class="bi bi-hourglass-split me-2"></i>Open Deliverables</h5>
             <input type="text" id="tableSearch" class="form-control form-control-sm w-25 float-end" placeholder="Search...">
 
-            </h5>
         </div>
         
         <div class="card-body">
-            @if($records->count() > 0)
+            <?php if($records->count() > 0): ?>
                 <div class="table-responsive">
-                    <table class="table table-bordered table-hover align-middle text-center" id="inprogress">
+                    <table class="table table-bordered table-hover align-middle text-center" id="open">
                         <thead class="table-dark text-center align-middle">
                             <tr>
                                 <th width="50">
@@ -30,56 +28,54 @@
                         </thead>
 
                         <tbody>
-                            @foreach($records as $index => $record)
+                            <?php $__currentLoopData = $records; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $record): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <tr>
                                 <td>
-                                    <input type="checkbox" class="form-check-input row-checkbox" value="{{ $record->id }}">
+                                    <input type="checkbox" class="form-check-input row-checkbox" value="<?php echo e($record->id); ?>">
                                 </td>
 
-                                <td>{{ $index + 1 }}</td>
+                                <td><?php echo e($index + 1); ?></td>
 
                                 <td>
-                                    <a href="{{ route('operations.deliverables.edit', $record->id) }}" 
+                                    <a href="<?php echo e(route('operations.deliverables.edit', $record->id)); ?>" 
                                        class="btn btn-sm btn-warning me-1">
                                         <i class="bi bi-pencil"></i> Edit
                                     </a>
-
-                                    <a href="{{ route('operations.deliverables.view', $record->id) }}" 
+                                    <a href="<?php echo e(route('operations.deliverables.view', $record->id)); ?>" 
                                        class="btn btn-sm btn-info">
                                         <i class="bi bi-eye"></i> View
                                     </a>
                                 </td>
 
-                                <td>{{ $record->po_number ?? 'N/A' }}</td>
+                                <td><?php echo e($record->po_number ?? 'N/A'); ?></td>
 
                                 <td>
-                                    {{ $record->po_date ? \Carbon\Carbon::parse($record->po_date)->format('d-m-Y') : 'N/A' }}
+                                    <?php echo e($record->po_date ? \Carbon\Carbon::parse($record->po_date)->format('d-m-Y') : 'N/A'); ?>
+
                                 </td>
 
-                                <td>{{ $record->feasibility->client->client_name ?? 'N/A' }}</td>
+                                <td><?php echo e($record->feasibility->client->client_name ?? 'N/A'); ?></td>
 
-                                <td>{{ $record->no_of_links ?? 'N/A' }}</td>
+                                <td><?php echo e($record->no_of_links ?? 'N/A'); ?></td>
                             </tr>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </tbody>
                     </table>
                 </div>
 
-            @else
+            <?php else: ?>
                 <div class="text-center py-5">
                     <i class="bi bi-inbox" style="font-size: 4rem; color: #ccc;"></i>
-                    <h5 class="text-muted mt-3">No In Progress Deliverables Found</h5>
-                    <p class="text-muted">There are currently no deliverables in "In Progress" status.</p>
+                    <h5 class="text-muted mt-3">No Open Deliverables Found</h5>
+                    <p class="text-muted">There are currently no deliverables in "Open" status.</p>
                 </div>
-            @endif
+            <?php endif; ?>
         </div>
     </div>
 </div>
 
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-
     const selectAll = document.getElementById('select_all');
     const rowCheckboxes = document.querySelectorAll('.row-checkbox');
 
@@ -101,11 +97,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
 document.getElementById('tableSearch').addEventListener('keyup', function() {
 
     let value = this.value.toLowerCase();
 
-    document.querySelectorAll('#inprogress tbody tr').forEach(row => {
+    document.querySelectorAll('#open tbody tr').forEach(row => {
 
         row.style.display = row.textContent.toLowerCase().includes(value) ? '' : 'none';
 
@@ -114,7 +111,7 @@ document.getElementById('tableSearch').addEventListener('keyup', function() {
 });
 </script>
 <style>
-.table th,  .table td {
+    .table th,  .table td {
 
     width: 130px;
 
@@ -122,4 +119,7 @@ document.getElementById('tableSearch').addEventListener('keyup', function() {
 
 }
 </style>
-@endsection
+
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH F:\xampp\htdocs\wlcome\multipleuserpage\resources\views/operations/deliverables/open.blade.php ENDPATH**/ ?>

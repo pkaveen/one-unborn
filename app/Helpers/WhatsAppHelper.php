@@ -2,137 +2,98 @@
 
 namespace App\Helpers;
 
-use App\Models\WhatsAppSettings;
-use Illuminate\Support\Facades\Log;
-
 class WhatsAppHelper
 {
     /**
-     * Send WhatsApp Text Message
+     * Send WhatsApp Text Message (Senior's exact implementation)
      */
     public static function sendMessage($mobile, $message)
     {
-        $settings = WhatsAppSettings::where('is_default', 1)->first();
-
-        if (!$settings) {
-            return ['success' => false, 'message' => 'WhatsApp settings not configured'];
-        }
-
-        // Fetch from DB
-        $instance_id  = $settings->unofficial_instance_id;
-        $access_token = $settings->unofficial_access_token;
-
+        $instance_id = '691AEEF33256E';
+        $access_token = '68f9df1ac354c';
+        
         $tmsg = urlencode($message);
-
-        $url = "https://wa.unbornsms.in/api/send.php?number={$mobile}&type=text&message={$tmsg}&instance_id={$instance_id}&access_token={$access_token}";
+        $url = "https://wahub.pro/api/send?number={$mobile}&type=text&message={$tmsg}&instance_id={$instance_id}&access_token={$access_token}";
 
         return self::sendCurlRequest($url, $mobile, 'text');
     }
 
     /**
-     * Send WhatsApp Media Message (Document/Image)
+     * Send WhatsApp Media Message (Senior's exact implementation)
      */
-    public static function sendMediaMessage($mobile, $message, $mediaUrl, $filename = null)
+    public static function sendMediaMessage($mobile, $message, $mediaUrl, $filename)
     {
-        $settings = WhatsAppSettings::where('is_default', 1)->first();
-
-        if (!$settings) {
-            return ['success' => false, 'message' => 'WhatsApp settings not configured'];
-        }
-
-        // Fetch from DB
-        $instance_id  = $settings->unofficial_instance_id;
-        $access_token = $settings->unofficial_access_token;
-
+        $instance_id = '691AEEF33256E';
+        $access_token = '68f9df1ac354c';
+        
         $tmsg = urlencode($message);
-
-        $url = "https://wa.unbornsms.in/api/send.php?number={$mobile}&type=media&message={$tmsg}&media_url={$mediaUrl}";
-
-        if ($filename) {
-            $url .= "&filename={$filename}";
-        }
-
-        $url .= "&instance_id={$instance_id}&access_token={$access_token}";
+        $url = "https://wahub.pro/api/send?number={$mobile}&type=media&message={$tmsg}&media_url={$mediaUrl}&filename={$filename}&instance_id={$instance_id}&access_token={$access_token}";
 
         return self::sendCurlRequest($url, $mobile, 'media');
     }
 
     /**
-     * Central cURL Handler (Based on senior's method)
+     * Send cURL request (Senior's exact implementation)
      */
     private static function sendCurlRequest($url, $toNumber, $typeOfMsg)
     {
         $curl = curl_init();
-
-        curl_setopt_array($curl, [
+        curl_setopt_array($curl, array(
             CURLOPT_URL => $url,
             CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
             CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'GET',
-            CURLOPT_HTTPHEADER => [
+            CURLOPT_HTTPHEADER => array(
                 'Accept: application/json'
-            ],
-            CURLOPT_SSL_VERIFYPEER => false,
-            CURLOPT_SSL_VERIFYHOST => false,
-        ]);
-
+            ),
+        ));
+        
         $response = curl_exec($curl);
+        $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
         $curlError = curl_error($curl);
-        $curlErrno = curl_errno($curl);
-        $httpCode  = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-
         curl_close($curl);
-
-        // Log request
-        Log::info('WhatsApp Request', [
-            'url'       => $url,
-            'http_code' => $httpCode,
-            'curl_error'=> $curlError,
-            'curl_errno'=> $curlErrno,
-            'response'  => $response
-        ]);
-
-        if ($curlErrno) {
-            return ['success' => false, 'message' => $curlError];
-        }
-
-        if (!$response) {
-            return ['success' => false, 'message' => 'No response from API'];
-        }
-
+        
+        // Debug: Log raw response (using storage path)
+        $logPath = storage_path('logs/whatsapp_debug.txt');
+        $logContent = date("Y-m-d H:i:s") . "\n" .
+            "URL: " . $url . "\n" .
+            "HTTP Code: " . $httpCode . "\n" .
+            "cURL Error: " . $curlError . "\n" .
+            "Raw Response: " . $response . "\n" .
+            str_repeat("-", 80) . "\n";
+        
+        file_put_contents($logPath, $logContent, FILE_APPEND);
+        
         $whatsappResponse = json_decode($response, true);
+        
+        // Log to file (following senior's pattern) - using storage path
+        $status = isset($whatsappResponse['status']) ? $whatsappResponse['status'] : 'unknown';
+        $msg = isset($whatsappResponse['message']) ? $whatsappResponse['message'] : 'no message';
+        $content = date("Y-m-j:g:ia") . ':to:' . $toNumber . ';type:' . $typeOfMsg . ';Status: ' . $status . ';Message:' . $msg . ';';
 
-        // Write log file
-        $logContent = date("Y-m-j g:ia") . ":to:{$toNumber};type:{$typeOfMsg};Status:" . 
-                      ($whatsappResponse['status'] ?? 'unknown') . 
-                      ";Message:" . ($whatsappResponse['message'] ?? 'no message') . ";";
+        $logFile = storage_path('logs/whatsapp_log.txt');
+        file_put_contents($logFile, $content . PHP_EOL, FILE_APPEND);
 
-        if (!is_dir('./mylogs')) {
-            mkdir('./mylogs', 0755, true);
-        }
-
-        file_put_contents('./mylogs/whatsapp_log.txt', $logContent . PHP_EOL, FILE_APPEND);
-
-        if (($whatsappResponse['status'] ?? '') === 'success') {
-            return ['success' => true, 'message' => 'WhatsApp message sent', 'response' => $whatsappResponse];
-        }
-
-        return [
-            'success' => false,
-            'message' => $whatsappResponse['message'] ?? 'Unknown error'
-        ];
+        return $response;
     }
 
-    /** Wrapper for Documents */
+    /**
+     * Send WhatsApp Document
+     */
     public static function sendDocument($mobile, $message, $documentUrl, $filename)
     {
         return self::sendMediaMessage($mobile, $message, $documentUrl, $filename);
     }
 
-    /** Wrapper for Images */
+    /**
+     * Send WhatsApp Image
+     */
     public static function sendImage($mobile, $message, $imageUrl)
     {
-        return self::sendMediaMessage($mobile, $message, $imageUrl);
+        return self::sendMediaMessage($mobile, $message, $imageUrl, '');
     }
 }
