@@ -116,6 +116,14 @@
 
                 </div>
 
+                <div class="col-md-6">
+
+                    <label class="form-label">User Name</label>
+
+                    <input type="text" name="user_name" class="form-control" required>
+
+                </div>
+
             </div>
 
 

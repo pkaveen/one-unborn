@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('module_name')->nullable(); 
             $table->string('user_type');    // ex: Admin, HR, Employee, etc.
-            $table->string('name');         // Menu name (ex: Manage Users)
+            $table->string('name');         // Menu name (ex: Manage User)
             $table->string('route')->nullable(); // Route name (ex: users.index)
             //  $table->unsignedBigInteger('user_type_id')->nullable();
             $table->string('icon')->nullable();  // Optional icon name

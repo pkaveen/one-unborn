@@ -289,6 +289,13 @@ document.getElementById('tableSearch').addEventListener('keyup', function() {
 
 
 </script>
+<style>
+    .table th,  .table td {
+    width: 230px;
+    white-space: nowrap;
+    text-align: center;
+    }
+</style>
 <?php $__env->stopSection(); ?>
 
 

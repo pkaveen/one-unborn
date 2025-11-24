@@ -6,10 +6,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use App\Models\Deliverables;
 use App\Models\Feasibility;
 use App\Models\FeasibilityStatus;
 use App\Models\PurchaseOrder;
+use App\Models\Deliverables;
 
 class DeliverablesController extends Controller
 {
@@ -102,7 +102,9 @@ class DeliverablesController extends Controller
             'status_of_link' => 'nullable|string',
             'mode_of_delivery' => 'required|string',
             'date_of_activation' => 'nullable|date',
-            'circuit_id' => 'nullable|string',
+            // 'circuit_id' => 'nullable|string',
+            'circuit_id'          => 'nullable|string|max:50|unique:deliverables,circuit_id',
+
             'pppoe_username' => 'nullable|string',
             'pppoe_password' => 'nullable|string',
             'pppoe_vlan' => 'nullable|string',
@@ -123,7 +125,7 @@ class DeliverablesController extends Controller
             'sla' => $request->sla,
             'status_of_link' => $request->status_of_link,
             'mode_of_delivery' => $request->mode_of_delivery,
-            'circuit_id' => $request->circuit_id,
+            // 'circuit_id' => $request->circuit_id,
             'otc_extra_charges' => $request->otc_extra_charges,
         ];
 
@@ -282,11 +284,35 @@ class DeliverablesController extends Controller
 
             $feasibility = $purchaseOrder->feasibility;
             $feasibilityStatus = FeasibilityStatus::where('feasibility_id', $purchaseOrder->feasibility_id)->first();
-            $client = optional($feasibility)->client;
+       // Get Feasibility fields
+$client = optional($feasibility)->client;
+
+// Last Deliverable ID for auto numbering
+$last = Deliverables::latest('id')->first();
+$nextNumber = ($last->id ?? 0) + 1;
+
+// Company short-form (first 3 letters)
+$companyName = $feasibility->company->company_name ?? 'CMP';
+$companyShort = strtoupper(substr(str_replace(' ', '', $companyName), 0, 3));
+
+// State short-form (first 3 letters)
+$stateName = $feasibility->state ?? 'Unknown';
+$stateShort = strtoupper(substr(str_replace(' ', '', $stateName), 0, 3));
+
+// Static IP from Feasibility
+$staticIp = $feasibility->static_ip_subnet ?? 'NOIP';
+
+// Build Circuit ID: 25-UNB-TAM-STATICIP-0001
+$circuitID = date('y')
+            . '' . $companyShort
+            . '' . $stateShort
+            . '' . strtoupper($staticIp)
+            . '' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
 
             $deliverable = Deliverables::create([
                 'feasibility_id' => $purchaseOrder->feasibility_id,
                 'status' => 'Open',
+                'circuit_id' => $circuitID, // ✅ Auto generated
 
                 'site_address' => $purchaseOrder->site_address ?? ($feasibility->address ?? ''),
                 'local_contact' => $purchaseOrder->local_contact ?? ($feasibility->spoc_name ?? ''),

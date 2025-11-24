@@ -6,14 +6,6 @@
         Manage User Type Privileges — <span class="text-dark">{{ $userType->name }}</span>
     </h3>
 
-    <!-- {{-- ✅ Info Alert --}}
-    <div class="alert alert-info mb-4">
-        <i class="bi bi-info-circle me-2"></i>
-        <strong>User Type Privilege Management:</strong> 
-        These are default privileges for the "{{ $userType->name }}" user type. 
-        When new users are created with this user type, they will automatically inherit these privileges.
-        You can still customize individual user privileges later using the gear icon in the user list.
-    </div> -->
 
     <div class="card shadow-lg border-0 rounded-4 p-4">
         <form id="userTypePrivilegeForm" action="{{ route('menus.updateUserTypePrivileges', $userType->id) }}" method="POST">
@@ -26,56 +18,89 @@
             </div>
 
             {{-- ✅ Privilege Table --}}
-            <div class="table-responsive">
-                <table class="table table-bordered align-middle text-center shadow-sm">
-                    <thead class="table-primary">
+            <div class="table-responsive privilege-table">
+                <table class="table table-bordered align-middle text-center shadow-sm mb-0">
+                    <thead class="table-primary table-custom">
                         <tr>
-                            <th>Module Name</th>
-                            <th>Menu Name</th>
-                            <th>Menu</th>
+                            <th class="select-col">Select</th>
+                            <th class="module-col">Module</th>
+                            <th class="section-col">Section</th>
+                            <th class="menu-col">Menu</th>
+                            <th>View</th>
                             <th>Add</th>
                             <th>Edit</th>
                             <th>Delete</th>
-                            <th>View</th>
                             <th>All</th>
+                            <!-- <th>Others</th> -->
                         </tr>
                     </thead>
-
                     <tbody>
-                        @foreach ($menus as $menu)
+
+                    @foreach ($groupedMenus as $moduleName => $moduleMenus)
+                        @php
+                              $moduleSlug = \Illuminate\Support\Str::slug($moduleName ?: 'module-'.$loop->index, '-');
+                        @endphp
+
+                        @foreach ($moduleMenus as $menu)
                             @php
                                 $priv = $userTypePrivileges[$menu->id] ?? null;
                             @endphp
-                            <tr>
-                                <td class="fw-semibold text-start ps-3">{{ ucfirst($menu->module_name ?? 'General') }}</td>
-                                <td class="fw-semibold text-start ps-4">{{ ucfirst($menu->name) }}</td>
-
-                                <td><input type="checkbox" name="privileges[{{ $menu->id }}][can_menu]" value="1"
-                                    class="perm-checkbox"
-                                    {{ $priv && $priv->can_menu ? 'checked' : '' }}></td>
-
-                                <td><input type="checkbox" name="privileges[{{ $menu->id }}][can_add]" value="1"
-                                    class="perm-checkbox"
-                                    {{ $priv && $priv->can_add ? 'checked' : '' }}></td>
-
-                                <td><input type="checkbox" name="privileges[{{ $menu->id }}][can_edit]" value="1"
-                                    class="perm-checkbox"
-                                    {{ $priv && $priv->can_edit ? 'checked' : '' }}></td>
-
-                                <td><input type="checkbox" name="privileges[{{ $menu->id }}][can_delete]" value="1"
-                                    class="perm-checkbox"
-                                    {{ $priv && $priv->can_delete ? 'checked' : '' }}></td>
-
-                                <td><input type="checkbox" name="privileges[{{ $menu->id }}][can_view]" value="1"
-                                    class="perm-checkbox"
-                                    {{ $priv && $priv->can_view ? 'checked' : '' }}></td>
+                            <tr data-module="{{ $moduleSlug }}">
+                                <td class="text-center select-cell">
+                                    @if ($loop->first)
+                                        <input type="checkbox" class="module-checkbox" data-module="{{ $moduleSlug }}">
+                                    @endif
+                                </td>
+                                <td class="text-start fw-semibold module-cell">
+                                    @if ($loop->first)
+                                        {{ ucfirst($moduleName) }}
+                                    @endif
+                                </td>
+                                <!-- <td class="text-start section-cell">
+                                    {{ ucfirst($moduleName) }}
+                                </td> -->
+                                <td class="text-start menu-cell ps-3">
+                                    {{ $menu->name }}
+                                </td>
 
                                 <td>
-                                    <input type="checkbox" class="grant-row-all form-check-input"
-                                        title="Grant all permissions for this menu">
+                                    <input type="checkbox" name="privileges[{{ $menu->id }}][can_menu]" value="1"
+                                           class="perm-checkbox"
+                                           {{ $priv && $priv->can_menu ? 'checked' : '' }}>
                                 </td>
+
+                                <td>
+                                    <input type="checkbox" name="privileges[{{ $menu->id }}][can_view]" value="1"
+                                           class="perm-checkbox"
+                                           {{ $priv && $priv->can_view ? 'checked' : '' }}>
+                                </td>
+
+                                <td>
+                                    <input type="checkbox" name="privileges[{{ $menu->id }}][can_add]" value="1"
+                                           class="perm-checkbox"
+                                           {{ $priv && $priv->can_add ? 'checked' : '' }}>
+                                </td>
+
+                                <td>
+                                    <input type="checkbox" name="privileges[{{ $menu->id }}][can_edit]" value="1"
+                                           class="perm-checkbox"
+                                           {{ $priv && $priv->can_edit ? 'checked' : '' }}>
+                                </td>
+
+                                <td>
+                                    <input type="checkbox" name="privileges[{{ $menu->id }}][can_delete]" value="1"
+                                           class="perm-checkbox"
+                                           {{ $priv && $priv->can_delete ? 'checked' : '' }}>
+                                </td>
+
+                                <td>
+                                        <input type="checkbox" class="grant-row-all form-check-input"
+                                               title="Grant all permissions for this menu">
+                                    </td>
                             </tr>
                         @endforeach
+                    @endforeach
+
                     </tbody>
                 </table>
             </div>
@@ -98,14 +123,11 @@
 document.addEventListener('DOMContentLoaded', function () {
     const globalGrant = document.getElementById('grantAllGlobal');
 
-    // ✅ Global "Grant All" - selects all checkboxes
     globalGrant.addEventListener('change', function () {
         const checked = this.checked;
-        document.querySelectorAll('tbody input[type="checkbox"]').forEach(cb => cb.checked = checked);
-        document.querySelectorAll('.grant-row-all').forEach(rowCb => rowCb.checked = checked);
+        document.querySelectorAll('tbody input[type="checkbox"]:not(:disabled)').forEach(cb => cb.checked = checked);
     });
 
-    // ✅ Row-wise "Grant All" toggle
     document.querySelectorAll('.grant-row-all').forEach(rowCb => {
         rowCb.addEventListener('change', function () {
             const row = this.closest('tr');
@@ -113,38 +135,82 @@ document.addEventListener('DOMContentLoaded', function () {
             row.querySelectorAll('.perm-checkbox').forEach(cb => cb.checked = checked);
         });
     });
+
+    document.querySelectorAll('.module-checkbox').forEach(cb => {
+        cb.addEventListener('change', function () {
+            const moduleKey = this.dataset.module;
+            const checked = this.checked;
+            document.querySelectorAll(`tr[data-module="${moduleKey}"] .perm-checkbox`).forEach(button => button.checked = checked);
+        });
+    });
 });
 </script>
 
 {{-- ✅ Styling --}}
 <style>
-.table {
-    border-radius: 8px;
-    overflow: hidden;
+.privilege-table {
+    border: 1px solid #dfe4eb;
+    border-radius: 10px;
+    background: #fff;
+    padding: 0.35rem;
 }
-.table th, .table td {
+.privilege-table .table {
+    margin-bottom: 0;
+}
+.table-custom th {
+    background: linear-gradient(135deg, #0d6efd, #0a52c4) !important;
+    color: #fff;
+    border-color: #0a58ca;
+    font-size: 0.9rem;
+    letter-spacing: 0.03rem;
+    text-transform: uppercase;
+}
+.table tbody tr:nth-of-type(odd) {
+    background: #f6fafd;
+}
+.table tbody tr:nth-of-type(even) {
+    background: #ffffff;
+}
+.table td,
+.table th {
+    border-color: #cce0ff;
     vertical-align: middle;
-    padding: 0.6rem;
+    padding: 0.7rem 0.55rem;
 }
-.table-primary th {
-    background-color: #0d6efd !important;
-    color: white;
+.select-col {
+    width: 5%;
 }
-.form-check-input,
-input[type="checkbox"] {
+.module-col {
+    width: 15%;
+}
+.section-col {
+    width: 15%;
+}
+.menu-col {
+    width: 20%;
+    text-align: left;
+}
+.module-cell,
+.section-cell,
+.menu-cell {
+    font-size: 0.95rem;
+    color: #1c1f26;
+}
+.text-center input[type="checkbox"] {
     cursor: pointer;
     width: 1.1rem;
     height: 1.1rem;
-    accent-color: #0d6efd;
-    border-radius: 4px;
 }
-input[type="checkbox"]:hover {
-    transform: scale(1.1);
-    transition: 0.15s ease;
-}
-input[type="checkbox"]:focus {
+.text-center input[type="checkbox"]:focus-visible {
     outline: none;
-    box-shadow: 0 0 4px rgba(13, 110, 253, 0.6);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.45);
+}
+.table-responsive {
+    border-radius: 12px;
+    background: #fdfdfd;
+}
+.perm-checkbox {
+    accent-color: #0d6efd;
 }
 .btn-success {
     background-color: #198754;
@@ -160,8 +226,16 @@ input[type="checkbox"]:focus {
 .btn-secondary:hover {
     background-color: #5c636a;
 }
-.alert-info {
-    border-left: 4px solid #0dcaf0;
+.form-check-label {
+    font-weight: 600;
+}
+@media (max-width: 992px) {
+    .select-col,
+    .module-col,
+    .section-col,
+    .menu-col {
+        width: auto;
+    }
 }
 </style>
 

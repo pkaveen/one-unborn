@@ -16,7 +16,8 @@ class PurchaseOrderController extends Controller
     public function index()
     {
         $purchaseOrders = PurchaseOrder::with('feasibility.client')->orderBy('created_at', 'desc')->get();
-        $permissions = TemplateHelper::getUserMenuPermissions('User Type') ?? (object)[
+        $permissions = TemplateHelper::getUserMenuPermissions('Purchase Order') ?? (object)[
+            'can_menu' => true,
             'can_add' => true,
             'can_edit' => true,
             'can_delete' => true,
@@ -43,11 +44,25 @@ class PurchaseOrderController extends Controller
         // Basic validation for main fields
         $rules = [
             'feasibility_id' => 'required|exists:feasibilities,id',
-            'po_number' => 'required|string|max:255|unique:purchase_orders,po_number',
+            // 'po_number' => 'required|string|max:255|unique:purchase_orders,po_number',
+            // 'po_number' => 'required',
             'po_date' => 'required|date',
             'no_of_links' => 'required|integer|min:1|max:4',
             'contract_period' => 'required|integer|min:1',
+            
         ];
+// Apply unique rule ONLY when reuse is NOT allowed
+    if ($request->allow_reuse == 1) {
+        $rules['po_number'] = 'required';
+    } else {
+        $rules['po_number'] = 'required|unique:purchase_orders,po_number';
+    }
+// if (!$request->allow_reuse) {
+//     $rules['po_number'] .= '|unique:purchase_orders,po_number';
+// }
+
+// $request->validate($rules);
+
 
         // Check if type_of_service is ILL - make static IP mandatory
         $feasibility = Feasibility::find($request->feasibility_id);
@@ -117,8 +132,8 @@ class PurchaseOrderController extends Controller
                 ->createFromPurchaseOrder($purchaseOrder);
             
             // Redirect to deliverables page
-            return redirect()->route('operations.deliverables.open')
-                ->with('success', 'Purchase Order created successfully and deliverable generated! Redirected to Deliverables.');
+            // return redirect()->route('operations.deliverables.open')
+                // ->with('success', 'Purchase Order created successfully and deliverable generated! Redirected to Deliverables.');
         }
 
         return redirect()->route('sm.purchaseorder.index')
@@ -151,14 +166,21 @@ class PurchaseOrderController extends Controller
     $purchaseOrder = PurchaseOrder::findOrFail($id);
 
     // Validate base fields
-    $validated = $request->validate([
-        'feasibility_id' => 'required|exists:feasibilities,id',
-        'po_number' => 'required|string|max:255|unique:purchase_orders,po_number,' . $id,
-        'po_date' => 'required|date',
-        'no_of_links' => 'required|integer|min:1|max:4',
-        'contract_period' => 'required|integer|min:1',
-        'status' => 'sometimes|string'
-    ]);
+    $rules = [
+    'feasibility_id' => 'required|exists:feasibilities,id',
+    // 'po_number' => 'required',
+    'po_date' => 'required|date',
+    'no_of_links' => 'required|integer|min:1|max:4',
+    'contract_period' => 'required|integer|min:1',
+    'status' => 'sometimes|string'
+];
+// Apply unique rule ONLY when reuse is NOT allowed
+    if ($request->allow_reuse == 1) {
+        $rules['po_number'] = 'required';
+    } else {
+        $rules['po_number'] = 'required|unique:purchase_orders,po_number';
+    }
+$validated = $request->validate($rules);
 
     $noOfLinks = $validated['no_of_links'];
 
@@ -318,86 +340,6 @@ class PurchaseOrderController extends Controller
         ]);
     }
 
-    /**
-     * Create deliverable from purchase order
-     */
-    private function createDeliverableFromPurchaseOrder($purchaseOrder)
-    {
-        try {
-            // If caller passed id, attempt to load model
-            if (is_numeric($purchaseOrder)) {
-                $purchaseOrder = PurchaseOrder::find($purchaseOrder);
-            }
-
-            if (!$purchaseOrder instanceof PurchaseOrder) {
-                Log::warning('createDeliverableFromPurchaseOrder: invalid purchaseOrder parameter');
-                return;
-            }
-
-            // Already exists? check by purchase_order_id (best) or po_number
-            $existingDeliverable = Deliverables::where('purchase_order_id', $purchaseOrder->id)
-                ->orWhere('po_number', $purchaseOrder->po_number)
-                ->first();
-
-            if ($existingDeliverable) {
-                Log::info("Deliverable already exists for Purchase Order ID: {$purchaseOrder->id}");
-                return;
-            }
-
-            // Only create if PO is Closed
-            if ($purchaseOrder->status !== 'Closed') {
-                Log::info("createDeliverableFromPurchaseOrder: PO not closed ({$purchaseOrder->status}) - skipping creation.");
-                return;
-            }
-
-            // Get feasibility and feasibility status data
-            $feasibility = $purchaseOrder->feasibility;
-            $feasibilityStatus = FeasibilityStatus::where('feasibility_id', $purchaseOrder->feasibility_id)->first();
-
-            if (!$feasibility) {
-                Log::error("Feasibility not found for Purchase Order ID: {$purchaseOrder->id}");
-                return;
-            }
-
-            // Get client for GST number
-            $client = $feasibility->client;
-
-            // Create deliverable with data from feasibility and purchase order
-            $deliverable = Deliverables::create([
-                'feasibility_id' => $feasibility->id,
-                'purchase_order_id' => $purchaseOrder->id,
-                'status' => 'Open',
-
-                // Site Information from Feasibility
-                'site_address' => $purchaseOrder->site_address ?? $feasibility->address ?? '',
-                'local_contact' => $purchaseOrder->local_contact ?? $feasibility->spoc_name ?? '',
-                'state' => $purchaseOrder->state ?? $feasibility->state ?? '',
-                'gst_number' => $client->gstin ?? '',
-
-                // Network Configuration
-                'link_type' => $purchaseOrder->connection_type ?? $feasibility->type_of_service ?? '',
-                'speed_in_mbps' => $purchaseOrder->bandwidth ?? $feasibility->speed ?? '',
-                'no_of_links' => $purchaseOrder->no_of_links ?? $feasibility->no_of_links ?? 1,
-
-                // Vendor info
-                'vendor' => $feasibilityStatus->vendor1_name ?? '',
-
-                // Pricing from Purchase Order
-                'arc_cost' => $purchaseOrder->arc_per_link ?? 0,
-                'otc_cost' => $purchaseOrder->otc_per_link ?? 0,
-                'static_ip_cost' => $purchaseOrder->static_ip_cost_per_link ?? 0,
-
-                // PO details
-                'po_number' => $purchaseOrder->po_number,
-                'po_date' => $purchaseOrder->po_date,
-            ]);
-
-            Log::info("Deliverable created successfully with ID: {$deliverable->id} for Purchase Order: {$purchaseOrder->po_number}");
-        } catch (\Exception $e) {
-            Log::error("Failed to create deliverable from purchase order: " . $e->getMessage());
-        }
-    }
-
     private function validatePricing($feas, $request, $noOfLinks)
     {
         if (!$feas || !$noOfLinks) {
@@ -489,4 +431,10 @@ class PurchaseOrderController extends Controller
 
         return null;
     }
+public function checkPoNumber(Request $request)
+{
+    $exists = PurchaseOrder::where('po_number', $request->po_number)->exists();
+    return response()->json(['exists' => $exists]);
+}
+
 }

@@ -310,9 +310,10 @@ Route::get('/test-email', function () {
         Route::delete('/{id}', [PurchaseOrderController::class, 'destroy'])->name('destroy');
         Route::get('/feasibility/{id}/details', [PurchaseOrderController::class, 'getFeasibilityDetails'])->name('feasibility.details');
     Route::patch('/{id}/toggle-status', [PurchaseOrderController::class, 'toggleStatus'])->name('toggle-status');
-        Route::get('/check-po-number', [PurchaseOrderController::class, 'checkPONumber']);
+        // Route::get('/check-po-number', [PurchaseOrderController::class, 'checkPONumber']);
+        // Route::get('/sm/purchaseorder/check-po/{po}', [PurchaseOrderController::class, 'checkPo'])->name('po.check');
+           Route::get('/check-po-number', [PurchaseOrderController::class, 'checkPoNumber']);
 
-        
     });
 
     Route::prefix('sm')->name('sm.')->middleware(['auth'])->group(function () {
@@ -337,7 +338,7 @@ Route::get('/test-email', function () {
         }
         
         // Test permission checks for key menus
-        $manageUsersPermission = \App\Helpers\TemplateHelper::getUserMenuPermissions('Manage Users');
+        $manageUsersPermission = \App\Helpers\TemplateHelper::getUserMenuPermissions('Manage User');
         $dashboardPermission = \App\Helpers\TemplateHelper::getUserMenuPermissions('Dashboard');
         $feasibilityPermission = \App\Helpers\TemplateHelper::getUserMenuPermissions('Feasibility Master');
         

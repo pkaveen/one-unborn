@@ -21,6 +21,7 @@ class Vendor extends Model
     }
 
     protected $fillable = [
+        'user_name',
         'vendor_code',
         'vendor_name',
         'business_display_name',

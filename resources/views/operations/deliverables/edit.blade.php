@@ -129,31 +129,31 @@
                     </div>
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-md-3 mb-3">
+                            <div class="col-md-4 mb-3">
                                 <label class="form-label">Plans Name <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" name="plans_name" 
                                        value="{{ old('plans_name', $record->plans_name) }}" required>
                             </div>
 
-                            <div class="col-md-3 mb-3">
+                            <div class="col-md-4 mb-3">
                                 <label class="form-label">Speed in Mbps (Plan) <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" name="speed_in_mbps_plan" 
                                        value="{{ old('speed_in_mbps_plan', $record->speed_in_mbps_plan) }}" required>
                             </div>
 
-                            <div class="col-md-3 mb-3">
+                            <div class="col-md-4 mb-3">
                                 <label class="form-label">No of Months Renewal <span class="text-danger">*</span></label>
                                 <input type="number" class="form-control" name="no_of_months_renewal" 
                                        value="{{ old('no_of_months_renewal', $record->no_of_months_renewal) }}" required>
                             </div>
 
-                            <div class="col-md-3 mb-3">
+                            <div class="col-md-4 mb-3">
                                 <label class="form-label">Date of Activation <span class="text-danger">*</span></label>
                                 <input type="date" class="form-control" name="date_of_activation" 
                                        value="{{ old('date_of_activation', $record->date_of_activation) }}" required>
                             </div>
 
-                            <div class="col-md-3 mb-3">
+                            <div class="col-md-4 mb-3">
                                 <label class="form-label">SLA <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" name="sla" 
                                        value="{{ old('sla', $record->sla) }}" required>
@@ -181,11 +181,17 @@
                                 </select>
                             </div>
 
-                            <div class="col-md-4 mb-3">
+                            <!-- <div class="col-md-4 mb-3">
                                 <label class="form-label">Circuit ID</label>
                                 <input type="text" class="form-control" name="circuit_id" 
                                        value="{{ old('circuit_id', $record->circuit_id) }}">
+                            </div> -->
+
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Circuit ID</label>
+                                <input type="text" class="form-control" value="Auto Generated" readonly>
                             </div>
+
                         </div>
                     </div>
                 </div>

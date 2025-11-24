@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use App\Mail\FeasibilityStatusMail;
+use App\Helpers\TemplateHelper;
 
 class FeasibilityStatusController extends Controller
 {
@@ -19,8 +20,16 @@ class FeasibilityStatusController extends Controller
         $records = FeasibilityStatus::with('feasibility')
             ->where('status', $status)
             ->get();
+            // Use the helper correctly
+        $permissions = TemplateHelper::getUserMenuPermissions('operations Feasibility') ?? (object)[
+            'can_menu' => true,
+            'can_add' => true,
+            'can_edit' => true,
+            'can_delete' => true,
+            'can_view' => true,
+        ];
 
-        return view('feasibility.feasibility_status.index', compact('records', 'status', 'statuses'));
+        return view('feasibility.feasibility_status.index', compact('records', 'status', 'statuses', 'permissions'));
     }
 
     public function show($id)
@@ -259,7 +268,8 @@ public function editSave(Request $request, $id)
             ->where('status', 'Open')
             ->get();
 
-        return view('operations.feasibility.open', compact('records'));
+        $permissions = $this->getOperationsFeasibilityPermissions();
+        return view('operations.feasibility.open', compact('records', 'permissions'));
     }
 
     public function operationsInProgress()
@@ -268,7 +278,8 @@ public function editSave(Request $request, $id)
             ->where('status', 'InProgress')
             ->get();
 
-        return view('operations.feasibility.inprogress', compact('records'));
+        $permissions = $this->getOperationsFeasibilityPermissions();
+        return view('operations.feasibility.inprogress', compact('records', 'permissions'));
     }
 
     public function operationsClosed()
@@ -277,7 +288,8 @@ public function editSave(Request $request, $id)
             ->where('status', 'Closed')
             ->get();
 
-        return view('operations.feasibility.closed', compact('records'));
+        $permissions = $this->getOperationsFeasibilityPermissions();
+        return view('operations.feasibility.closed', compact('records', 'permissions'));
     }
 
     public function operationsView($id)
@@ -379,6 +391,17 @@ public function editSave(Request $request, $id)
 
         return redirect()->route('operations.feasibility.closed')
             ->with('success', 'Feasibility closed and deliverable created successfully!');
+    }
+
+    private function getOperationsFeasibilityPermissions()
+    {
+        return TemplateHelper::getUserMenuPermissions('operations Feasibility') ?? (object)[
+            'can_menu' => true,
+            'can_add' => true,
+            'can_edit' => true,
+            'can_delete' => true,
+            'can_view' => true,
+        ];
     }
 
     /**
@@ -488,51 +511,62 @@ public function editSave(Request $request, $id)
      * @param string|null $previousStatus The previous status
      * @return array Array of email addresses
      */
-    private function getEmailRecipients($feasibility, $newStatus, $previousStatus = null)
-    {
-        $recipients = [];
+  
+private function getEmailRecipients($feasibility, $newStatus, $previousStatus = null)
+{
+    // Fetch all users who belong to user_type = Team
+    $teamUsers = \App\Models\User::whereHas('userType', function ($q) {
+        $q->where('name', 'Team');
+    })->pluck('email')->toArray();
+
+    return array_unique(array_filter($teamUsers));
+}
+
+    // private function getEmailRecipients($feasibility, $newStatus, $previousStatus = null)
+    // {
+    //     $recipients = [];
         
-        // Always include the SPOC email if available
-        if ($feasibility->spoc_email) {
-            $recipients[] = $feasibility->spoc_email;
-        }
+    //     // Always include the SPOC email if available
+    //     if ($feasibility->spoc_email) {
+    //         $recipients[] = $feasibility->spoc_email;
+    //     }
         
-        // Add the person who created the feasibility
-        if ($feasibility->createdBy && $feasibility->createdBy->email) {
-            $recipients[] = $feasibility->createdBy->email;
-        }
+    //     // Add the person who created the feasibility
+    //     if ($feasibility->createdBy && $feasibility->createdBy->email) {
+    //         $recipients[] = $feasibility->createdBy->email;
+    //     }
         
-        // Status-specific recipients
-        switch ($newStatus) {
-            case 'InProgress':
-                // Notify S&M team when operations starts working
-                $smEmails = \App\Models\User::whereHas('userType', function($q) {
-                    $q->where('name', 'like', '%sales%')
-                      ->orWhere('name', 'like', '%marketing%');
-                })->pluck('email')->toArray();
-                $recipients = array_merge($recipients, $smEmails);
-                break;
+    //     // Status-specific recipients
+    //     switch ($newStatus) {
+    //         case 'InProgress':
+    //             // Notify S&M team when operations starts working
+    //             $smEmails = \App\Models\User::whereHas('userType', function($q) {
+    //                 $q->where('name', 'like', '%sales%')
+    //                   ->orWhere('name', 'like', '%marketing%');
+    //             })->pluck('email')->toArray();
+    //             $recipients = array_merge($recipients, $smEmails);
+    //             break;
                 
-            case 'Closed':
-                // Notify original requester and management when completed
-                if ($feasibility->createdBy && $feasibility->createdBy->email) {
-                    $recipients[] = $feasibility->createdBy->email;
-                }
+    //         case 'Closed':
+    //             // Notify original requester and management when completed
+    //             if ($feasibility->createdBy && $feasibility->createdBy->email) {
+    //                 $recipients[] = $feasibility->createdBy->email;
+    //             }
                 
-                // 🎯 FIXED: If direct Open→Closed, also notify S&M team
-                if ($previousStatus === 'Open') {
-                    $smEmails = \App\Models\User::whereHas('userType', function($q) {
-                        $q->where('name', 'like', '%sales%')
-                          ->orWhere('name', 'like', '%marketing%');
-                    })->pluck('email')->toArray();
-                    $recipients = array_merge($recipients, $smEmails);
-                }
-                break;
-        }
+    //             // 🎯 FIXED: If direct Open→Closed, also notify S&M team
+    //             if ($previousStatus === 'Open') {
+    //                 $smEmails = \App\Models\User::whereHas('userType', function($q) {
+    //                     $q->where('name', 'like', '%sales%')
+    //                       ->orWhere('name', 'like', '%marketing%');
+    //                 })->pluck('email')->toArray();
+    //                 $recipients = array_merge($recipients, $smEmails);
+    //             }
+    //             break;
+    //     }
         
-        // Remove duplicates and empty emails
-        return array_unique(array_filter($recipients));
-    }
+    //     // Remove duplicates and empty emails
+    //     return array_unique(array_filter($recipients));
+    // }
 
     /**
      * Create deliverable from feasibility when it's closed

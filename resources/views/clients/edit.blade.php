@@ -126,6 +126,26 @@
 
                 </div>
 
+                <div class="col-md-6">
+
+                    <label class="form-label">Client Code</label>
+
+                    <input type="text" class="form-control" 
+
+                           value="{{ $client->client_code }}" readonly> {{-- ✅ Show existing code --}}
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <label class="form-label">User Name</label>
+
+                    <input type="text" name="user_name" class="form-control" 
+
+                           value="{{ old('user_name', $client->user_name) }}" required>
+
+                </div>
+
             </div>
 
 

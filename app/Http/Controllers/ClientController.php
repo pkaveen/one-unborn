@@ -57,6 +57,7 @@ class ClientController extends Controller
     {
        $validated =  $request->validate([
         'pan_number' => 'nullable|string|size:10',
+        'user_name'            => 'required|string|max:255',
             'client_name'          => 'required|string|max:255',
             'client_code'          => 'nullable|string|max:50|unique:clients,client_code',
             'business_display_name'=> 'nullable|string|max:255',
@@ -120,6 +121,7 @@ Client::create($validated);
     {
         $validated = $request->validate([
             'pan_number' => 'nullable|string|size:10',
+        'user_name'            => 'required|string|max:255',
         'client_name'          => 'required|string|max:255',
         'business_display_name'=> 'nullable|string|max:255',
         'address1'             => 'nullable|string|max:255',

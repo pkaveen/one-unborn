@@ -3,10 +3,7 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
 class FeasibilityStatusMail extends Mailable
@@ -17,50 +14,60 @@ class FeasibilityStatusMail extends Mailable
     public $status;
     public $previousStatus;
     public $actionBy;
-    public $emailType;
-    
+    public $emailType; // created OR status_update
+
     /**
      * Create a new message instance.
      */
     public function __construct($feasibility, $status, $previousStatus = null, $actionBy = null, $emailType = 'status_update')
     {
-        $this->feasibility = $feasibility;
-        $this->status = $status;
-        $this->previousStatus = $previousStatus;
-        $this->actionBy = $actionBy;
-        $this->emailType = $emailType;
+        $this->feasibility     = $feasibility;
+        $this->status          = $status;
+        $this->previousStatus  = $previousStatus;
+        $this->actionBy        = $actionBy;
+        $this->emailType       = $emailType;
     }
 
     /**
-     * Get the message building.
+     * Build the message.
      */
     public function build()
     {
-        $subject = $this->getEmailSubject();
-        
-        return $this->subject($subject)
+        return $this->subject($this->getEmailSubject())
                     ->view('emails.feasibility.status')
                     ->with([
-                        'feasibility' => $this->feasibility,
-                        'status' => $this->status,
-                        'previousStatus' => $this->previousStatus,
-                        'actionBy' => $this->actionBy,
-                        'emailType' => $this->emailType
+                        'feasibility'     => $this->feasibility,
+                        'status'          => $this->status,
+                        'previousStatus'  => $this->previousStatus,
+                        'actionBy'        => $this->actionBy,
+                        'emailType'       => $this->emailType
                     ]);
     }
-    
+
     /**
-     * Get email subject based on status change
+     * Determine subject line dynamically.
      */
     private function getEmailSubject()
     {
-        switch($this->status) {
+        // Case 1: Feasibility Newly Created by Sales → Goes to Team
+        if ($this->emailType === 'created') {
+            return 'New Feasibility Created - Action Required';
+        }
+
+        // Case 2: Operations Updated Status → Goes to Creator
+        switch ($this->status) {
+            case 'Open':
+                return 'Feasibility Updated - Now Open';
+
             case 'InProgress':
-                return 'Feasibility Status Updated - Now In Progress';
+            case 'In Progress':
+                return 'Feasibility Updated - Now In Progress';
+
             case 'Closed':
-                return 'Feasibility Request Completed - ' . $this->feasibility->feasibility_request_id;
+                return 'Feasibility Completed - ' . ($this->feasibility->feasibility_request_id ?? '');
+
             default:
-                return 'Feasibility Status Updated - ' . $this->feasibility->feasibility_request_id;
+                return 'Feasibility Status Updated';
         }
     }
 }

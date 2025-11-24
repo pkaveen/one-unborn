@@ -23,7 +23,7 @@ class TemplateHelper
     /**
      * ✅ Get current logged-in user's permissions for a given menu name.
      */
-    public static function getUserMenuPermissions($menuName)
+    public static function getUserMenuPermissions($menuId)
     {
         $user = Auth::user();
 
@@ -39,15 +39,15 @@ class TemplateHelper
 
         // Get user's specific privileges for the requested menu
         $priv = UserMenuPrivilege::where('user_id', $user->id)
-            ->whereHas('menu', function ($query) use ($menuName) {
-                $query->where('name', $menuName);
+            ->whereHas('menu', function ($query) use ($menuId) {
+                $query->where('name', $menuId);
             })
             ->with('menu')
             ->first();
 
         // If individual privilege exists, use it
         if ($priv) {
-            Log::info('✅ Using individual privileges for user: ' . $user->name . ' on menu: ' . $menuName);
+            Log::info('✅ Using individual privileges for user: ' . $user->name . ' on menu ID: ' . $menuId);
             return (object)[
                 'can_menu' => (bool)$priv->can_menu,
                 'can_add' => (bool)$priv->can_add,
@@ -59,18 +59,18 @@ class TemplateHelper
 
         // ✅ FALLBACK TO USER TYPE PRIVILEGES if no individual user privilege exists
         if ($user->userType) {
-            Log::info('No individual privilege found for user: ' . $user->name . ', checking user type privileges for: ' . $menuName);
+            Log::info('No individual privilege found for user: ' . $user->name . ', checking user type privileges for: ' . $menuId);
             
             // Check user type default privileges
             $userTypePriv = UserTypeMenuPrivilege::where('user_type_id', $user->user_type_id)
-                ->whereHas('menu', function ($query) use ($menuName) {
-                    $query->where('name', $menuName);
+                ->whereHas('menu', function ($query) use ($menuId) {
+                    $query->where('name', $menuId);
                 })
                 ->with('menu')
                 ->first();
                 
             if ($userTypePriv) {
-                Log::info('✅ Using user type privileges for user: ' . $user->name . ' on menu: ' . $menuName);
+                Log::info('✅ Using user type privileges for user: ' . $user->name . ' on menu ID: ' . $menuId);
                 return (object)[
                     'can_menu' => (bool)$userTypePriv->can_menu,
                     'can_add' => (bool)$userTypePriv->can_add,
@@ -82,7 +82,7 @@ class TemplateHelper
         }
 
         // Return false for all if no privileges found
-        Log::info('❌ No privileges found for user: ' . $user->name . ' on menu: ' . $menuName);
+        Log::info('❌ No privileges found for user: ' . $user->name . ' on menu ID: ' . $menuId);
         return (object)[
             'can_menu' => false,
             'can_add' => false,

@@ -8,7 +8,7 @@
 
     <div class="d-flex justify-content-between align-items-center mb-3">
 
-        <h3 class="fw-bold text-primary">Manage Users</h3>
+        <h3 class="fw-bold text-primary">Manage User</h3>
 
         {{-- Add User Button --}}
 
@@ -175,9 +175,9 @@
 
                                      @endif
 
-<!-- 
 
-                                     @php
+
+                                     <!-- @php
 
                                      $role = strtolower(auth()->user()->userType->name ?? '');
 
@@ -192,14 +192,6 @@
                                     @endif -->
 
                                      <ul class="sidebar-menu">
-
-      
-
-
-
-
-
-
 
                             </td>
 

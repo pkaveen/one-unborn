@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use App\Models\Feasibility;
 use App\Models\FeasibilityStatus;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class FeasibilityController extends Controller
 {
@@ -30,7 +32,7 @@ class FeasibilityController extends Controller
     
 
         // Use the helper correctly
-        $permissions = TemplateHelper::getUserMenuPermissions('Feasibility') ?? (object)[
+        $permissions = TemplateHelper::getUserMenuPermissions('Feasibility Master') ?? (object)[
             'can_menu' => true,
             'can_add' => true,
             'can_edit' => true,
@@ -105,6 +107,8 @@ class FeasibilityController extends Controller
     $validated['created_by'] = Auth::user()->id;
 
         $feasibility = Feasibility::create($validated);
+        $this->sendCreatedEmail($feasibility);
+
 
         // ⚙️ Automatically create feasibility status entry for operations
         FeasibilityStatus::create([
@@ -143,6 +147,33 @@ $status->save();
 
         return redirect()->route('sm.feasibility.open')->with('success', 'Feasibility added successfully!');
     }
+
+ 
+private function sendCreatedEmail($feasibility)
+{
+    try {
+        $teamType = \App\Models\UserType::where('name', 'Operations')->first();
+
+        if ($teamType && $teamType->email) {
+            Mail::to($teamType->email)->send(
+                new \App\Mail\FeasibilityStatusMail(
+                    $feasibility,
+                    'Created',
+                    null,
+                    Auth::user(),
+                    'created'
+                )
+            );
+        }
+
+    } catch (\Exception $e) {
+        Log::error('Feasibility create email failed', [
+            'error' => $e->getMessage()
+        ]);
+    }
+}
+
+
 
      public function update(Request $request, $id)
     {
@@ -227,7 +258,6 @@ $status->save();
     $feasibility->load('company', 'client'); // LOAD RELATIONS
     return view('feasibility.view', compact('feasibility'));
 }
-
 
 
 }

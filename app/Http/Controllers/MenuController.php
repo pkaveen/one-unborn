@@ -98,28 +98,30 @@ class MenuController extends Controller
      * 
      * @param int $userTypeId - The user type ID to manage privileges for
      */
-    public function editUserTypePrivileges($userTypeId)
-    {
-        $userType = UserType::findOrFail($userTypeId);
-        
-        // Get all menus available for this user type
-        $menus = Menu::where('user_type', $userType->name)
-                    ->orderBy('id')
-                    ->get();
-                    
-        // Fallback: If no menus found for user type, get all menus
-        if ($menus->isEmpty()) {
-            Log::info('No menus found for user type: ' . $userType->name . ', showing all menus');
-            $menus = Menu::orderBy('id')->get();
-        }
-        
-        // Load existing user type privileges
-        $userTypePrivileges = UserTypeMenuPrivilege::where('user_type_id', $userTypeId)
-                                ->get()
-                                ->keyBy('menu_id');
-        
-        return view('menus.edit-usertype-privileges', compact('userType', 'menus', 'userTypePrivileges'));
-    }
+   public function editUserTypePrivileges($userTypeId)
+{
+    $userType = UserType::findOrFail($userTypeId);
+
+    // FIXED: whereIn instead of where
+    $menus = Menu::whereIn('user_type', ['superadmin', 'All', 'all'])
+                ->orderBy('module_name')
+                ->orderBy('id')
+                ->get();
+
+    $groupedMenus = $menus->groupBy('module_name');
+
+    // Load privileges
+    $userTypePrivileges = UserTypeMenuPrivilege::where('user_type_id', $userTypeId)
+                            ->get()
+                            ->keyBy('menu_id');
+
+    return view('menus.edit-usertype-privileges', compact(
+        'groupedMenus',
+        'userType',
+        'menus',
+        'userTypePrivileges'
+    ));
+}
 
     /**
      * ✅ Update user type privileges
@@ -148,6 +150,24 @@ class MenuController extends Controller
                 'can_delete' => isset($rights['can_delete']),
                 'can_view' => isset($rights['can_view']),
             ]);
+        }
+
+        // Sync the new defaults to every user who belongs to this type so their per-user entries match
+        $users = User::where('user_type_id', $userTypeId)->get();
+        foreach ($users as $user) {
+            UserMenuPrivilege::where('user_id', $user->id)->delete();
+
+            foreach ($privileges as $menuId => $rights) {
+                UserMenuPrivilege::create([
+                    'user_id' => $user->id,
+                    'menu_id' => $menuId,
+                    'can_menu' => isset($rights['can_menu']),
+                    'can_add' => isset($rights['can_add']),
+                    'can_edit' => isset($rights['can_edit']),
+                    'can_delete' => isset($rights['can_delete']),
+                    'can_view' => isset($rights['can_view']),
+                ]);
+            }
         }
         
         return redirect()->route('usertypetable.index')->with('success', 'User Type privileges updated successfully! New users with this type will inherit these privileges.');

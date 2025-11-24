@@ -29,6 +29,9 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
 
+    <!-- <link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.css" rel="stylesheet"> -->
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-lite.min.css" rel="stylesheet">
 
 
 
@@ -417,6 +420,11 @@
     vertical-align: middle;
 
 }
+.table th,  .table td {
+    width: 230px;
+    white-space: nowrap;
+    text-align: center;
+    }
 
 
 
@@ -556,6 +564,8 @@
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
+<!-- ✅ Summernote CSS & JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-lite.min.js"></script>
 
 
 

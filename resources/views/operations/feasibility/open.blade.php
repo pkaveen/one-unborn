@@ -84,6 +84,7 @@
                                                 <div class="btn-group" role="group">
 
                                                     <!-- View button with route to the view page -->
+                                                     @if($permissions->can_view)
 
                                                     <a href="{{ route('operations.feasibility.view', $record->id) }}" 
 
@@ -92,8 +93,10 @@
                                                         <i class="bi bi-eye"></i> View
 
                                                     </a>
+                                                    @endif
 
                                                     <!-- Update button with route to the edit page -->
+                                                     @if($permissions->can_edit)
 
                                                     <a href="{{ route('operations.feasibility.edit', $record->id) }}" 
 
@@ -102,6 +105,7 @@
                                                         <i class="bi bi-pencil"></i> Update
 
                                                     </a>
+                                                    @endif
 
                                                 </div>
 

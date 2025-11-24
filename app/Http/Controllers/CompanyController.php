@@ -51,6 +51,7 @@ public function index()
     public function store(Request $request)
     {
        $validated = $request->validate([
+        'user_name' => 'nullable|string|max:255',
     'trade_name' => 'nullable|string|max:255',
     'company_name' => 'required|string|max:255',
     'business_number' => 'nullable|string|max:255',
@@ -109,6 +110,7 @@ public function index()
     {
         try {
             $validated = $request->validate([
+                'user_name' => 'nullable|string|max:255',
                 'trade_name' => 'nullable|string|max:255',
                 'company_name' => 'required|string|max:255',
                 'business_number' => 'nullable|string|max:255',
