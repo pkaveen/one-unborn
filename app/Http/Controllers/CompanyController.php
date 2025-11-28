@@ -18,17 +18,18 @@ class CompanyController extends Controller
      */
 public function index()
 {
+     $companies = Company::orderBy('id', 'asc')->get();
     /** @var \App\Models\User $user */
     $user = Auth::user();
     $role = strtolower($user->userType->name ?? '');
 
     // 🔹 Superadmin/Admin — show all companies
     if (in_array($role, ['superadmin', 'admin'])) {
-        $companies = Company::latest()->paginate(10);
-    } else {
-        // 🔹 Normal user — show only assigned companies
-        $companies = $user->companies()->latest()->paginate(10);
-    }
+    $companies = Company::orderBy('id', 'asc')->paginate(10);
+} else {
+    $companies = $user->companies()->orderBy('id', 'asc')->paginate(10);
+}
+
 
     // ✅ Get permissions safely
     $permissions = TemplateHelper::getUserMenuPermissions('Company Details') ?? (object)[

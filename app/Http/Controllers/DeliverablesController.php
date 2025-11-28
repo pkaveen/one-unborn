@@ -21,6 +21,8 @@ class DeliverablesController extends Controller
 
     public function operationsOpen()
     {
+        $deliverables = Deliverables::orderBy('id', 'asc')->get();
+
         $records = Deliverables::with([
             'feasibility',
             'feasibility.client',
@@ -28,14 +30,16 @@ class DeliverablesController extends Controller
             'feasibility.feasibilityStatus'
         ])
         ->where('status', 'Open')
-        ->latest()
+        ->orderBy('id', 'asc')
         ->get();
 
-        return view('operations.deliverables.open', compact('records'));
+        return view('operations.deliverables.open', compact('records', 'deliverables'));
     }
 
     public function operationsInProgress()
     {
+        $deliverables = Deliverables::orderBy('id', 'asc')->get();
+
         $records = Deliverables::with([
             'feasibility',
             'feasibility.client',
@@ -43,14 +47,16 @@ class DeliverablesController extends Controller
             'feasibility.feasibilityStatus'
         ])
         ->where('status', 'InProgress')
-        ->latest()
+        ->orderBy('id', 'asc')
         ->get();
 
-        return view('operations.deliverables.inprogress', compact('records'));
+        return view('operations.deliverables.inprogress', compact('records', 'deliverables'));
     }
 
     public function operationsDelivery()
     {
+        $deliverables = Deliverables::orderBy('id', 'asc')->get();
+
         $records = Deliverables::with([
             'feasibility',
             'feasibility.client',
@@ -58,10 +64,10 @@ class DeliverablesController extends Controller
             'feasibility.feasibilityStatus'
         ])
         ->where('status', 'Delivery')
-        ->latest()
+        ->orderBy('id', 'asc')
         ->get();
 
-        return view('operations.deliverables.delivery', compact('records'));
+        return view('operations.deliverables.delivery', compact('records', 'deliverables'));
     }
 
     // ====================================
@@ -70,6 +76,7 @@ class DeliverablesController extends Controller
 
     public function operationsView($id)
     {
+
         $record = Deliverables::with(['feasibility', 'feasibility.client'])->findOrFail($id);
         return view('operations.deliverables.view', compact('record'));
     }

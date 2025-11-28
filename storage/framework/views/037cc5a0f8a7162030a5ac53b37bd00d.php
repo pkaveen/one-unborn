@@ -106,7 +106,7 @@
         </div>
     </div>
 
-    <div class="mt-5">
+    <div class="mt-1">
         <h3>Feasibility</h3>
         <div class="row g-4 mt-2">
             <div class="col-md-4">
@@ -150,7 +150,7 @@
         </div>
     </div>
 
-    <div class="mt-5">
+    <div class="mt-1">
         <h3>Deliverables</h3>
         <div class="row g-4 mt-2">
             <div class="col-md-4 col-sm-6">
@@ -194,7 +194,7 @@
         </div>
     </div>
 
-    <div class="mt-5">
+    <div class="mt-1">
         <h3>Upcoming Renewals</h3>
         <div class="row g-4 mt-2">
             <div class="col-md-4 col-sm-6">

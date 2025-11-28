@@ -18,10 +18,12 @@ class ClientController extends Controller
     {
         /** @var \App\Models\User $user */
        $user = Auth::user();
+     $clients = Client::orderBy('id', 'asc')->get();
+
 
     // ✅ Superadmin (1) & Admin (2) can see all clients
     if (in_array($user->user_type_id, [1, 2])) {
-        $clients = \App\Models\Client::latest()->paginate(10);
+        $clients = \App\Models\Client::orderBy('id', 'asc')->paginate(10);
     } 
     else {
         // ✅ Normal users: only clients belonging to their assigned companies

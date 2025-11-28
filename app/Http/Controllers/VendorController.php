@@ -15,7 +15,9 @@ class VendorController extends Controller
      */
     public function index()
     {
-        $vendors = Vendor::latest()->get();
+     $vendors = Vendor::orderBy('id', 'asc')->get();
+
+        $vendors = Vendor::orderBy('id', 'asc')->get();
         // ✅ Use the helper correctly
         $permissions = TemplateHelper::getUserMenuPermissions('Vendor Master') ?? (object)[
     'can_add' => true,

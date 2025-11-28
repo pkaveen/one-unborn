@@ -13,11 +13,13 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\FeasibilityImport;
+use App\Helpers\EmailHelper;
 
 class FeasibilityController extends Controller
 {
     public function index()
     {
+        $feasibilities = Feasibility::orderBy('id', 'asc')->get();
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
@@ -154,7 +156,7 @@ $status->save();
 private function sendCreatedEmail($feasibility)
 {
     try {
-        $teamType = \App\Models\UserType::where('name', 'Operation Team')->first();
+        $teamType = \App\Models\UserType::where('name', 'Team')->first();
 
         if ($teamType && $teamType->email) {
             Mail::to($teamType->email)->send(
@@ -174,8 +176,51 @@ private function sendCreatedEmail($feasibility)
         ]);
     }
 }
+//         // Convert to array of email strings
+//         $emails = collect($operationUsers)->pluck('official_email')->filter()->toArray();
 
+//         if (!empty($emails)) {
+//             Mail::to($emails)->send(
+//                 new \App\Mail\FeasibilityStatusMail(
+//                     $feasibility,
+//                     'Created',
+//                     null,
+//                     Auth::user(),
+//                     'created'
+//                 )
+//             );
+//         }
 
+//     } catch (\Exception $e) {
+//         Log::error('Feasibility create email failed', ['error' => $e->getMessage()]);
+//     }
+// }
+
+private function sendUpdatedEmail($feasibility)
+{
+    try {
+        $creatorEmail = optional($feasibility->createdByUser)->official_email;
+
+        if ($creatorEmail) {
+            Mail::to($creatorEmail)->send(
+                new \App\Mail\FeasibilityStatusMail(
+                    $feasibility,
+                    'Updated / Closed',
+                    null,
+                    Auth::user(),
+                    'updated'
+                )
+            );
+        } else {
+            Log::warning('Creator email missing', [
+                'feasibility_id' => $feasibility->id
+            ]);
+        }
+
+    } catch (\Exception $e) {
+        Log::error('Feasibility update email failed', ['error' => $e->getMessage()]);
+    }
+}
 
      public function update(Request $request, $id)
     {

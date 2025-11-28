@@ -29,9 +29,11 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::with(['userType', 'companies'])->latest()->get();
-        $companies = Company::all();
-        $usertypes = UserType::all();
+     $users = User::orderBy('id', 'asc')->get();
+
+        $users = User::with(['userType', 'companies'])->orderBy('id', 'asc')->get();
+        $companies = Company::orderBy('id', 'asc')->get();
+        $usertypes = UserType::orderBy('id', 'asc')->get();
 
         // ✅ Use the helper to get actual permissions from database
         $permissions = TemplateHelper::getUserMenuPermissions('Manage User')?? (object)[

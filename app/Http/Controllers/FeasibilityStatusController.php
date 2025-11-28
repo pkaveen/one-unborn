@@ -16,6 +16,8 @@ class FeasibilityStatusController extends Controller
 {
     public function index($status = 'Open')
     {
+     $feasibilityStatuses = FeasibilityStatus::orderBy('id', 'asc')->get();
+
         $statuses = ['Open', 'InProgress', 'Closed'];
         $records = FeasibilityStatus::with('feasibility')
             ->where('status', $status)
@@ -29,7 +31,7 @@ class FeasibilityStatusController extends Controller
             'can_view' => true,
         ];
 
-        return view('feasibility.feasibility_status.index', compact('records', 'status', 'statuses', 'permissions'));
+        return view('feasibility.feasibility_status.index', compact('records', 'status', 'statuses', 'permissions', 'feasibilityStatuses'));
     }
 
     public function show($id)
@@ -512,15 +514,38 @@ public function editSave(Request $request, $id)
      * @return array Array of email addresses
      */
   
+// private function getEmailRecipients($feasibility, $newStatus, $previousStatus = null)
+// {
+//     // Fetch all users who belong to user_type = Team
+//     $teamUsers = \App\Models\User::whereHas('userType', function ($q) {
+//         $q->where('name', 'Team');
+//     })->pluck('email')->toArray();
+
+
+//     return array_unique(array_filter($teamUsers));
+// }
+
 private function getEmailRecipients($feasibility, $newStatus, $previousStatus = null)
 {
-    // Fetch all users who belong to user_type = Team
-    $teamUsers = \App\Models\User::whereHas('userType', function ($q) {
-        $q->where('name', 'Team');
-    })->pluck('email')->toArray();
+    // Open → Send to Operations Team
+    if ($newStatus == 'Open') {
+        return \App\Models\User::whereHas('userType', function ($q) {
+            $q->where('name', 'Operations');
+        })
+        ->whereNotNull('official_email')
+        ->pluck('official_email')
+        ->toArray();
+    }
 
-    return array_unique(array_filter($teamUsers));
+    // Closed → Send ONLY to Creator (S&M)
+    if ($newStatus == 'Closed' && $feasibility->createdByUser) {
+        $creatorEmail = $feasibility->createdByUser->official_email ?? $feasibility->createdByUser->email;
+        return $creatorEmail ? [$creatorEmail] : [];
+    }
+
+    return [];
 }
+
 
     // private function getEmailRecipients($feasibility, $newStatus, $previousStatus = null)
     // {

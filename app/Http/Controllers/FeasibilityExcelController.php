@@ -67,9 +67,12 @@ class FeasibilityExcelController extends Controller
         File::copy($importFile->getRealPath(), $storedPath);
         $importPath = $storedPath;
 
-        $preparedRow = null;
+        $successCount = 0;
+        $failureCount = 0;
+        $rowNumber = 0;
 
         foreach ((new FastExcel)->import($importPath) as $row) {
+            $rowNumber++;
             $companyIdentifier = $row['Company ID'] ?? $row['Company Name'] ?? $row['Company'] ?? 'unknown';
             $clientIdentifier = $row['Client ID'] ?? $row['Client Name'] ?? $row['Client'] ?? 'unknown';
 
@@ -77,14 +80,14 @@ class FeasibilityExcelController extends Controller
             $clientId = $this->resolveClientId($clientIdentifier);
 
             if (!$companyId) {
-                $this->importErrors[] = "Company '{$companyIdentifier}' could not be resolved to an existing company record.";
+                $this->importErrors[] = "Row {$rowNumber}: Company '{$companyIdentifier}' not found.";
+                $failureCount++;
+                continue;
             }
 
             if (!$clientId) {
-                $this->importErrors[] = "Client '{$clientIdentifier}' could not be resolved to an existing client record.";
-            }
-
-            if (!$companyId || !$clientId) {
+                $this->importErrors[] = "Row {$rowNumber}: Client '{$clientIdentifier}' not found.";
+                $failureCount++;
                 continue;
             }
 
@@ -96,14 +99,12 @@ class FeasibilityExcelController extends Controller
                 'state' => $this->normalizeString($row['State'] ?? null),
                 'city' => $this->normalizeString($row['City'] ?? null),
                 'district' => $this->normalizeString($row['District'] ?? null),
-                // 'area' => $this->normalizeString($row['Area'] ?? $row['Post Office'] ?? null),
                 'area' => $this->normalizeString($row['Area'] ?? null),
                 'address' => $this->normalizeString($row['Address'] ?? null),
                 'spoc_name' => $this->normalizeString($row['SPOC Name'] ?? $row['SPOC Contact Name'] ?? null),
                 'spoc_contact1' => $this->normalizeString($row['SPOC Contact1'] ?? $row['SPOC Contact 1'] ?? null),
                 'spoc_contact2' => $this->normalizeString($row['SPOC Contact2'] ?? $row['SPOC Contact 2'] ?? null),
                 'spoc_email' => $this->normalizeString($row['SPOC Email'] ?? $row['SPOC Email ID'] ?? null),
-                // 'no_of_links' => $this->toInteger($row['No of Links'] ?? $row['Links'] ?? null),
                 'no_of_links' => $this->normalizeString($row['No of Links'] ?? null),
                 'vendor_type' => $this->normalizeString($row['Vendor Type'] ?? $row['Vendor'] ?? null),
                 'speed' => $this->normalizeString($row['Speed'] ?? null),
@@ -111,32 +112,41 @@ class FeasibilityExcelController extends Controller
                 'static_ip_subnet' => $this->normalizeString($row['Static IP Subnet'] ?? null),
                 'expected_delivery' => $this->parseDate($row['Expected Delivery'] ?? $row['Delivery Date'] ?? null),
                 'expected_activation' => $this->parseDate($row['Expected Activation'] ?? $row['Activation Date'] ?? null),
-                // 'hardware_required' => $this->normalizeBoolean($row['Hardware Required'] ?? $row['Hardware Needed'] ?? null),
                 'hardware_required' => $this->normalizeHardwareRequired($row['Hardware Required'] ?? null),
                 'hardware_model_name' => $this->normalizeString($row['Hardware Model Name'] ?? $row['Hardware Model'] ?? null),
                 'status' => $this->normalizeStatus($row['Status'] ?? null),
+                'created_at' => now(),
+                'updated_at' => now(),
             ];
 
             $missingFields = $this->validateRequiredFields($prepared, $companyIdentifier, $clientIdentifier);
 
             if (!empty($missingFields)) {
                 $this->importErrors = array_merge($this->importErrors, $missingFields);
+                $failureCount++;
                 continue;
             }
 
-            $preparedRow = $prepared;
-            break;
+            try {
+                Feasibility::create($prepared);
+                $successCount++;
+            } catch (\Exception $e) {
+                $this->importErrors[] = "Row {$rowNumber}: Failed to save - " . $e->getMessage();
+                $failureCount++;
+            }
         }
+
         File::delete($storedPath);
 
-        $redirect = back()->with('success', 'Excel parsed. Review the pre-filled form and hit save when ready.');
+        $message = "Import completed! {$successCount} records added successfully.";
+        if ($failureCount > 0) {
+            $message .= " ({$failureCount} rows failed)";
+        }
+
+        $redirect = back()->with('success', $message);
 
         if (!empty($this->importErrors)) {
             $redirect = $redirect->with('import_errors', $this->importErrors);
-        }
-
-        if ($preparedRow) {
-            $redirect = $redirect->with('imported_row', $preparedRow);
         }
 
         return $redirect;

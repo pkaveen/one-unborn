@@ -75,6 +75,12 @@ public function createdBy()
     return $this->belongsTo(User::class, 'created_by');
 }
 
+    // Provide alias for existing controllers referencing createdByUser
+    public function createdByUser()
+    {
+        return $this->createdBy();
+    }
+
 // 🧩 Relationship — Each Feasibility can have multiple Purchase Orders
 public function purchaseOrders()
 {

@@ -39,6 +39,31 @@
 
         </p>
 
+        {{-- Operations Closed → Email to Creator --}}
+        @elseif($status == 'Closed')
+
+            <h2 style="color:#28a745;">Feasibility Completed</h2>
+
+            <p>
+                Hello {{ $feasibility->createdBy->name ?? 'User' }},<br><br>
+                Your feasibility request has been <strong>successfully closed by the Operations Team.</strong>
+            </p>
+
+            <table class="info-table">
+                <tr>
+                    <td class="label">Status</td>
+                    <td>Completed</td>
+                </tr>
+                <tr>
+                    <td class="label">Closed By</td>
+                    <td>{{ $actionBy->name ?? 'System' }}</td>
+                </tr>
+                <tr>
+                    <td class="label">Closed On</td>
+                    <td>{{ now()->format('d-m-Y H:i A') }}</td>
+                </tr>
+            </table>
+
         {{-- Operations Updated → Email to Creator --}}
         @else
 

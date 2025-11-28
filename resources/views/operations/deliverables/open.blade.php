@@ -15,9 +15,9 @@
                     <table class="table table-bordered table-hover align-middle text-center" id="open">
                         <thead class="table-dark text-center align-middle">
                             <tr>
-                                <th width="50">
+                                <!-- <th width="50">
                                     <input type="checkbox" id="select_all" class="form-check-input">
-                                </th>
+                                </th> -->
                                 <th width="50">S.No</th>
                                 <th width="150">Action</th>
                                 <th>PO Number</th>
@@ -30,9 +30,9 @@
                         <tbody>
                             @foreach($records as $index => $record)
                             <tr>
-                                <td>
+                                <!-- <td>
                                     <input type="checkbox" class="form-check-input row-checkbox" value="{{ $record->id }}">
-                                </td>
+                                </td> -->
 
                                 <td>{{ $index + 1 }}</td>
 
@@ -74,28 +74,28 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const selectAll = document.getElementById('select_all');
-    const rowCheckboxes = document.querySelectorAll('.row-checkbox');
+// document.addEventListener('DOMContentLoaded', function() {
+//     const selectAll = document.getElementById('select_all');
+//     const rowCheckboxes = document.querySelectorAll('.row-checkbox');
 
-    if (selectAll) {
-        selectAll.addEventListener('change', function() {
-            rowCheckboxes.forEach(cb => cb.checked = selectAll.checked);
-        });
-    }
+//     if (selectAll) {
+//         selectAll.addEventListener('change', function() {
+//             rowCheckboxes.forEach(cb => cb.checked = selectAll.checked);
+//         });
+//     }
 
-    rowCheckboxes.forEach(cb => {
-        cb.addEventListener('change', function() {
-            const allChecked = [...rowCheckboxes].every(c => c.checked);
-            const noneChecked = [...rowCheckboxes].every(c => !c.checked);
+//     rowCheckboxes.forEach(cb => {
+//         cb.addEventListener('change', function() {
+//             const allChecked = [...rowCheckboxes].every(c => c.checked);
+//             const noneChecked = [...rowCheckboxes].every(c => !c.checked);
 
-            if (selectAll) {
-                selectAll.checked = allChecked;
-                selectAll.indeterminate = !allChecked && !noneChecked;
-            }
-        });
-    });
-});
+//             if (selectAll) {
+//                 selectAll.checked = allChecked;
+//                 selectAll.indeterminate = !allChecked && !noneChecked;
+//             }
+//         });
+//     });
+// });
 
 document.getElementById('tableSearch').addEventListener('keyup', function() {
 

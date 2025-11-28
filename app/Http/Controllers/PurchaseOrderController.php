@@ -15,7 +15,9 @@ class PurchaseOrderController extends Controller
 {
     public function index()
     {
-        $purchaseOrders = PurchaseOrder::with('feasibility.client')->orderBy('created_at', 'desc')->get();
+        $purchaseOrders = PurchaseOrder::orderBy('id', 'asc')->get();
+ 
+        $purchaseOrders = PurchaseOrder::with('feasibility.client')->orderBy('created_at', 'asc')->get();
         $permissions = TemplateHelper::getUserMenuPermissions('Purchase Order') ?? (object)[
             'can_menu' => true,
             'can_add' => true,

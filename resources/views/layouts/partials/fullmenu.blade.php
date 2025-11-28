@@ -670,7 +670,7 @@
 
                    href="{{ route('operations.deliverables.delivery') }}">
 
-                   <i class="bi bi-truck-flatbed me-2"></i> Delivery
+                   <i class="bi bi-truck-flatbed me-2"></i> Delivered
 
                 </a>
 

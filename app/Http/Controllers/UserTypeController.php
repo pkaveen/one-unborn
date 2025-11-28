@@ -15,7 +15,9 @@ class UserTypeController extends Controller
      */
     public function index()
     {
-        $usertypetable = UserType::latest()->get();
+     $usertypetable = UserType::orderBy('id', 'asc')->get();
+
+        $usertypetable = UserType::orderBy('id', 'asc')->get();
          // ✅ Use the helper correctly
         $permissions = TemplateHelper::getUserMenuPermissions('User Type') ?? (object)[
     'can_add' => true,
