@@ -253,7 +253,7 @@ SELECT
     cl.id,
     cl.link_name,
     cl.interface_name,
-    c.company_name as client_name,
+    c.client_name,
     mr.name as router_name,
     lmd.interface_status,
     lmd.latency_ms,
@@ -272,7 +272,7 @@ ORDER BY cl.id;
 -- Get SLA breach summary for current month
 SELECT 
     cl.link_name,
-    c.company_name as client_name,
+    c.client_name,
     sr.report_month,
     sr.uptime_percentage,
     sr.avg_latency_ms,
@@ -283,7 +283,7 @@ JOIN client_links cl ON sr.client_link_id = cl.id
 JOIN clients c ON cl.client_id = c.id
 WHERE sr.sla_met = 0
     AND sr.report_month >= DATE_FORMAT(NOW(), '%Y-%m-01')
-ORDER BY sr.report_month DESC, c.company_name;
+ORDER BY sr.report_month DESC, c.client_name;
 
 -- Get notification statistics per company
 SELECT 
@@ -302,7 +302,7 @@ ORDER BY c.company_name, nl.notification_type;
 SELECT 
     cl.id,
     cl.link_name,
-    c.company_name as client_name,
+    c.client_name,
     mr.name as router_name,
     mr.management_ip,
     cl.interface_name,
@@ -323,7 +323,7 @@ ORDER BY lmd.collected_at ASC;
 SELECT 
     cl.id,
     cl.link_name,
-    c.company_name as client_name,
+    c.client_name,
     COUNT(*) as samples,
     AVG(lmd.latency_ms) as avg_latency,
     AVG(lmd.packet_loss_percent) as avg_packet_loss,
@@ -335,7 +335,7 @@ JOIN clients c ON cl.client_id = c.id
 LEFT JOIN link_monitoring_data lmd ON cl.id = lmd.client_link_id
     AND lmd.collected_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR)
 WHERE cl.status = 'active'
-GROUP BY cl.id, cl.link_name, c.company_name
+GROUP BY cl.id, cl.link_name, c.client_name
 ORDER BY cl.id;
 
 -- ============================================
