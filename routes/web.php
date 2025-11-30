@@ -28,6 +28,7 @@ use App\Http\Controllers\ComplianceController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\TrainingController;
 use App\Http\Controllers\StrategyController;
+use App\Http\Controllers\AssuranceController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -356,6 +357,10 @@ Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
 Route::get('/training', [TrainingController::class, 'index'])->name('training.index');
 Route::get('/strategy', [StrategyController::class, 'index'])->name('strategy.index');
 
+// 🛡️ Assurance Routes
+Route::get('/assurance', [\App\Http\Controllers\AssuranceController::class, 'index'])
+    ->middleware(\App\Http\Middleware\CheckPrivilege::class .':view')
+    ->name('assurance.index');
 
 // Pincode Lookup
 

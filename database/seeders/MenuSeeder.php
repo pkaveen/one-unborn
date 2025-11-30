@@ -65,6 +65,11 @@ class MenuSeeder extends Seeder
             ['module_name' => 'operations', 'user_type' => 'admin', 'name' => 'operations Deliverables', 'route' => 'operations.deliverables.open', 'icon' => 'bi bi-truck', 'can_add' => 1, 'can_edit' => 1, 'can_delete' => 0, 'can_view' => 1],
             ['module_name' => 'operations', 'user_type' => 'users', 'name' => 'operations Deliverables', 'route' => 'operations.deliverables.open', 'icon' => 'bi bi-truck', 'can_add' => 0, 'can_edit' => 1, 'can_delete' => 0, 'can_view' => 1],
 
+            // 🛡️ Assurance Module
+            ['module_name' => 'Assurance', 'user_type' => 'superadmin', 'name' => 'Assurance', 'route' => 'assurance.index', 'icon' => 'bi bi-shield-check', 'can_add' => 1, 'can_edit' => 1, 'can_delete' => 1, 'can_view' => 1],
+            ['module_name' => 'Assurance', 'user_type' => 'admin', 'name' => 'Assurance', 'route' => 'assurance.index', 'icon' => 'bi bi-shield-check', 'can_add' => 1, 'can_edit' => 1, 'can_delete' => 0, 'can_view' => 1],
+            ['module_name' => 'Assurance', 'user_type' => 'users', 'name' => 'Assurance', 'route' => 'assurance.index', 'icon' => 'bi bi-shield-check', 'can_add' => 0, 'can_edit' => 1, 'can_delete' => 0, 'can_view' => 1],
+
             // ⚙️ Settings
             ['module_name' => 'Settings', 'user_type' => 'superadmin', 'name' => 'Common Settings', 'route' => 'settings.index', 'icon' => 'bi bi-gear', 'can_add' => 1, 'can_edit' => 1, 'can_delete' => 1, 'can_view' => 1],
 
