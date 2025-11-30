@@ -7,6 +7,8 @@ use App\Helpers\TemplateHelper;
 use App\Models\Vendor;
 use Illuminate\Http\Request;
 use App\Models\Company;
+use App\Models\Gstin;
+use App\Services\SurepassService;
 
 class VendorController extends Controller
 {
@@ -242,5 +244,138 @@ private function getGSTChecksum($input)
     return $chars[$checksumPoint];
 }
 
+/**
+ * Fetch GSTIN by PAN using Surepass API
+ */
+public function fetchGstinByPan(Request $request)
+{
+    $request->validate([
+        'pan_number' => 'required|string|size:10',
+        'vendor_id' => 'nullable|integer'
+    ]);
+
+    $surepassService = new SurepassService();
+    $result = $surepassService->getGstinByPan($request->pan_number);
+
+    if (!$result['success']) {
+        return response()->json($result);
+    }
+
+    // Parse the GSTIN data
+    $gstinList = $surepassService->parseGstinData($result['data']);
+
+    if (empty($gstinList)) {
+        return response()->json([
+            'success' => false,
+            'message' => 'No GSTIN found for this PAN'
+        ]);
+    }
+
+    // Don't save automatically - let user select which GSTINs to save
+    return response()->json([
+        'success' => true,
+        'data' => $gstinList,
+        'message' => 'GSTIN details fetched successfully'
+    ]);
 }
+
+/**
+ * Save selected GSTINs for a vendor
+ */
+public function saveSelectedGstins(Request $request)
+{
+    $request->validate([
+        'vendor_id' => 'required|integer|exists:vendors,id',
+        'gstins' => 'required|array|min:1',
+        'gstins.*.gstin' => 'required|string|size:15',
+        'gstins.*.trade_name' => 'nullable|string',
+        'gstins.*.legal_name' => 'nullable|string',
+        'gstins.*.principal_business_address' => 'nullable|string',
+        'gstins.*.building_name' => 'nullable|string',
+        'gstins.*.building_number' => 'nullable|string',
+        'gstins.*.floor_number' => 'nullable|string',
+        'gstins.*.street' => 'nullable|string',
+        'gstins.*.location' => 'nullable|string',
+        'gstins.*.district' => 'nullable|string',
+        'gstins.*.city' => 'nullable|string',
+        'gstins.*.state' => 'nullable|string',
+        'gstins.*.state_code' => 'nullable|string|max:2',
+        'gstins.*.pincode' => 'nullable|string|max:10',
+        'gstins.*.is_primary' => 'nullable|boolean',
+    ]);
+
+    try {
+        // If a GSTIN is marked as primary, unmark all others
+        $hasPrimary = collect($request->gstins)->contains('is_primary', true);
+        
+        if ($hasPrimary) {
+            Gstin::where('entity_type', 'vendor')
+                ->where('entity_id', $request->vendor_id)
+                ->update(['is_primary' => false]);
+        }
+
+        $conflicts = [];
+        $savedCount = 0;
+
+        // Save each selected GSTIN with duplicate checks across entities
+        foreach ($request->gstins as $gstinData) {
+            $existingOther = Gstin::where('gstin', $gstinData['gstin'])
+                ->where(function($q) use ($request) {
+                    $q->where('entity_type', '!=', 'vendor')
+                      ->orWhere('entity_id', '!=', $request->vendor_id);
+                })
+                ->first();
+
+            if ($existingOther) {
+                $conflicts[] = $gstinData['gstin'];
+                continue; // skip saving this GSTIN
+            }
+
+            Gstin::updateOrCreate(
+                [
+                    'entity_type' => 'vendor',
+                    'entity_id' => $request->vendor_id,
+                    'gstin' => $gstinData['gstin']
+                ],
+                [
+                    'trade_name' => $gstinData['trade_name'] ?? null,
+                    'legal_name' => $gstinData['legal_name'] ?? null,
+                    'principal_business_address' => $gstinData['principal_business_address'] ?? null,
+                    'building_name' => $gstinData['building_name'] ?? null,
+                    'building_number' => $gstinData['building_number'] ?? null,
+                    'floor_number' => $gstinData['floor_number'] ?? null,
+                    'street' => $gstinData['street'] ?? null,
+                    'location' => $gstinData['location'] ?? null,
+                    'district' => $gstinData['district'] ?? null,
+                    'city' => $gstinData['city'] ?? null,
+                    'state' => $gstinData['state'] ?? null,
+                    'state_code' => $gstinData['state_code'] ?? null,
+                    'pincode' => $gstinData['pincode'] ?? null,
+                    'status' => 'Active',
+                    'is_primary' => $gstinData['is_primary'] ?? false,
+                ]
+            );
+            $savedCount++;
+        }
+
+        $message = $savedCount . ' GSTIN(s) saved successfully';
+        if (!empty($conflicts)) {
+            $message .= '. Skipped duplicates already linked to other entities: ' . implode(', ', $conflicts);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => $message
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Error saving GSTINs: ' . $e->getMessage()
+        ], 500);
+    }
+}
+
+}
+
 

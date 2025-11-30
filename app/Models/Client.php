@@ -50,5 +50,11 @@ public function company() {
     return $this->belongsTo(Company::class);
 }
 
+// Relationship with GSTINs
+public function gstins()
+{
+    return $this->hasMany(Gstin::class, 'entity_id')->where('entity_type', 'client');
+}
+
 
 }

@@ -21,6 +21,7 @@ class SystemSettingsController extends Controller
             'language' => 'required',
             'currency_symbol' => 'required',
             'fiscal_start_month' => 'required',
+            'surepass_api_token' => 'nullable|string',
         ]);
 
         SystemSetting::updateOrCreate(['id' => 1], $request->all());

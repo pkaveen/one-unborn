@@ -242,6 +242,12 @@ Route::post('/menus/usertype-privileges/{userTypeId}', [MenuController::class, '
     // 🧾 Vendor Toggle
     Route::patch('/vendors/{id}/toggle-status', [VendorController::class, 'toggleStatus'])->name('vendors.toggle-status');
 
+    // 🏢 GSTIN by PAN API Routes
+    Route::post('/clients/fetch-gstin-by-pan', [ClientController::class, 'fetchGstinByPan'])->name('clients.fetch-gstin-by-pan');
+    Route::post('/clients/save-selected-gstins', [ClientController::class, 'saveSelectedGstins'])->name('clients.save-selected-gstins');
+    Route::post('/vendors/fetch-gstin-by-pan', [VendorController::class, 'fetchGstinByPan'])->name('vendors.fetch-gstin-by-pan');
+    Route::post('/vendors/save-selected-gstins', [VendorController::class, 'saveSelectedGstins'])->name('vendors.save-selected-gstins');
+
 //
 // 📧 TEST EMAIL ROUTE
 //

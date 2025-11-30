@@ -43,4 +43,10 @@ class Vendor extends Model
         'ifsc_code',
         'status',
     ];
+
+    // Relationship with GSTINs
+    public function gstins()
+    {
+        return $this->hasMany(Gstin::class, 'entity_id')->where('entity_type', 'vendor');
+    }
 }

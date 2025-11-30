@@ -56,29 +56,7 @@
 
 
 
-            {{-- ✅ GST State --}}
-
-            <div class="col-md-4 mt-3">
-
-                <label class="form-label">Select GST State</label>
-
-                <select id="gst_state" class="form-select select2-tags">
-
-                    <option value="">-- Select State --</option>
-
-                    <option value="29">Karnataka</option>
-
-                    <option value="33">Tamil Nadu</option>
-
-                    <option value="36">Telangana</option>
-
-                    <option value="27">Maharashtra</option>
-
-                    <option value="07">Delhi</option>
-
-                </select>
-
-            </div>
+            {{-- ✅ GST State removed: state now derived per GSTIN; master-level selection no longer needed --}}
 
 
 
@@ -421,6 +399,8 @@ document.getElementById("gst_state").addEventListener("change", fetchGST);
 </script>
 
 
+{{-- ✅ GSTIN by PAN Fetch Script --}}
+<script src="{{ asset('js/gstin-fetch.js') }}"></script>
 
 @endsection
 
