@@ -10,6 +10,7 @@ use Illuminate\Queue\SerializesModels;
 use App\Models\ClientLink;
 use App\Models\LinkMonitoringData;
 use App\Services\MikrotikService;
+use App\Services\NotificationService;
 use Illuminate\Support\Facades\Log;
 
 class CollectLinkMetrics implements ShouldQueue
@@ -100,5 +101,11 @@ class CollectLinkMetrics implements ShouldQueue
             'rx_rate' => $traffic['rx_rate_mbps'] ?? 0,
             'tx_rate' => $traffic['tx_rate_mbps'] ?? 0,
         ]);
+
+        // Check for real-time alerts
+        $notificationService = new NotificationService();
+        $notificationService->checkLinkDownAlert($link, $data);
+        $notificationService->checkHighLatencyAlert($link);
+        $notificationService->checkHighPacketLossAlert($link);
     }
 }

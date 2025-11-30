@@ -5,13 +5,11 @@ namespace App\Console\Commands;
 use App\Models\ClientLink;
 use App\Models\LinkMonitoringData;
 use App\Models\SlaReport;
-use App\Models\ClientPortalUser;
-use App\Mail\SlaBreachNotification;
+use App\Services\NotificationService;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 
 class CalculateMonthlySla extends Command
 {
@@ -175,28 +173,10 @@ class CalculateMonthlySla extends Command
 
         Log::info("SLA report created for link {$link->id} ({$month}): " . ($slaMet ? 'Met' : 'Breach'));
 
-        // Send email notification if SLA was breached
+        // Send notification if SLA was breached (via NotificationService)
         if (!$slaMet) {
-            $this->sendBreachNotification($report);
-        }
-    }
-
-    /**
-     * Send SLA breach notification email
-     */
-    protected function sendBreachNotification(SlaReport $report)
-    {
-        try {
-            $clientUsers = ClientPortalUser::where('client_id', $report->clientLink->client_id)
-                ->where('status', 'active')
-                ->get();
-
-            foreach ($clientUsers as $user) {
-                Mail::to($user->email)->queue(new SlaBreachNotification($report));
-                Log::info("SLA breach notification sent to {$user->email} for link {$report->clientLink->id}");
-            }
-        } catch (\Exception $e) {
-            Log::error("Failed to send SLA breach notification: " . $e->getMessage());
+            $notificationService = new NotificationService();
+            $notificationService->sendSlaBreachNotification($report);
         }
     }
 

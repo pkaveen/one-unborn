@@ -30,6 +30,7 @@ use App\Http\Controllers\TrainingController;
 use App\Http\Controllers\StrategyController;
 use App\Http\Controllers\AssuranceController;
 use App\Http\Controllers\ClientPortalController;
+use App\Http\Controllers\NotificationSettingsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -384,6 +385,19 @@ Route::get('/strategy', [StrategyController::class, 'index'])->name('strategy.in
 Route::get('/assurance', [\App\Http\Controllers\AssuranceController::class, 'index'])
     ->middleware(\App\Http\Middleware\CheckPrivilege::class .':view')
     ->name('assurance.index');
+
+// 🔔 Notification Settings Routes
+Route::get('/notification-settings', [NotificationSettingsController::class, 'index'])
+    ->middleware(\App\Http\Middleware\CheckPrivilege::class .':view')
+    ->name('notification-settings.index');
+
+Route::put('/notification-settings/{id}', [NotificationSettingsController::class, 'update'])
+    ->middleware(\App\Http\Middleware\CheckPrivilege::class .':edit')
+    ->name('notification-settings.update');
+
+Route::get('/notification-settings/logs', [NotificationSettingsController::class, 'logs'])
+    ->middleware(\App\Http\Middleware\CheckPrivilege::class .':view')
+    ->name('notification-settings.logs');
 
 // Pincode Lookup
 
