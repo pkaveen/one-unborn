@@ -5,7 +5,8 @@ namespace App\Services;
 use App\Models\ClientLink;
 use App\Models\NotificationSetting;
 use App\Models\NotificationLog;
-use App\Models\ClientPortalUser;
+use App\Models\Client;
+use App\Models\User;
 use App\Models\LinkMonitoringData;
 use App\Mail\SlaBreachNotification;
 use App\Mail\LinkDownAlert;
@@ -38,13 +39,21 @@ class NotificationService
 
         $recipients = [];
 
-        // Add client portal users if enabled
+        // Add client portal user email if enabled
         if ($settings->sla_breach_to_client) {
-            $clientEmails = ClientPortalUser::where('client_id', $link->client_id)
-                ->where('status', 'active')
-                ->pluck('email')
-                ->toArray();
-            $recipients = array_merge($recipients, $clientEmails);
+            $client = Client::where('id', $link->client_id)
+                ->where('portal_active', true)
+                ->first();
+                
+            if ($client) {
+                if ($client->billing_spoc_email) {
+                    $recipients[] = $client->billing_spoc_email;
+                }
+                // Also include invoice email if different
+                if ($client->invoice_email && $client->invoice_email !== $client->billing_spoc_email) {
+                    $recipients[] = $client->invoice_email;
+                }
+            }
         }
 
         // Add operations team if enabled

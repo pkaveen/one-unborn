@@ -70,10 +70,10 @@ return [
             'model' => env('AUTH_MODEL', App\Models\User::class),
         ],
 
-        'client_portal_users' => [
-            'driver' => 'eloquent',
-            'model' => App\Models\ClientPortalUser::class,
-        ],
+            'client_portal_users' => [
+                'driver' => 'eloquent',
+                'model' => App\Models\Client::class,
+            ],
 
         // 'users' => [
         //     'driver' => 'database',
