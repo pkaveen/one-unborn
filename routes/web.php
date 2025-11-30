@@ -29,6 +29,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\TrainingController;
 use App\Http\Controllers\StrategyController;
 use App\Http\Controllers\AssuranceController;
+use App\Http\Controllers\ClientPortalController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -66,6 +67,28 @@ Route::post('/logout', function () {
     session()->regenerateToken();   // prevents CSRF token issues
     return redirect()->route('login');
 })->name('logout');
+
+
+//
+// 👤 CLIENT PORTAL ROUTES
+//
+Route::prefix('client')->name('client.')->group(function () {
+    // Guest routes (login)
+    Route::middleware('guest:client')->group(function () {
+        Route::get('/login', [ClientPortalController::class, 'showLoginForm'])->name('login');
+        Route::post('/login', [ClientPortalController::class, 'login']);
+    });
+    
+    // Authenticated client routes
+    Route::middleware('auth:client')->group(function () {
+        Route::post('/logout', [ClientPortalController::class, 'logout'])->name('logout');
+        Route::get('/dashboard', [ClientPortalController::class, 'dashboard'])->name('dashboard');
+        Route::get('/links', [ClientPortalController::class, 'links'])->name('links');
+        Route::get('/links/{id}', [ClientPortalController::class, 'linkDetails'])->name('links.details');
+        Route::get('/sla-reports', [ClientPortalController::class, 'slaReports'])->name('sla.reports');
+        Route::get('/sla-reports/{id}/download', [ClientPortalController::class, 'downloadSlaReport'])->name('sla.download');
+    });
+});
 
 
 // Route::post('/logout', function () {

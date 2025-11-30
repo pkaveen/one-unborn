@@ -13,11 +13,17 @@ class ClientLink extends Model
         'interface_name',
         'circuit_id',
         'link_name',
+        'link_type',
+        'bandwidth_committed',
+        'sla_uptime',
+        'sla_latency',
+        'sla_packet_loss',
+        'status',
+        'activation_date',
         'committed_speed_mbps',
         'committed_sla_uptime',
         'committed_sla_latency_ms',
         'committed_sla_packet_loss',
-        'activation_date',
         'is_active',
         'grafana_dashboard_uid',
         'monitoring_config',
@@ -50,22 +56,22 @@ class ClientLink extends Model
 
     public function monitoringData()
     {
-        return $this->hasMany(LinkMonitoringData::class, 'link_id');
+        return $this->hasMany(LinkMonitoringData::class, 'client_link_id');
     }
 
     public function slaReports()
     {
-        return $this->hasMany(SlaReport::class, 'link_id');
+        return $this->hasMany(SlaReport::class, 'client_link_id');
     }
 
     public function latestMonitoringData()
     {
-        return $this->hasOne(LinkMonitoringData::class, 'link_id')->latestOfMany('timestamp');
+        return $this->hasOne(LinkMonitoringData::class, 'client_link_id')->latestOfMany('collected_at');
     }
 
     public function scopeActive($query)
     {
-        return $query->where('is_active', true);
+        return $query->where('status', 'active');
     }
 
     public function getUptimePercentageAttribute()
