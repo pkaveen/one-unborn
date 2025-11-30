@@ -1,0 +1,32 @@
+# MikroTik Exporter Configuration
+# Add your MikroTik routers here
+
+devices:
+  - name: Router1
+    address: 192.168.1.1:8728
+    user: laravel-api
+    password: YourStrongPassword123
+    
+  - name: Router2
+    address: 192.168.1.2:8728
+    user: laravel-api
+    password: YourStrongPassword123
+
+# Features to collect
+features:
+  bgp: true
+  dhcp: true
+  dhcpl: true
+  dhcpv6: true
+  health: true
+  routes: true
+  poe: true
+  pools: true
+  optics: true
+  w60g: true
+  wlansta: true
+  wlanif: true
+  monitor: true
+  ipsec: true
+
+timeout: 10s
