@@ -3,25 +3,27 @@
 -- Complete MySQL Script for All Tables
 -- ============================================
 
--- Table: client_portal_users
--- Purpose: Separate authentication for client portal users
-CREATE TABLE IF NOT EXISTS `client_portal_users` (
-  `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `client_id` bigint(20) UNSIGNED NOT NULL,
-  `username` varchar(255) NOT NULL,
-  `email` varchar(255) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `status` varchar(50) NOT NULL DEFAULT 'active',
-  `last_login` timestamp NULL DEFAULT NULL,
-  `remember_token` varchar(100) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `client_portal_users_username_unique` (`username`),
-  UNIQUE KEY `client_portal_users_email_unique` (`email`),
-  KEY `client_portal_users_client_id_foreign` (`client_id`),
-  CONSTRAINT `client_portal_users_client_id_foreign` FOREIGN KEY (`client_id`) REFERENCES `clients` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+-- ============================================
+-- IMPORTANT: Client Portal Authentication
+-- ============================================
+-- Portal authentication is handled directly through the existing `clients` table.
+-- Add these columns to your existing `clients` table:
+--
+-- ALTER TABLE `clients` ADD COLUMN `portal_username` varchar(255) DEFAULT NULL AFTER `support_spoc_email`;
+-- ALTER TABLE `clients` ADD COLUMN `portal_password` varchar(255) DEFAULT NULL AFTER `portal_username`;
+-- ALTER TABLE `clients` ADD COLUMN `portal_active` tinyint(1) NOT NULL DEFAULT 0 AFTER `portal_password`;
+-- ALTER TABLE `clients` ADD COLUMN `portal_last_login` timestamp NULL DEFAULT NULL AFTER `portal_active`;
+-- ALTER TABLE `clients` ADD COLUMN `remember_token` varchar(100) DEFAULT NULL AFTER `portal_last_login`;
+-- 
+-- CREATE UNIQUE INDEX `clients_portal_username_unique` ON `clients` (`portal_username`);
+-- CREATE INDEX `clients_portal_active_index` ON `clients` (`portal_active`);
+--
+-- The ClientPortalController will authenticate against clients table using:
+-- - portal_username (unique login identifier)
+-- - portal_password (hashed password)
+-- - portal_active (must be 1 to allow login)
+-- - portal_last_login (tracks last successful login)
+-- ============================================
 
 -- Table: mikrotik_routers
 -- Purpose: MikroTik router inventory with API credentials
@@ -382,7 +384,7 @@ CREATE INDEX idx_notification_logs_company_time ON notification_logs(company_id,
 -- FROM information_schema.TABLES
 -- WHERE table_schema = 'your_database_name'
 --     AND table_name IN (
---         'client_portal_users',
+--         'clients',
 --         'mikrotik_routers',
 --         'client_links',
 --         'link_monitoring_data',
